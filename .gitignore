@@ -1,2 +1,7 @@
 /target
+tantivy-recovery/target
 *.env
+.env.docker
+*.log
+actix-server/target
+rustc-ice*

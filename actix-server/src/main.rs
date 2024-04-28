@@ -1,3 +1,3 @@
 fn main() -> std::io::Result<()> {
-    trieve_server::main()
+    actix_server::main()
 }

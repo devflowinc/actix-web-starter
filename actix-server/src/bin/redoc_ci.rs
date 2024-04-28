@@ -1,4 +1,4 @@
-use trieve_server::ApiDoc;
+use actix_server::ApiDoc;
 use utoipa::OpenApi;
 
 fn main() -> std::io::Result<()> {

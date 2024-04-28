@@ -1,14 +1,9 @@
-use crate::data::models::{Organization, StripePlan, UserRole};
 use crate::get_env;
-use crate::operators::invitation_operator::check_inv_valid;
-use crate::operators::organization_operator::{get_org_from_id_query, get_user_org_count};
-use crate::operators::user_operator::{add_user_to_organization, create_user_query};
+use crate::operators::user_operator::{create_user_query};
 use crate::{
-    data::models::{Pool, SlimUser, User, UserOrganization},
+    data::models::{Pool, User},
     errors::ServiceError,
-    operators::{
-        organization_operator::create_organization_query, user_operator::get_user_by_id_query,
-    },
+    operators::user_operator::get_user_by_id_query,
 };
 use actix_identity::Identity;
 use actix_session::Session;
@@ -38,74 +33,18 @@ pub struct OpCallback {
 #[derive(Clone, Debug, Default, Deserialize, PartialEq)]
 struct AFClaims {}
 
-pub type LoggedUser = SlimUser;
-
-impl FromRequest for LoggedUser {
+impl FromRequest for User {
     type Error = Error;
-    type Future = Ready<Result<LoggedUser, Error>>;
+    type Future = Ready<Result<User, Error>>;
 
     #[inline]
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
         ready(
             req.extensions()
-                .get::<LoggedUser>()
+                .get::<User>()
                 .cloned()
                 .ok_or(ServiceError::Unauthorized.into()),
         )
-    }
-}
-
-#[derive(Debug)]
-pub struct OrganizationRole {
-    pub user: SlimUser,
-    pub role: UserRole,
-}
-
-#[derive(Debug, Clone)]
-pub struct AdminOnly(pub SlimUser);
-
-impl FromRequest for AdminOnly {
-    type Error = ServiceError;
-    type Future = Ready<Result<Self, Self::Error>>;
-
-    #[inline]
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let ext = req.extensions();
-
-        match ext.get::<OrganizationRole>() {
-            Some(OrganizationRole {
-                user,
-                role: UserRole::Owner,
-            }) => ready(Ok(Self(user.clone()))),
-            Some(OrganizationRole {
-                user,
-                role: UserRole::Admin,
-            }) => ready(Ok(Self(user.clone()))),
-            None => ready(Err(ServiceError::Unauthorized)),
-            _ => ready(Err(ServiceError::Forbidden)),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct OwnerOnly(pub SlimUser);
-
-impl FromRequest for OwnerOnly {
-    type Error = ServiceError;
-    type Future = Ready<Result<Self, Self::Error>>;
-
-    #[inline]
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let ext = req.extensions();
-
-        match ext.get::<OrganizationRole>() {
-            Some(OrganizationRole {
-                user,
-                role: UserRole::Owner,
-            }) => ready(Ok(Self(user.clone()))),
-            None => ready(Err(ServiceError::Unauthorized)),
-            _ => ready(Err(ServiceError::Forbidden)),
-        }
     }
 }
 
@@ -166,50 +105,9 @@ pub async fn create_account(
     email: String,
     name: String,
     user_id: uuid::Uuid,
-    organization_id: Option<uuid::Uuid>,
-    inv_code: Option<uuid::Uuid>,
     pool: web::Data<Pool>,
-) -> Result<(User, Vec<UserOrganization>, Vec<Organization>), ServiceError> {
-    let (mut role, org) = match organization_id {
-        Some(organization_id) => (
-            UserRole::User,
-            get_org_from_id_query(organization_id, pool.clone())
-                .await?
-                .organization,
-        ),
-        None => {
-            let org_name = email.split('@').collect::<Vec<&str>>()[0]
-                .to_string()
-                .replace(' ', "-");
-            (
-                UserRole::Owner,
-                create_organization_query(org_name.as_str(), pool.clone()).await?,
-            )
-        }
-    };
-    let org_id = org.id;
-
-    let org_plan_sub = get_org_from_id_query(org_id, pool.clone()).await?;
-    let user_org_count_pool = pool.clone();
-    let user_org_count = get_user_org_count(org_id, user_org_count_pool).await?;
-    if user_org_count
-        >= org_plan_sub
-            .plan
-            .unwrap_or(StripePlan::default())
-            .user_count
-    {
-        return Err(ServiceError::BadRequest(
-            "User limit reached for organization, must upgrade plan to add more users".to_string(),
-        ));
-    }
-
-    if let Some(inv_code) = inv_code {
-        let invitation =
-            check_inv_valid(inv_code, email.clone(), organization_id, pool.clone()).await?;
-        role = invitation.role.into();
-    }
-
-    let user_org = create_user_query(user_id, email, Some(name), role, org_id, pool).await?;
+) -> Result<User, ServiceError> {
+    let user_org = create_user_query(user_id, email, Some(name), pool).await?;
 
     Ok(user_org)
 }
@@ -276,11 +174,9 @@ const OIDC_SESSION_KEY: &str = "oidc_state";
 
 #[derive(Deserialize, Debug, ToSchema, IntoParams)]
 #[schema(
-    example = json!({"organization_id": "00000000-0000-0000-0000-000000000000", "redirect_uri": "https://api.trieve.ai", "inv_code": "00000000-0000-0000-0000-000000000000"}),
+    example = json!({"redirect_uri": "https://api.trieve.ai"}),
 )]
 pub struct AuthQuery {
-    /// ID of organization to authenticate into
-    pub organization_id: Option<uuid::Uuid>,
     /// URL to redirect to after successful login
     pub redirect_uri: Option<String>,
     /// Code sent via email as a result of successful call to send_invitation
@@ -291,10 +187,6 @@ pub struct AuthQuery {
 pub struct LoginState {
     /// URL to redirect to after successful login
     pub redirect_uri: String,
-    /// ID of organization to authenticate into
-    pub organization_id: Option<uuid::Uuid>,
-    /// Code sent via email as a result of successful call to send_invitation
-    pub inv_code: Option<uuid::Uuid>,
 }
 
 /// Login
@@ -351,9 +243,7 @@ pub async fn login(
     };
 
     let login_state = LoginState {
-        redirect_uri,
-        organization_id: data.organization_id,
-        inv_code: data.inv_code,
+        redirect_uri
     };
 
     session
@@ -469,39 +359,13 @@ pub async fn callback(
                 email.to_string(),
                 name.iter().next().unwrap().1.to_string(),
                 user_id,
-                login_state.organization_id,
-                login_state.inv_code,
                 pool.clone(),
             )
             .await?
         }
     };
 
-    let slim_user: SlimUser = SlimUser::from_details(user.0, user.1, user.2);
-
-    if login_state.organization_id.is_some()
-        && !slim_user.user_orgs.iter().any(|org| {
-            org.organization_id == login_state.organization_id.unwrap_or(uuid::Uuid::default())
-        })
-    {
-        if let Some(inv_code) = login_state.inv_code {
-            let invitation = check_inv_valid(
-                inv_code,
-                email.to_string(),
-                login_state.organization_id,
-                pool.clone(),
-            )
-            .await?;
-            let user_org = UserOrganization::from_details(
-                slim_user.id,
-                invitation.organization_id,
-                invitation.role.into(),
-            );
-            add_user_to_organization(None, None, user_org, pool).await?;
-        }
-    }
-
-    let user_string = serde_json::to_string(&slim_user).map_err(|_| {
+    let user_string = serde_json::to_string(&user).map_err(|_| {
         ServiceError::InternalServerError("Failed to serialize user to JSON".into())
     })?;
 
@@ -514,45 +378,17 @@ pub async fn callback(
         .finish())
 }
 
-/// Get Me
-///
-/// Get the user corresponding to your current auth credentials.
-#[utoipa::path(
-    get,
-    path = "/auth/me",
-    context_path = "/api",
-    tag = "auth",
-    responses(
-        (status = 200, description = "The user corresponding to your current auth credentials", body = SlimUser),
-        (status = 400, description = "Error message indicitating you are not currently signed in", body = ErrorResponseBody),
-    ),
-    security(
-        ("ApiKey" = ["readonly"]),
-    )
-)]
-#[tracing::instrument(skip(pool))]
-pub async fn get_me(
-    logged_user: LoggedUser,
-    pool: web::Data<Pool>,
-) -> Result<HttpResponse, actix_web::Error> {
-    let user_query_id: uuid::Uuid = logged_user.id;
-
-    let user = get_user_by_id_query(&user_query_id, pool).await?;
-
-    Ok(HttpResponse::Ok().json(SlimUser::from_details(user.0, user.1, user.2)))
-}
-
 /// Health Check
 ///
-/// Confirmation that the service is healthy and can make embedding vectors
+/// Confirmation that the service is healthy
 #[utoipa::path(
     get,
     path = "/health",
     context_path = "/api",
     tag = "health",
     responses(
-        (status = 200, description = "Confirmation that the service is healthy and can make embedding vectors"),
-        (status = 400, description = "Service error relating to making an embedding or overall service health", body = ErrorResponseBody),
+        (status = 200, description = "Confirmation that the service is healthy"),
+        (status = 400, description = "Service error relating to overall service health", body = ErrorResponseBody),
     ),
 )]
 #[tracing::instrument]

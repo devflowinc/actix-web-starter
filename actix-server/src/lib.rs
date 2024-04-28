@@ -8,12 +8,10 @@ use crate::{
 };
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::{config::PersistentSession, storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
-    cookie::{Key, SameSite},
-    middleware,
     web::{self, PayloadConfig},
     App, HttpServer,
+    middleware::Logger,
 };
 use diesel_async::pooled_connection::AsyncDieselConnectionManager;
 use diesel_async::pooled_connection::ManagerConfig;
@@ -32,6 +30,13 @@ pub mod data;
 pub mod errors;
 pub mod handlers;
 pub mod operators;
+
+#[macro_export]
+macro_rules! get_env {
+    ($name:expr, $message:expr) => {
+        env!($name, $message)
+    };
+}
 
 pub const SECONDS_IN_MINUTE: u64 = 60;
 pub const SECONDS_IN_HOUR: u64 = 60 * SECONDS_IN_MINUTE;
@@ -167,7 +172,6 @@ pub fn main() -> std::io::Result<()> {
     };
 
     let database_url = get_env!("DATABASE_URL", "DATABASE_URL should be set");
-    let redis_url = get_env!("REDIS_URL", "REDIS_URL should be set");
 
     run_migrations(database_url);
 
@@ -206,7 +210,7 @@ pub fn main() -> std::io::Result<()> {
                 .app_data(web::Data::new(pool.clone()))
                 .app_data(web::Data::new(oidc_client.clone()))
                 .wrap(sentry_actix::Sentry::with_transaction())
-                .wrap(af_middleware::auth_middleware::AuthMiddlewareFactory)
+                .wrap(middleware::auth_middleware::AuthMiddlewareFactory)
                 .wrap(
                     IdentityMiddleware::builder()
                         .login_deadline(Some(std::time::Duration::from_secs(SECONDS_IN_DAY)))
@@ -214,7 +218,7 @@ pub fn main() -> std::io::Result<()> {
                         .build(),
                 )
                 .wrap(Cors::permissive())
-                .wrap(middleware::Logger::default())
+                .wrap(Logger::default())
                 .service(Redoc::with_url("/redoc", ApiDoc::openapi()))
                 .service(
                     SwaggerUi::new("/swagger-ui/{_:.*}")

@@ -1,17 +1,106 @@
-version: '3'
+version: "3"
 
 services:
-  db:
-    image: postgres
+  actix-server-pg:
+    image: postgres:15
+    container_name: actix-server-pg
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: ai_editor
+      POSTGRES_DB: actix-server
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - actix-server-pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - actix-server-network
+
+  # actix-server:
+  #   container_name: actix-server
+  #   build:
+  #     context: ./actix-server/
+  #     dockerfile: Dockerfile.actix-server
+  #   depends_on:
+  #     actix-server-pg:
+  #       condition: service_healthy
+  #     actix-server-keycloak:
+  #       condition: service_healthy
+  #   networks:
+  #     - actix-server-network
+  #   ports:
+  #     - 8090:8090
+  #   restart: always
+  #   environment:
+  #     - BASE_SERVER_URL=${BASE_SERVER_URL}
+  #     - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+  #     - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+  #     - OIDC_AUTH_REDIRECT_URL=${OIDC_AUTH_REDIRECT_URL}
+  #     - OIDC_ISSUER_URL=${OIDC_ISSUER_URL}
+
+  actix-server-keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    container_name: actix-server-keycloak
+    depends_on:
+      actix-server-keycloak-pg:
+        condition: service_healthy
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=aintsecure
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://actix-server-keycloak-pg:5432/keycloak
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=password
+      - KC_HEALTH_ENABLED=true
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20 # Account for keycloak db starting up and taking time.
+    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false"
+    volumes:
+      - actix-server-keycloak-data:/opt/keycloak/data
+      - ./docker/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./docker/keycloak/themes/trieve:/opt/keycloak/themes/treive
+    ports:
+      - 8080:8080
+    networks:
+      - actix-server-network
+
+  actix-server-keycloak-pg:
+    image: postgres:15
+    container_name: actix-server-keycloak-pg
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - actix-server-pg-keycloak-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - actix-server-network
+
+networks:
+  actix-server-network:
+    driver: bridge
 
 volumes:
-  pgdata:
+  actix-server-pgdata:
+  actix-server-keycloak-data:
+  actix-server-pg-keycloak-data:
