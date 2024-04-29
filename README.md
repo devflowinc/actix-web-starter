@@ -2,11 +2,27 @@
 
 ## Local Development Start Guide
 
-This assumes you are using a debian linux distribution for local development and you have rust installed through rustup.
 
 ### Install OS Dependencies 
 
 `apt-get update -y && apt-get -y install pkg-config libssl-dev libpq-dev`
+
+### Install Dockekr
+
+You can either install it the right way:
+
+- https://docs.docker.com/engine/install/
+
+or the fast way:
+
+```
+curl https://get.docker.com | sh
+```
+
+### Install Rust via Rustup
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
 
 ### Install Diesel
 
