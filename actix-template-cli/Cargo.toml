@@ -1,0 +1,30 @@
+[package]
+name = "actix-template-cli"
+version = "0.4.1"
+edition = "2021"
+authors = ["Trieve <developers@trieve.ai>"]
+license = "MIT"
+description = "CLI interface for Actix Web Template"
+readme = "README.md"
+homepage = "https://github.com/devflowinc/actix-web-template"
+repository = "https://github.com/devflowinc/actix-web-template"
+keywords = ["cli", "search", "trieve"]
+categories = ["command-line-utilities"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.5.3", features = ["derive", "env"] }
+inquire = "0.7.4"
+serde = { version = "1.0.152", features = ["derive"] }
+serde_derive = "1.0.152"
+confy = "0.6.1"
+tabled = "0.15.0"
+ureq = { version = "2.9.6", features = ["json"] }
+serde_json = "1.0.115"
+chrono = { version = "0.4.20", features = ["serde"] }
+csv = "1.3.0"
+tokio = { version = "1.37.0", features = ["full"] }
+trieve-client = "0.6.5"
+uuid = "1.8.0"
+open = "5.1.2"
