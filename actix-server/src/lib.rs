@@ -2,16 +2,13 @@
 
 #[macro_use]
 extern crate diesel;
-use crate::{
-    errors::ServiceError,
-    handlers::auth_handler::build_oidc_client
-};
+use crate::{errors::ServiceError, handlers::auth_handler::build_oidc_client};
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_web::{
+    middleware::Logger,
     web::{self, PayloadConfig},
     App, HttpServer,
-    middleware::Logger,
 };
 use diesel_async::pooled_connection::AsyncDieselConnectionManager;
 use diesel_async::pooled_connection::ManagerConfig;
@@ -25,10 +22,10 @@ use tracing_subscriber::{prelude::*, EnvFilter, Layer};
 use utoipa_redoc::{Redoc, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
-pub mod middleware;
 pub mod data;
 pub mod errors;
 pub mod handlers;
+pub mod middleware;
 pub mod operators;
 
 #[macro_export]
