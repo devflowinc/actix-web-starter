@@ -223,14 +223,27 @@ pub fn main() -> std::io::Result<()> {
                 )
                 .service(web::redirect("/swagger-ui", "/swagger-ui/"))
                 .service(
-                    web::resource("/auth/cli")
-                        .route(web::get().to(handlers::auth_handler::login_cli)),
-                )
-                .service(
-                    web::scope("/api").service(
-                        web::resource("/health")
-                            .route(web::get().to(handlers::auth_handler::health_check)),
-                    ),
+                    web::scope("/api")
+                        .service(
+                            web::resource("/health")
+                                .route(web::get().to(handlers::auth_handler::health_check)),
+                        )
+                        .service(
+                            web::scope("/auth")
+                                .service(
+                                    web::resource("")
+                                        .route(web::get().to(handlers::auth_handler::login))
+                                        .route(web::delete().to(handlers::auth_handler::logout)),
+                                )
+                                .service(
+                                    web::resource("/cli")
+                                        .route(web::get().to(handlers::auth_handler::login_cli)),
+                                )
+                                .service(
+                                    web::resource("/callback")
+                                        .route(web::get().to(handlers::auth_handler::callback)),
+                                ),
+                        ),
                 )
         })
         .bind(("0.0.0.0", 8090))?
