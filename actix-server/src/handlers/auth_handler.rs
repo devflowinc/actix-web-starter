@@ -1,5 +1,5 @@
 use crate::get_env;
-use crate::operators::user_operator::{create_user_query};
+use crate::operators::user_operator::create_user_query;
 use crate::{
     data::models::{Pool, User},
     errors::ServiceError,
@@ -242,9 +242,7 @@ pub async fn login(
             .to_string(),
     };
 
-    let login_state = LoginState {
-        redirect_uri
-    };
+    let login_state = LoginState { redirect_uri };
 
     session
         .insert("login_state", login_state)
@@ -281,6 +279,8 @@ pub async fn callback(
         .get(OIDC_SESSION_KEY)
         .map_err(|_| ServiceError::InternalServerError("Could not get OIDC Session".into()))?
         .ok_or(ServiceError::Unauthorized)?;
+
+    log::info!("Past state {:?}", state);
 
     let code_verifier = state.pkce_verifier;
     let code = query.code.clone();

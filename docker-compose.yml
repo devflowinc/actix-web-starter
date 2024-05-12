@@ -19,6 +19,23 @@ services:
     networks:
       - actix-server-network
 
+  actix-server-redis:
+    image: redis:7.2.2
+    container_name: actix-server-redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "6379:6379"
+    volumes:
+      - actix-server-redis-data:/data
+    networks:
+      - actix-server-network
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+
   # actix-server:
   #   container_name: actix-server
   #   build:
@@ -100,5 +117,6 @@ networks:
 
 volumes:
   actix-server-pgdata:
+  actix-server-redis-data:
   actix-server-keycloak-data:
   actix-server-pg-keycloak-data:
