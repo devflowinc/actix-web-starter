@@ -204,6 +204,8 @@ pub fn main() -> std::io::Result<()> {
 
         let oidc_client = build_oidc_client().await;
 
+        println!("{:?}", std::env::var("SECRET_KEY"));
+
         HttpServer::new(move || {
             App::new()
                 .app_data(PayloadConfig::new(134200000))
@@ -223,7 +225,6 @@ pub fn main() -> std::io::Result<()> {
                 .app_data(web::Data::new(oidc_client.clone()))
                 .app_data(web::Data::new(redis_pool.clone()))
                 .wrap(sentry_actix::Sentry::new())
-                .wrap(middleware::auth_middleware::AuthMiddlewareFactory)
                 .wrap(
                     IdentityMiddleware::builder()
                         .login_deadline(Some(std::time::Duration::from_secs(SECONDS_IN_DAY)))
@@ -231,6 +232,24 @@ pub fn main() -> std::io::Result<()> {
                         .build(),
                 )
                 .wrap(Cors::permissive())
+                .wrap(
+                    SessionMiddleware::builder(
+                        redis_store.clone(),
+                        Key::from(
+                            std::env::var("SECRET_KEY")
+                                .unwrap_or_else(|_| "0123".repeat(16))
+                                .as_bytes(),
+                        ),
+                    )
+                    .session_lifecycle(
+                        PersistentSession::default().session_ttl(time::Duration::days(1)),
+                    )
+                    .cookie_name("actix-server".to_owned())
+                    .cookie_same_site(SameSite::Lax)
+                    .cookie_secure(false)
+                    .cookie_path("/".to_owned())
+                    .build(),
+                )
                 .wrap(Logger::default())
                 .service(Redoc::with_url("/redoc", ApiDoc::openapi()))
                 .service(
@@ -238,6 +257,10 @@ pub fn main() -> std::io::Result<()> {
                         .url("/api-docs/openapi.json", ApiDoc::openapi()),
                 )
                 .service(web::redirect("/swagger-ui", "/swagger-ui/"))
+                .service(
+                    web::resource("/auth/cli")
+                        .route(web::get().to(handlers::auth_handler::login_cli)),
+                )
                 .service(
                     web::scope("/api")
                         .service(
@@ -250,10 +273,6 @@ pub fn main() -> std::io::Result<()> {
                                     web::resource("")
                                         .route(web::get().to(handlers::auth_handler::login))
                                         .route(web::delete().to(handlers::auth_handler::logout)),
-                                )
-                                .service(
-                                    web::resource("/cli")
-                                        .route(web::get().to(handlers::auth_handler::login_cli)),
                                 )
                                 .service(
                                     web::resource("/callback")

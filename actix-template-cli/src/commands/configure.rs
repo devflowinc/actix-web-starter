@@ -71,7 +71,7 @@ impl Default for ActixTemplateConfiguration {
         ActixTemplateConfiguration {
             api_key: "".to_string(),
             organization_id: uuid::Uuid::nil(),
-            api_url: "http://127.0.0.1:8090".to_string(),
+            api_url: "http://localhost:8090".to_string(),
         }
     }
 }
@@ -189,18 +189,18 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) {
 
     if api_url.is_none() {
         let use_default = Confirm::new(
-            "Would you like to use the defautl URL for the Actix Template server (http://127.0.0.1:8090)?",
+            "Would you like to use the default URL for the Actix Template server (http://localhost:8090)?",
         )
         .with_default(true)
         .prompt();
 
         if use_default.unwrap() {
-            api_url = Some("http://127.0.0.1:8090".to_string());
+            api_url = Some("http://localhost:8090".to_string());
         } else {
             Text::new("Enter the URL of the Actix Template server:")
-                .with_default("http://127.0.0.1:8090")
+                .with_default("http://localhost:8090")
                 .prompt()
-                .unwrap_or("http://127.0.0.1:8090".to_string());
+                .unwrap_or("http://localhost:8090".to_string());
         }
     }
 
