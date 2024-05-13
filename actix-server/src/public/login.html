@@ -10,7 +10,7 @@
       const params = new URLSearchParams(window.location.search);
       const host = params.get("host");
 
-      fetch(`${host}/api/user/api_key`, {
+      fetch(`${host}/api/api_key`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Trieve CLI", role: 1 }),

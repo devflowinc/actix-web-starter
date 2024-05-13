@@ -171,6 +171,7 @@ dependencies = [
  "openidconnect",
  "openssl",
  "postgres-openssl",
+ "rand",
  "sentry",
  "sentry-actix",
  "sentry-tracing",

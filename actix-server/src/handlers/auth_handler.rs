@@ -7,9 +7,7 @@ use crate::{
     operators::user_operator::get_user_by_id_query,
 };
 use actix_identity::Identity;
-use actix_web::{
-    dev::Payload, web, Error, FromRequest, HttpMessage as _, HttpRequest, HttpResponse,
-};
+use actix_web::{web, Error, FromRequest, HttpMessage as _, HttpRequest, HttpResponse};
 use bb8_redis::redis::AsyncCommands;
 use oauth2::reqwest::async_http_client;
 use oauth2::{
@@ -21,9 +19,24 @@ use openidconnect::{AccessTokenHash, ClientId, IssuerUrl, Nonce};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::fs::read_to_string;
-use std::future::{ready, Ready};
 use utoipa::{IntoParams, ToSchema};
 
+pub type AuthedUser = User;
+
+impl FromRequest for AuthedUser {
+    type Error = actix_web::Error;
+    type Future = std::future::Ready<Result<AuthedUser, actix_web::Error>>;
+
+    #[inline]
+    fn from_request(req: &HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
+        std::future::ready(
+            req.extensions()
+                .get::<AuthedUser>()
+                .cloned()
+                .ok_or(ServiceError::Unauthorized.into()),
+        )
+    }
+}
 #[derive(Deserialize, Debug)]
 pub struct OpCallback {
     pub state: String,
@@ -33,21 +46,6 @@ pub struct OpCallback {
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq)]
 struct AFClaims {}
-
-impl FromRequest for User {
-    type Error = Error;
-    type Future = Ready<Result<User, Error>>;
-
-    #[inline]
-    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        ready(
-            req.extensions()
-                .get::<User>()
-                .cloned()
-                .ok_or(ServiceError::Unauthorized.into()),
-        )
-    }
-}
 
 #[tracing::instrument]
 pub async fn build_oidc_client() -> CoreClient {
@@ -201,7 +199,7 @@ pub struct LoginState {
     params(AuthQuery),
     responses(
         (status = 303, description = "Response that redirects to OAuth provider through a Location header to be handled by browser."),
-        (status = 400, description = "OAuth error likely with OIDC provider.", body = ErrorResponseBody),
+        (status = 400, description = "OAuth error likely with OIDC provider.", body = ErrorRespPayload),
     )
 )]
 #[tracing::instrument(skip(oidc_client, redis_pool))]
@@ -273,7 +271,7 @@ pub async fn login(
     tag = "auth",
     responses(
         (status = 200, description = "Response that returns with set-cookie header", body = SlimUser),
-        (status = 400, description = "Email or password empty or incorrect", body = ErrorResponseBody),
+        (status = 400, description = "Email or password empty or incorrect", body = ErrorRespPayload),
     )
 )]
 #[tracing::instrument(skip(redis_pool, oidc_client, pg_pool))]
@@ -415,7 +413,7 @@ pub async fn callback(
     tag = "health",
     responses(
         (status = 200, description = "Confirmation that the service is healthy"),
-        (status = 400, description = "Service error relating to overall service health", body = ErrorResponseBody),
+        (status = 400, description = "Service error relating to overall service health", body = ErrorRespPayload),
     ),
 )]
 #[tracing::instrument]
@@ -429,4 +427,24 @@ pub async fn login_cli() -> Result<HttpResponse, ServiceError> {
         ServiceError::InternalServerError(format!("Could not read login page {}", e))
     })?;
     Ok(HttpResponse::Ok().content_type("text/html").body(html_page))
+}
+
+/// Get Currently Auth'ed User
+///
+/// Get the currently auth'ed user. This will return the user object for the currently auth'ed user.
+#[utoipa::path(
+    get,
+    path = "/auth/whoami",
+    context_path = "/api",
+    tag = "auth",
+    responses(
+        (status = 200, description = "JSON body containing the user object", body = SetUserApiKeyRespPayload),
+        (status = 400, description = "Service error relating to getting the currently auth'ed user", body = ErrorRespPayload),
+    ),
+    security(
+        ("ApiKey" = ["readonly"]),
+    )
+)]
+pub async fn whoami(user: AuthedUser) -> Result<HttpResponse, actix_web::Error> {
+    Ok(HttpResponse::Ok().json(user))
 }
