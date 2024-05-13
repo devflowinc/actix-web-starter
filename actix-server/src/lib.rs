@@ -5,7 +5,9 @@ extern crate diesel;
 use crate::{errors::ServiceError, handlers::auth_handler::build_oidc_client};
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
+use actix_session::{config::PersistentSession, storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
+    cookie::{Key, SameSite},
     middleware::Logger,
     web::{self, PayloadConfig},
     App, HttpServer,
@@ -187,6 +189,10 @@ pub fn main() -> std::io::Result<()> {
             .max_size(10)
             .build()
             .unwrap();
+        
+        let redis_store = RedisSessionStore::new(redis_url)
+            .await
+            .expect("Failed to create redis store");
 
         let redis_manager =
             bb8_redis::RedisConnectionManager::new(redis_url).expect("Failed to connect to redis");
