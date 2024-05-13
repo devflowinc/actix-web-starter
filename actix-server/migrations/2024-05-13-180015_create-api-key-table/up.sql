@@ -10,3 +10,4 @@ CREATE TABLE api_keys (
 );
 
 CREATE INDEX api_keys_user_id_idx ON api_keys(user_id);
+CREATE INDEX api_keys_blake3_hash_idx ON api_keys(blake3_hash);

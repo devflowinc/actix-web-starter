@@ -1,5 +1,6 @@
 use crate::{
     data::models::{PgPool, User},
+    operators::user_operator::get_user_from_api_key,
 };
 use actix_identity::Identity;
 use actix_web::{
@@ -37,8 +38,6 @@ where
             let transaction = sentry::start_transaction(tx_ctx);
             sentry::configure_scope(|scope| scope.set_span(Some(transaction.clone().into())));
 
-            let pool = req.app_data::<web::Data<PgPool>>().unwrap().to_owned();
-
             let get_user_span = transaction.start_child("get_user", "Getting user");
 
             let (http_req, pl) = req.parts_mut();
@@ -61,6 +60,7 @@ where
 async fn get_user(req: &HttpRequest, pl: &mut Payload, tx: Transaction) -> Option<User> {
     let get_user_from_identity_span =
         tx.start_child("get_user_from_identity", "Getting user from identity");
+
     if let Ok(identity) = Identity::from_request(req, pl).into_inner() {
         if let Ok(user_json) = identity.id() {
             if let Ok(user) = serde_json::from_str::<User>(&user_json) {
@@ -68,6 +68,22 @@ async fn get_user(req: &HttpRequest, pl: &mut Payload, tx: Transaction) -> Optio
             }
         }
     }
+
+    if let Some(auth_header) = req.headers().get("Authorization") {
+        if let Ok(auth_header) = auth_header.to_str() {
+            let user = get_user_from_api_key(
+                auth_header,
+                req.app_data::<web::Data<PgPool>>()
+                    .expect("PgPool will always be in server state")
+                    .to_owned(),
+            )
+            .await
+            .ok();
+            get_user_from_identity_span.finish();
+            return user;
+        }
+    }
+
     get_user_from_identity_span.finish();
 
     None
