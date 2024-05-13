@@ -8,7 +8,7 @@ use uuid::Error as ParseError;
 
 #[derive(Serialize, Deserialize, Debug, Display, ToSchema)]
 #[schema(example = json!({"message": "Bad Request"}))]
-pub struct ErrorResponseBody {
+pub struct ErrorRespPayload {
     pub message: String,
 }
 
@@ -36,21 +36,21 @@ impl ResponseError for ServiceError {
         sentry::capture_message(&format!("Error {:?}", self), sentry::Level::Error);
         match self {
             ServiceError::InternalServerError(ref message) => HttpResponse::InternalServerError()
-                .json(ErrorResponseBody {
+                .json(ErrorRespPayload {
                     message: message.to_string(),
                 }),
             ServiceError::BadRequest(ref message) => {
-                HttpResponse::BadRequest().json(ErrorResponseBody {
+                HttpResponse::BadRequest().json(ErrorRespPayload {
                     message: message.to_string(),
                 })
             }
-            ServiceError::Unauthorized => HttpResponse::Unauthorized().json(ErrorResponseBody {
+            ServiceError::Unauthorized => HttpResponse::Unauthorized().json(ErrorRespPayload {
                 message: "Unauthorized".to_string()
             }),
-            ServiceError::Forbidden => HttpResponse::Forbidden().json(ErrorResponseBody {
+            ServiceError::Forbidden => HttpResponse::Forbidden().json(ErrorRespPayload {
                 message: "Forbidden".to_string()
             }),
-            ServiceError::NotFound => HttpResponse::NotFound().json(ErrorResponseBody {
+            ServiceError::NotFound => HttpResponse::NotFound().json(ErrorRespPayload {
                 message: "Record not found".to_string()
             }),
         }

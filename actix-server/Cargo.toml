@@ -74,6 +74,7 @@ openssl = "0.10.64"
 utoipa-swagger-ui = { version = "7.0.1", features = ["actix-web"] }
 blake3 = "1.5.1"
 bb8-redis = "0.15.0"
+rand = "0.8.5"
 
 [build-dependencies]
 dotenvy = "0.15.7"

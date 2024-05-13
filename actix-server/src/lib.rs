@@ -119,7 +119,7 @@ impl Modify for SecurityAddon {
     ),
     components(
         schemas(
-            errors::ErrorResponseBody,
+            errors::ErrorRespPayload,
         )
     ),
     tags(
@@ -189,7 +189,7 @@ pub fn main() -> std::io::Result<()> {
             .max_size(10)
             .build()
             .unwrap();
-        
+
         let redis_store = RedisSessionStore::new(redis_url)
             .await
             .expect("Failed to create redis store");
@@ -281,9 +281,20 @@ pub fn main() -> std::io::Result<()> {
                                         .route(web::delete().to(handlers::auth_handler::logout)),
                                 )
                                 .service(
+                                    web::resource("/whoami")
+                                        .route(web::get().to(handlers::auth_handler::whoami)),
+                                )
+                                .service(
                                     web::resource("/callback")
                                         .route(web::get().to(handlers::auth_handler::callback)),
                                 ),
+                        )
+                        .service(
+                            web::scope("/api_key").service(
+                                web::resource("").route(
+                                    web::post().to(handlers::api_key_handler::create_api_key),
+                                ),
+                            ),
                         ),
                 )
         })
