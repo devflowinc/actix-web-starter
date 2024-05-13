@@ -1,5 +1,5 @@
 use crate::{
-    data::models::{Pool, User},
+    data::models::{PgPool, User},
 };
 use actix_identity::Identity;
 use actix_web::{
@@ -37,7 +37,7 @@ where
             let transaction = sentry::start_transaction(tx_ctx);
             sentry::configure_scope(|scope| scope.set_span(Some(transaction.clone().into())));
 
-            let pool = req.app_data::<web::Data<Pool>>().unwrap().to_owned();
+            let pool = req.app_data::<web::Data<PgPool>>().unwrap().to_owned();
 
             let get_user_span = transaction.start_child("get_user", "Getting user");
 

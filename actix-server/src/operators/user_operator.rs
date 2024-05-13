@@ -1,19 +1,19 @@
 use crate::{
-    data::models::{Pool, User},
+    data::models::{PgPool, User},
     errors::ServiceError,
 };
 use actix_web::web;
 use diesel::prelude::*;
 use diesel_async::RunQueryDsl;
 
-#[tracing::instrument(skip(pool))]
+#[tracing::instrument(skip(pg_pool))]
 pub async fn get_user_by_id_query(
     user_id: &uuid::Uuid,
-    pool: web::Data<Pool>,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
     use crate::data::schema::users::dsl as users_columns;
 
-    let mut conn = pool.get().await.unwrap();
+    let mut conn = pg_pool.get().await.unwrap();
 
     let user: User = users_columns::users
         .filter(users_columns::id.eq(user_id))
@@ -27,16 +27,16 @@ pub async fn get_user_by_id_query(
     Ok(user)
 }
 
-#[tracing::instrument(skip(pool))]
+#[tracing::instrument(skip(pg_pool))]
 pub async fn create_user_query(
     user_id: uuid::Uuid,
     email: String,
     name: Option<String>,
-    pool: web::Data<Pool>,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
     use crate::data::schema::users::dsl as users_columns;
 
-    let mut conn = pool.get().await.unwrap();
+    let mut conn = pg_pool.get().await.unwrap();
 
     let user = User::from_details_with_id(user_id, email, name);
 

@@ -1,15 +1,16 @@
+use crate::data::models::RedisPool;
 use crate::get_env;
 use crate::operators::user_operator::create_user_query;
 use crate::{
-    data::models::{Pool, User},
+    data::models::{PgPool, User},
     errors::ServiceError,
     operators::user_operator::get_user_by_id_query,
 };
 use actix_identity::Identity;
-use actix_session::Session;
 use actix_web::{
     dev::Payload, web, Error, FromRequest, HttpMessage as _, HttpRequest, HttpResponse,
 };
+use bb8_redis::redis::AsyncCommands;
 use oauth2::reqwest::async_http_client;
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientSecret, CsrfToken, PkceCodeChallenge, PkceCodeVerifier,
@@ -100,14 +101,14 @@ pub async fn build_oidc_client() -> CoreClient {
     )
 }
 
-#[tracing::instrument(skip(pool))]
+#[tracing::instrument(skip(pg_pool))]
 pub async fn create_account(
     email: String,
     name: String,
     user_id: uuid::Uuid,
-    pool: web::Data<Pool>,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
-    let user_org = create_user_query(user_id, email, Some(name), pool).await?;
+    let user_org = create_user_query(user_id, email, Some(name), pg_pool).await?;
 
     Ok(user_org)
 }
@@ -203,10 +204,10 @@ pub struct LoginState {
         (status = 400, description = "OAuth error likely with OIDC provider.", body = ErrorResponseBody),
     )
 )]
-#[tracing::instrument(skip(oidc_client, session))]
+#[tracing::instrument(skip(oidc_client, redis_pool))]
 pub async fn login(
     req: HttpRequest,
-    session: Session,
+    redis_pool: web::Data<RedisPool>,
     data: web::Query<AuthQuery>,
     oidc_client: web::Data<CoreClient>,
 ) -> Result<HttpResponse, Error> {
@@ -228,9 +229,16 @@ pub async fn login(
         nonce,
     };
 
-    session
-        .insert(OIDC_SESSION_KEY, oidc_state)
-        .map_err(|_| ServiceError::InternalServerError("Could not set OIDC Session".into()))?;
+    let mut redis_conn = redis_pool.get().await.unwrap();
+    let _: () = redis_conn
+        .set(
+            OIDC_SESSION_KEY,
+            serde_json::to_string(&oidc_state).unwrap(),
+        )
+        .await
+        .map_err(|_| {
+            ServiceError::InternalServerError("Failed to set OIDC session state".into())
+        })?;
 
     let redirect_uri = match data.redirect_uri.clone() {
         Some(redirect_uri) => redirect_uri,
@@ -244,25 +252,10 @@ pub async fn login(
 
     let login_state = LoginState { redirect_uri };
 
-    session
-        .insert("login_state", login_state)
-        .map_err(|_| ServiceError::InternalServerError("Could not set redirect url".into()))?;
-
-    log::info!(
-        "OIDC entry at end {:?}",
-        session
-            .get::<OpenIdConnectState>(OIDC_SESSION_KEY)
-            .map_err(|_| ServiceError::InternalServerError("Could not get OIDC Session".into()))?
-    );
-
-    log::info!(
-        "LoginState entry at end {:?}",
-        session
-            .get::<LoginState>("login_state")
-            .map_err(|_| ServiceError::InternalServerError("Could not get redirect url".into()))?
-    );
-
-    log::info!("Redirecting to {}", auth_url.as_str());
+    let _: () = redis_conn
+        .set("login_state", serde_json::to_string(&login_state).unwrap())
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Failed to set login state".into()))?;
 
     //redirect to OpenIdProvider for authentication
     Ok(HttpResponse::SeeOther()
@@ -283,20 +276,33 @@ pub async fn login(
         (status = 400, description = "Email or password empty or incorrect", body = ErrorResponseBody),
     )
 )]
-#[tracing::instrument(skip(session, oidc_client, pool))]
+#[tracing::instrument(skip(redis_pool, oidc_client, pg_pool))]
 pub async fn callback(
     req: HttpRequest,
-    session: Session,
+    redis_pool: web::Data<RedisPool>,
     oidc_client: web::Data<CoreClient>,
-    pool: web::Data<Pool>,
+    pg_pool: web::Data<PgPool>,
     query: web::Query<OpCallback>,
 ) -> Result<HttpResponse, Error> {
-    log::info!("Entries at start {:?}", session.entries());
+    let mut redis_conn = redis_pool
+        .get()
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Could not get redis connection".into()))?;
 
-    let state: OpenIdConnectState = session
-        .get(OIDC_SESSION_KEY)
-        .map_err(|_| ServiceError::InternalServerError("Could not get OIDC Session".into()))?
-        .ok_or(ServiceError::Unauthorized)?;
+    let opt_state: Option<String> =
+        redis_conn
+            .get(OIDC_SESSION_KEY.to_string())
+            .await
+            .map_err(|_| {
+                ServiceError::InternalServerError("Could not get OIDC session state".into())
+            })?;
+
+    let state: OpenIdConnectState = match opt_state {
+        Some(state) => serde_json::from_str(&state).map_err(|_| {
+            ServiceError::InternalServerError("Could not deserialize OIDC session state".into())
+        })?,
+        None => Err(ServiceError::Unauthorized)?,
+    };
 
     let code_verifier = state.pkce_verifier;
     let code = query.code.clone();
@@ -363,19 +369,26 @@ pub async fn callback(
         ServiceError::InternalServerError("Failed to parse name from claims".into())
     })?;
 
-    let login_state = session
-        .get::<LoginState>("login_state")
-        .map_err(|_| ServiceError::InternalServerError("Could not get redirect url".into()))?
-        .ok_or(ServiceError::Unauthorized)?;
+    let opt_login_state: Option<String> = redis_conn
+        .get("login_state")
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Failed to get login state".into()))?;
 
-    let user = match get_user_by_id_query(&user_id, pool.clone()).await {
+    let login_state: LoginState = match opt_login_state {
+        Some(login_state) => serde_json::from_str(&login_state).map_err(|_| {
+            ServiceError::InternalServerError("Failed to deserialize login state".into())
+        })?,
+        None => Err(ServiceError::Unauthorized)?,
+    };
+
+    let user = match get_user_by_id_query(&user_id, pg_pool.clone()).await {
         Ok(user) => user,
         Err(_) => {
             create_account(
                 email.to_string(),
                 name.iter().next().unwrap().1.to_string(),
                 user_id,
-                pool.clone(),
+                pg_pool.clone(),
             )
             .await?
         }
@@ -386,8 +399,6 @@ pub async fn callback(
     })?;
 
     Identity::login(&req.extensions(), user_string).expect("Failed to set login state for user");
-    session.remove(OIDC_SESSION_KEY);
-    session.remove("login_state");
 
     Ok(HttpResponse::SeeOther()
         .insert_header(("Location", login_state.redirect_uri))
