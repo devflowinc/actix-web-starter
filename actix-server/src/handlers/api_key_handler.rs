@@ -24,7 +24,7 @@ pub struct CreateApiKeyRespPayload {
   path = "/api_key",
   context_path = "/api",
   tag = "api_key",
-  request_body(content = SetUserApiKeyReq, description = "JSON request payload to create a new user api key", content_type = "application/json"),
+  request_body(content = CreateApiKeyReqPayload, description = "JSON request payload to create a new user api key", content_type = "application/json"),
   responses(
       (status = 200, description = "JSON body representing the api_key for the user", body = CreateApiKeyRespPayload),
       (status = 400, description = "Service error relating to creating api_key for the user", body = ErrorRespPayload),

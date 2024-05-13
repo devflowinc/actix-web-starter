@@ -37,7 +37,7 @@ impl FromRequest for AuthedUser {
         )
     }
 }
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, IntoParams)]
 pub struct OpCallback {
     pub state: String,
     pub session_state: String,
@@ -111,7 +111,7 @@ pub async fn create_account(
     Ok(user_org)
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, IntoParams)]
 pub struct LogoutRequest {
     pub redirect_uri: Option<String>,
 }
@@ -123,6 +123,9 @@ pub struct LogoutRequest {
     delete,
     path = "/auth",
     context_path = "/api",
+    params(
+        LogoutRequest
+    ),
     tag = "auth",
     responses(
         (status = 204, description = "Confirmation that your current auth token has been invalidated. This does not invalidate your API key."),
@@ -269,6 +272,9 @@ pub async fn login(
     path = "/auth/callback",
     context_path = "/api",
     tag = "auth",
+    params(
+        OpCallback
+    ),
     responses(
         (status = 303, description = "Response that returns with set-cookie header"),
         (status = 400, description = "Email or password empty or incorrect", body = ErrorRespPayload),

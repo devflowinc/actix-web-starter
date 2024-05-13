@@ -123,6 +123,7 @@ impl Modify for SecurityAddon {
     components(
         schemas(
             handlers::api_key_handler::CreateApiKeyRespPayload,
+            handlers::api_key_handler::CreateApiKeyReqPayload,
             errors::ErrorRespPayload,
         )
     ),
