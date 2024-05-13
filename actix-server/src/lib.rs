@@ -5,9 +5,7 @@ extern crate diesel;
 use crate::{errors::ServiceError, handlers::auth_handler::build_oidc_client};
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::{config::PersistentSession, storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
-    cookie::{Key, SameSite},
     middleware::Logger,
     web::{self, PayloadConfig},
     App, HttpServer,
@@ -185,14 +183,10 @@ pub fn main() -> std::io::Result<()> {
             config,
         );
 
-        let pool = diesel_async::pooled_connection::deadpool::Pool::builder(mgr)
+        let pg_pool = diesel_async::pooled_connection::deadpool::Pool::builder(mgr)
             .max_size(10)
             .build()
             .unwrap();
-
-        let redis_store = RedisSessionStore::new(redis_url)
-            .await
-            .expect("Failed to create redis store");
 
         let redis_manager =
             bb8_redis::RedisConnectionManager::new(redis_url).expect("Failed to connect to redis");
@@ -225,7 +219,7 @@ pub fn main() -> std::io::Result<()> {
                         ServiceError::BadRequest(format!("{}", err)).into()
                     }),
                 )
-                .app_data(web::Data::new(pool.clone()))
+                .app_data(web::Data::new(pg_pool.clone()))
                 .app_data(web::Data::new(oidc_client.clone()))
                 .app_data(web::Data::new(redis_pool.clone()))
                 .wrap(sentry_actix::Sentry::new())
@@ -237,32 +231,6 @@ pub fn main() -> std::io::Result<()> {
                         .build(),
                 )
                 .wrap(Cors::permissive())
-                .wrap(
-                    SessionMiddleware::builder(
-                        redis_store.clone(),
-                        Key::from(
-                            std::env::var("SECRET_KEY")
-                                .unwrap_or_else(|_| "0123".repeat(16))
-                                .as_bytes(),
-                        ),
-                    )
-                    .session_lifecycle(
-                        PersistentSession::default().session_ttl(time::Duration::days(1)),
-                    )
-                    .cookie_name("vault".to_owned())
-                    .cookie_same_site(
-                        if std::env::var("COOKIE_SECURE").unwrap_or("false".to_owned()) == "true" {
-                            SameSite::None
-                        } else {
-                            SameSite::Lax
-                        },
-                    )
-                    .cookie_secure(
-                        std::env::var("COOKIE_SECURE").unwrap_or("false".to_owned()) == "true",
-                    )
-                    .cookie_path("/".to_owned())
-                    .build(),
-                )
                 .wrap(Logger::default())
                 .service(Redoc::with_url("/redoc", ApiDoc::openapi()))
                 .service(

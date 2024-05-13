@@ -1,8 +1,10 @@
 use super::schema::*;
+use bb8_redis::{bb8, RedisConnectionManager};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-pub type Pool = diesel_async::pooled_connection::deadpool::Pool<diesel_async::AsyncPgConnection>;
+pub type PgPool = diesel_async::pooled_connection::deadpool::Pool<diesel_async::AsyncPgConnection>;
+pub type RedisPool = bb8::Pool<RedisConnectionManager>;
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
 #[schema(example = json!({
