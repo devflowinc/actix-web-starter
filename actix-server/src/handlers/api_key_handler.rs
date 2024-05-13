@@ -11,7 +11,7 @@ pub struct CreateApiKeyReqPayload {
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
-pub struct SetUserApiKeyRespPayload {
+pub struct CreateApiKeyRespPayload {
     /// The api key which was created. This is the value which should be used in the Authorization header.
     api_key: String,
 }
@@ -26,7 +26,7 @@ pub struct SetUserApiKeyRespPayload {
   tag = "api_key",
   request_body(content = SetUserApiKeyReq, description = "JSON request payload to create a new user api key", content_type = "application/json"),
   responses(
-      (status = 200, description = "JSON body representing the api_key for the user", body = SetUserApiKeyRespPayload),
+      (status = 200, description = "JSON body representing the api_key for the user", body = CreateApiKeyRespPayload),
       (status = 400, description = "Service error relating to creating api_key for the user", body = ErrorRespPayload),
   ),
   security(
@@ -44,5 +44,5 @@ pub async fn create_api_key(
 
     let api_key = create_api_key_query(user_id, name, pg_pool).await?;
 
-    Ok(HttpResponse::Created().json(SetUserApiKeyRespPayload { api_key }))
+    Ok(HttpResponse::Created().json(CreateApiKeyRespPayload { api_key }))
 }

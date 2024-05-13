@@ -270,7 +270,7 @@ pub async fn login(
     context_path = "/api",
     tag = "auth",
     responses(
-        (status = 200, description = "Response that returns with set-cookie header", body = SlimUser),
+        (status = 303, description = "Response that returns with set-cookie header"),
         (status = 400, description = "Email or password empty or incorrect", body = ErrorRespPayload),
     )
 )]
@@ -438,7 +438,7 @@ pub async fn login_cli() -> Result<HttpResponse, ServiceError> {
     context_path = "/api",
     tag = "auth",
     responses(
-        (status = 200, description = "JSON body containing the user object", body = SetUserApiKeyRespPayload),
+        (status = 200, description = "JSON body containing the user object", body = CreateApiKeyRespPayload),
         (status = 400, description = "Service error relating to getting the currently auth'ed user", body = ErrorRespPayload),
     ),
     security(

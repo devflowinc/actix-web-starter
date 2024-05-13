@@ -103,26 +103,32 @@ impl Modify for SecurityAddon {
         ),
         license(
             name = "MIT",
-            url = "https://github.com/devflowinc/trieve/blob/main/LICENSE.txt",
+            url = "https://github.com/devflowinc/actix-web-template/blob/main/LICENSE.txt",
         ),
         version = "0.0.1",
     ),
     servers(
-        (url = "https://api.trieve.ai",
-        description = "Production server"),
         (url = "http://localhost:8090",
         description = "Local development server"),
     ),
     modifiers(&SecurityAddon),
     paths(
+        handlers::auth_handler::login,
+        handlers::auth_handler::logout,
+        handlers::auth_handler::whoami,
+        handlers::auth_handler::callback,
+        handlers::api_key_handler::create_api_key,
         handlers::auth_handler::health_check,
     ),
     components(
         schemas(
+            handlers::api_key_handler::CreateApiKeyRespPayload,
             errors::ErrorRespPayload,
         )
     ),
     tags(
+        (name = "auth", description = "Authentication endpoints. Used to authenticate users."),
+        (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
     ),
 )]
@@ -270,10 +276,6 @@ pub fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/api")
                         .service(
-                            web::resource("/health")
-                                .route(web::get().to(handlers::auth_handler::health_check)),
-                        )
-                        .service(
                             web::scope("/auth")
                                 .service(
                                     web::resource("")
@@ -295,6 +297,10 @@ pub fn main() -> std::io::Result<()> {
                                     web::post().to(handlers::api_key_handler::create_api_key),
                                 ),
                             ),
+                        )
+                        .service(
+                            web::resource("/health")
+                                .route(web::get().to(handlers::auth_handler::health_check)),
                         ),
                 )
         })
