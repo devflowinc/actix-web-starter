@@ -21,10 +21,7 @@ pub async fn get_user_by_id_query(
         .first::<User>(&mut conn)
         .await
         .map_err(|_| {
-            ServiceError::BadRequest(
-                "Error loading user for get_user_by_id_query"
-                    .to_string(),
-            )
+            ServiceError::BadRequest("Error loading user for get_user_by_id_query".to_string())
         })?;
 
     Ok(user)
@@ -48,10 +45,7 @@ pub async fn create_user_query(
         .get_result::<User>(&mut conn)
         .await
         .map_err(|_| {
-            ServiceError::BadRequest(
-                "Error creating user for create_user_query"
-                    .to_string(),
-            )
+            ServiceError::BadRequest("Error creating user for create_user_query".to_string())
         })?;
 
     Ok(user)

@@ -248,6 +248,22 @@ pub async fn login(
         .insert("login_state", login_state)
         .map_err(|_| ServiceError::InternalServerError("Could not set redirect url".into()))?;
 
+    log::info!(
+        "OIDC entry at end {:?}",
+        session
+            .get::<OpenIdConnectState>(OIDC_SESSION_KEY)
+            .map_err(|_| ServiceError::InternalServerError("Could not get OIDC Session".into()))?
+    );
+
+    log::info!(
+        "LoginState entry at end {:?}",
+        session
+            .get::<LoginState>("login_state")
+            .map_err(|_| ServiceError::InternalServerError("Could not get redirect url".into()))?
+    );
+
+    log::info!("Redirecting to {}", auth_url.as_str());
+
     //redirect to OpenIdProvider for authentication
     Ok(HttpResponse::SeeOther()
         .insert_header(("Location", auth_url.as_str()))
@@ -275,12 +291,12 @@ pub async fn callback(
     pool: web::Data<Pool>,
     query: web::Query<OpCallback>,
 ) -> Result<HttpResponse, Error> {
+    log::info!("Entries at start {:?}", session.entries());
+
     let state: OpenIdConnectState = session
         .get(OIDC_SESSION_KEY)
         .map_err(|_| ServiceError::InternalServerError("Could not get OIDC Session".into()))?
         .ok_or(ServiceError::Unauthorized)?;
-
-    log::info!("Past state {:?}", state);
 
     let code_verifier = state.pkce_verifier;
     let code = query.code.clone();
