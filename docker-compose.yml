@@ -37,28 +37,30 @@ services:
       - actix-server-network
     command: redis-server --requirepass ${REDIS_PASSWORD}
 
-  # actix-server:
-  #   container_name: actix-server
-  #   build:
-  #     context: ./actix-server/
-  #     dockerfile: Dockerfile.actix-server
-  #   depends_on:
-  #     actix-server-pg:
-  #       condition: service_healthy
-  #     actix-server-keycloak:
-  #       condition: service_healthy
-  #   networks:
-  #     - actix-server-network
-  #   ports:
-  #     - 8090:8090
-  #   restart: always
-  #   environment:
-  #     - BASE_SERVER_URL=${BASE_SERVER_URL}
-  #     - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
-  #     - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
-  #     - OIDC_AUTH_REDIRECT_URL=${OIDC_AUTH_REDIRECT_URL}
-  #     - OIDC_ISSUER_URL=${OIDC_ISSUER_URL}
-
+  actix-server:
+    container_name: actix-server
+    build:
+      context: ./actix-server/
+      dockerfile: Dockerfile.actix-server
+    depends_on:
+      actix-server-pg:
+        condition: service_healthy
+      actix-server-keycloak:
+        condition: service_healthy
+    networks:
+      - actix-server-network
+    ports:
+      - 8090:8090
+    restart: always
+    environment:
+      - BASE_SERVER_URL=http://localhost:8090
+      - DATABASE_URL=postgres://postgres:password@actix-server-pg:5432/actix-server
+      - REDIS_URL=redis://:thisredispasswordisverysecureandcomplex@actix-server-redis:6379
+      - REDIS_PASSWORD=thisredispasswordisverysecureandcomplex
+      - OIDC_CLIENT_SECRET=YllmLDTy67MbsUBrUAWvQ7z9aMq0QcKx
+      - OIDC_CLIENT_ID=actix-server
+      - OIDC_AUTH_REDIRECT_URL=http://actix-server-keycloak:8080/realms/actix-server/protocol/openid-connect/auth
+      - OIDC_ISSUER_URL=http://actix-server-keycloak:8080/realms/actix-server
   actix-server-keycloak:
     image: quay.io/keycloak/keycloak:23.0.7
     container_name: actix-server-keycloak
