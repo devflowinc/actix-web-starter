@@ -4,7 +4,7 @@ Seriously, we are really nice. If you put a PR and it is incorrect, we will like
 
 ## How to Contribute
 
-1. Find an open issue from the [issues tab](https://github.com/devflowinc/trieve/issues) that suits you
+1. Find an open issue from the [issues tab](https://github.com/devflowinc/actix-web-starter) that suits you
 2. Ask to be assigned to the issue and also ask any questions which you feel will help you work on it
 3. Fork the repository
 4. Add code that meets the requirements to close the open issue
