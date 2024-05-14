@@ -293,6 +293,7 @@ pub async fn callback(
     let token_response = oidc_client
         .exchange_code(AuthorizationCode::new(code))
         .set_pkce_verifier(code_verifier)
+        .set_redirect_uri(redirect_url) // THIS COULD BE BIG
         .request_async(async_http_client)
         .await
         .map_err(|e| match e {

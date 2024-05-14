@@ -59,7 +59,7 @@ services:
       - REDIS_PASSWORD=thisredispasswordisverysecureandcomplex
       - OIDC_CLIENT_SECRET=YllmLDTy67MbsUBrUAWvQ7z9aMq0QcKx
       - OIDC_CLIENT_ID=actix-server
-      - OIDC_AUTH_REDIRECT_URL=http://actix-server-keycloak:8080/realms/actix-server/protocol/openid-connect/auth
+      - OIDC_AUTH_REDIRECT_URL=http://localhost:8080/realms/actix-server/protocol/openid-connect/auth
       - OIDC_ISSUER_URL=http://actix-server-keycloak:8080/realms/actix-server
   actix-server-keycloak:
     image: quay.io/keycloak/keycloak:23.0.7
@@ -85,7 +85,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20 # Account for keycloak db starting up and taking time.
-    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false"
+    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false --hostname-url=http://localhost:8080 --hostname-strict-backchannel=true"
     volumes:
       - actix-server-keycloak-data:/opt/keycloak/data
       - ./docker/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
