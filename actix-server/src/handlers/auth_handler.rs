@@ -112,6 +112,7 @@ pub struct LogoutRequest {
     tag = "auth",
     responses(
         (status = 204, description = "Confirmation that your current auth token has been invalidated. This does not invalidate your API key."),
+        (status = 401, description = "The user is already logged out / does not have an account"),
     ),
 )]
 #[tracing::instrument(skip(id))]
