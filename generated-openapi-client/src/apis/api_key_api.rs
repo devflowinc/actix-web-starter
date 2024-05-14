@@ -18,7 +18,7 @@ use super::{Error, configuration};
 #[derive(Clone, Debug)]
 pub struct CreateApiKeyParams {
     /// JSON request payload to create a new user api key
-    pub body: models::SetUserApiKeyReq
+    pub body: models::CreateApiKeyRespPayload
 }
 
 
