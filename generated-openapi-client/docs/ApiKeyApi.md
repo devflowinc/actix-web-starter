@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## create_api_key
 
-> models::CreateApiKeyRespPayload create_api_key(body)
+> models::CreateApiKeyRespPayload create_api_key(create_api_key_req_payload)
 Set User Api Key
 
 Set User Api Key  Create a new api key for the auth'ed user. Successful response will contain the newly created api key. The api key will have permission level of the auth'ed user who calls this endpoint.
@@ -20,7 +20,7 @@ Set User Api Key  Create a new api key for the auth'ed user. Successful response
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**body** | **models::SetUserApiKeyReq** | JSON request payload to create a new user api key | [required] |
+**create_api_key_req_payload** | [**CreateApiKeyReqPayload**](CreateApiKeyReqPayload.md) | JSON request payload to create a new user api key | [required] |
 
 ### Return type
 

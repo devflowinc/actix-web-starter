@@ -18,7 +18,7 @@ use super::{Error, configuration};
 #[derive(Clone, Debug)]
 pub struct CreateApiKeyParams {
     /// JSON request payload to create a new user api key
-    pub body: models::CreateApiKeyRespPayload
+    pub create_api_key_req_payload: models::CreateApiKeyReqPayload
 }
 
 
@@ -44,7 +44,7 @@ pub async fn create_api_key(configuration: &configuration::Configuration, params
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let body = params.body;
+    let create_api_key_req_payload = params.create_api_key_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -63,7 +63,7 @@ pub async fn create_api_key(configuration: &configuration::Configuration, params
         };
         local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
     };
-    local_var_req_builder = local_var_req_builder.json(&body);
+    local_var_req_builder = local_var_req_builder.json(&create_api_key_req_payload);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
