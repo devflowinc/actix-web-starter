@@ -1,0 +1,15 @@
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_user WHERE usename = 'keycloak') THEN
+        CREATE USER keycloak WITH PASSWORD 'password';
+    END IF;
+END
+$$;
+
+CREATE SCHEMA IF NOT EXISTS keycloak AUTHORIZATION postgres;
+GRANT ALL PRIVILEGES ON SCHEMA keycloak TO keycloak;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA keycloak TO keycloak;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA keycloak TO keycloak;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA keycloak GRANT ALL ON TABLES TO keycloak;
+
