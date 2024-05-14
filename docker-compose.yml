@@ -37,11 +37,14 @@ services:
       - actix-server-network
     command: redis-server --requirepass ${REDIS_PASSWORD}
 
+  # Will only be started if running `docker compose --profile prod up`
   actix-server:
     container_name: actix-server
     build:
       context: ./actix-server/
       dockerfile: Dockerfile.actix-server
+    profiles:
+      - prod
     depends_on:
       actix-server-pg:
         condition: service_healthy
