@@ -30,13 +30,6 @@ pub mod handlers;
 pub mod middleware;
 pub mod operators;
 
-#[macro_export]
-macro_rules! get_env {
-    ($name:expr, $message:expr) => {
-        env!($name, $message)
-    };
-}
-
 pub const SECONDS_IN_MINUTE: u64 = 60;
 pub const SECONDS_IN_HOUR: u64 = 60 * SECONDS_IN_MINUTE;
 pub const SECONDS_IN_DAY: u64 = 24 * SECONDS_IN_HOUR;
@@ -177,10 +170,10 @@ pub fn main() -> std::io::Result<()> {
         None
     };
 
-    let database_url = get_env!("DATABASE_URL", "DATABASE_URL should be set");
-    let redis_url = get_env!("REDIS_URL", "REDIS_URL should be set");
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL should be set");
+    let redis_url = std::env::var("REDIS_URL").expect("REDIS_URL should be set");
 
-    run_migrations(database_url);
+    run_migrations(&database_url);
 
     actix_web::rt::System::new().block_on(async move {
         // create db connection pool
@@ -197,7 +190,7 @@ pub fn main() -> std::io::Result<()> {
             .build()
             .unwrap();
 
-        let redis_store = RedisSessionStore::new(redis_url)
+        let redis_store = RedisSessionStore::new(redis_url.clone())
             .await
             .expect("Failed to create redis store");
 

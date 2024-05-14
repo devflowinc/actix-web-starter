@@ -1,5 +1,4 @@
 use crate::data::models::RedisPool;
-use crate::get_env;
 use crate::operators::user_operator::create_user_query;
 use crate::{
     data::models::{PgPool, User},
@@ -49,32 +48,16 @@ struct AFClaims {}
 
 #[tracing::instrument]
 pub async fn build_oidc_client() -> CoreClient {
-    let issuer_url = get_env!(
-        "OIDC_ISSUER_URL",
-        "Issuer URL for OpenID provider must be set"
-    )
-    .to_string();
-
-    let client_id = get_env!(
-        "OIDC_CLIENT_ID",
-        "Client ID for OpenID provider must be set"
-    )
-    .to_string();
-
-    let auth_redirect_url = get_env!(
-        "OIDC_AUTH_REDIRECT_URL",
-        "Auth redirect URL for OpenID provider must be set"
-    )
-    .to_string();
-    let client_secret = get_env!(
-        "OIDC_CLIENT_SECRET",
-        "Client secret for OpenID provider must be set"
-    )
-    .to_string();
-    let base_server_url = get_env!(
-        "BASE_SERVER_URL",
-        "Server hostname for OpenID provider must be set"
-    );
+    let issuer_url =
+        std::env::var("OIDC_ISSUER_URL").expect("Issuer URL for OpenID provider must be set");
+    let client_id =
+        std::env::var("OIDC_CLIENT_ID").expect("Client ID for OpenID provider must be set");
+    let auth_redirect_url = std::env::var("OIDC_AUTH_REDIRECT_URL")
+        .expect("Auth redirect URL for OpenID provider must be set");
+    let client_secret =
+        std::env::var("OIDC_CLIENT_SECRET").expect("Client secret for OpenID provider must be set");
+    let base_server_url =
+        std::env::var("BASE_SERVER_URL").expect("Server hostname for OpenID provider must be set");
 
     //build OpenId Connect client
     let meta_data = CoreProviderMetadata::discover_async(
@@ -138,16 +121,11 @@ pub async fn logout(
     req: HttpRequest,
 ) -> HttpResponse {
     id.logout();
-    let issuer_url = get_env!(
-        "OIDC_ISSUER_URL",
-        "Issuer URL for OpenID provider must be set"
-    )
-    .to_string();
-    let client_id = get_env!(
-        "OIDC_CLIENT_ID",
-        "Client ID for OpenID provider must be set"
-    )
-    .to_string();
+    let issuer_url =
+        std::env::var("OIDC_ISSUER_URL").expect("Issuer URL for OpenID provider must be set");
+    let client_id =
+        std::env::var("OIDC_CLIENT_ID").expect("Client ID for OpenID provider must be set");
+
     let logout_url = format!(
         "{}/protocol/openid-connect/logout?post_logout_redirect_uri={}&client_id={}",
         issuer_url,
