@@ -2,7 +2,9 @@
 
 #[macro_use]
 extern crate diesel;
-use crate::{errors::ServiceError, handlers::auth_handler::build_oidc_client};
+use crate::{
+    errors::ServiceError, handlers::auth_handler::build_oidc_client, middleware::auth_middleware,
+};
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_session::{config::PersistentSession, storage::RedisSessionStore, SessionMiddleware};
@@ -231,6 +233,7 @@ pub fn main() -> std::io::Result<()> {
                 .app_data(web::Data::new(oidc_client.clone()))
                 .app_data(web::Data::new(redis_pool.clone()))
                 .wrap(sentry_actix::Sentry::new())
+                .wrap(auth_middleware::AuthMiddlewareFactory)
                 .wrap(
                     IdentityMiddleware::builder()
                         .login_deadline(Some(std::time::Duration::from_secs(SECONDS_IN_DAY)))
