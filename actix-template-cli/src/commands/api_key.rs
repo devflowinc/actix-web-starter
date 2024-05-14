@@ -1,19 +1,15 @@
-use trieve_client::{
-    apis::{configuration::Configuration, user_api::SetUserApiKeyParams},
-    models::SetUserApiKeyRequest,
+use actix_web_starter_client::{
+    apis::{api_key_api::CreateApiKeyParams, configuration::Configuration},
+    models::CreateApiKeyRespPayload,
 };
-use crate::ApiKeyData;
+
 use super::configure::ActixTemplateConfiguration;
+use crate::ApiKeyData;
 
 pub async fn generate_api_key(
     settings: ActixTemplateConfiguration,
     api_key_data: ApiKeyData,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    if settings.organization_id.to_string().is_empty() || settings.api_key.is_empty() {
-        eprintln!("Please configure the Actix Template CLI with your credentials. Run `actix-template configure` to get started.");
-        std::process::exit(1);
-    }
-
     let name = if api_key_data.name.is_none() {
         inquire::Text::new("Enter a name for the API Key:")
             .with_help_message("This name will help you identify the API Key in the future.")
@@ -25,21 +21,20 @@ pub async fn generate_api_key(
 
     let config = Configuration {
         base_path: settings.api_url.clone(),
-        api_key: Some(trieve_client::apis::configuration::ApiKey {
+        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
             prefix: None,
             key: settings.api_key.clone(),
         }),
         ..Default::default()
     };
 
-    let data = SetUserApiKeyParams {
-        set_user_api_key_request: SetUserApiKeyRequest {
-            name: name.clone(),
-            role: 0,
+    let data = CreateApiKeyParams {
+        body: CreateApiKeyRespPayload {
+            api_key: name.clone(),
         },
     };
 
-    let user = trieve_client::apis::user_api::set_user_api_key(&config, data)
+    let user = actix_web_starter_client::apis::api_key_api::create_api_key(&config, data)
         .await
         .map_err(|e| {
             eprintln!("Error generating API Key: {:?}", e);
@@ -50,12 +45,12 @@ pub async fn generate_api_key(
         .unwrap();
 
     match user {
-        trieve_client::apis::user_api::SetUserApiKeySuccess::Status200(api_key) => {
+        actix_web_starter_client::apis::api_key_api::CreateApiKeySuccess::Status200(api_key) => {
             println!("\nAPI Key generated successfully!\n");
             println!("Name: {}", name);
             println!("API Key: {}", api_key.api_key);
         }
-        trieve_client::apis::user_api::SetUserApiKeySuccess::UnknownValue(_) => {
+        actix_web_starter_client::apis::api_key_api::CreateApiKeySuccess::UnknownValue(_) => {
             eprintln!("Error generating API Key.");
             std::process::exit(1);
         }

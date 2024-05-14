@@ -1,24 +1,16 @@
-use std::{
-    fmt,
-    ops::{Deref, DerefMut},
-};
-
 use crate::{commands::login_server::server, Login};
+use actix_web_starter_client::apis::{
+    auth_api::{whoami, WhoamiSuccess},
+    configuration::{ApiKey, Configuration},
+};
 use inquire::{Confirm, Text};
 use serde::{Deserialize, Serialize};
+use std::ops::{Deref, DerefMut};
 use tokio::sync::mpsc;
-use trieve_client::{
-    apis::{
-        auth_api::get_me,
-        configuration::{ApiKey, Configuration},
-    },
-    models::Organization,
-};
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ActixTemplateConfiguration {
     pub api_key: String,
-    pub organization_id: uuid::Uuid,
     pub api_url: String,
 }
 
@@ -70,24 +62,15 @@ impl Default for ActixTemplateConfiguration {
     fn default() -> Self {
         ActixTemplateConfiguration {
             api_key: "".to_string(),
-            organization_id: uuid::Uuid::nil(),
             api_url: "http://localhost:8090".to_string(),
         }
-    }
-}
-
-pub struct OrgDTO(pub Organization);
-
-impl fmt::Display for OrgDTO {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} - {}", self.0.name, self.0.id)
     }
 }
 
 pub async fn get_user(
     api_url: String,
     api_key: String,
-) -> trieve_client::apis::auth_api::GetMeSuccess {
+) -> actix_web_starter_client::apis::auth_api::WhoamiSuccess {
     let configuration = Configuration {
         base_path: api_url.clone(),
         api_key: Some(ApiKey {
@@ -97,7 +80,7 @@ pub async fn get_user(
         ..Default::default()
     };
 
-    get_me(&configuration)
+    whoami(&configuration)
         .await
         .map_err(|e| {
             eprintln!("Error getting user: {:?}", e);
@@ -144,22 +127,11 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
     let result = get_user(api_url.clone(), api_key.clone().unwrap()).await;
 
     match result {
-        trieve_client::apis::auth_api::GetMeSuccess::Status200(user) => {
-            println!("\nWelcome, {}!", user.name.unwrap().unwrap());
-            let orgs = user
-                .orgs
-                .iter()
-                .map(|org| OrgDTO(org.clone()))
-                .collect::<Vec<OrgDTO>>();
-
-            let selected_organization =
-                inquire::Select::new("Select an organization to use:", orgs)
-                    .prompt()
-                    .unwrap();
+        WhoamiSuccess::Status200(user) => {
+            // println!("\nWelcome, {}!", user.email.unwrap().unwrap());
 
             ActixTemplateConfiguration {
                 api_key: api_key.unwrap(),
-                organization_id: selected_organization.0.id,
                 api_url: api_url.clone(),
             }
         }
@@ -179,7 +151,7 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) {
     let api_key = init.api_key;
     let mut api_url = init.api_url;
 
-    if settings.api_key.is_empty() && settings.organization_id.is_nil() {
+    if settings.api_key.is_empty() {
         println!(
             "Welcome to the Actix Template CLI! Let's get started by configuring your API Key."
         );
@@ -226,10 +198,7 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) {
         })
         .unwrap_or_default();
 
-    if profiles
-        .iter()
-        .any(|p| p.name == profile_name && p.settings.organization_id != uuid::Uuid::nil())
-    {
+    if profiles.iter().any(|p| p.name == profile_name) {
         let overwrite = Confirm::new("Profile already exists. Overwrite?")
             .with_default(false)
             .prompt();
