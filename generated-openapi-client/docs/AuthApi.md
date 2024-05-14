@@ -13,14 +13,19 @@ Method | HTTP request | Description
 
 ## callback
 
-> callback()
+> callback(state, session_state, code)
 OpenID Connect callback
 
 OpenID Connect callback  This is the callback route for the OAuth provider, it should not be called directly. Redirects to browser with set-cookie header.
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**state** | **String** |  | [required] |
+**session_state** | **String** |  | [required] |
+**code** | **String** |  | [required] |
 
 ### Return type
 
@@ -71,14 +76,17 @@ No authorization required
 
 ## logout
 
-> logout()
+> logout(redirect_uri)
 Logout
 
 Logout  Invalidate your current auth credential stored typically stored in a cookie. This does not invalidate your API key.
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**redirect_uri** | Option<**String**> |  |  |
 
 ### Return type
 
@@ -98,7 +106,7 @@ No authorization required
 
 ## whoami
 
-> models::CreateApiKeyRespPayload whoami()
+> models::User whoami()
 Get Currently Auth'ed User
 
 Get Currently Auth'ed User  Get the currently auth'ed user. This will return the user object for the currently auth'ed user.
@@ -109,7 +117,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**models::CreateApiKeyRespPayload**](CreateApiKeyRespPayload.md)
+[**models::User**](User.md)
 
 ### Authorization
 

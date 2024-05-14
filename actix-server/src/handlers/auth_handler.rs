@@ -422,7 +422,7 @@ pub async fn login_cli() -> Result<HttpResponse, ServiceError> {
     context_path = "/api",
     tag = "auth",
     responses(
-        (status = 200, description = "JSON body containing the user object", body = CreateApiKeyRespPayload),
+        (status = 200, description = "JSON body containing the user object", body = User),
         (status = 400, description = "Service error relating to getting the currently auth'ed user", body = ErrorRespPayload),
     ),
     security(

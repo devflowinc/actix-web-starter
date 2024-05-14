@@ -14,6 +14,14 @@ use reqwest;
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration};
 
+/// struct for passing parameters to the method [`callback`]
+#[derive(Clone, Debug)]
+pub struct CallbackParams {
+    pub state: String,
+    pub session_state: String,
+    pub code: String
+}
+
 /// struct for passing parameters to the method [`login`]
 #[derive(Clone, Debug)]
 pub struct LoginParams {
@@ -21,6 +29,12 @@ pub struct LoginParams {
     pub redirect_uri: Option<String>,
     /// Code sent via email as a result of successful call to send_invitation
     pub inv_code: Option<String>
+}
+
+/// struct for passing parameters to the method [`logout`]
+#[derive(Clone, Debug)]
+pub struct LogoutParams {
+    pub redirect_uri: Option<String>
 }
 
 
@@ -52,7 +66,7 @@ pub enum LogoutSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum WhoamiSuccess {
-    Status200(models::CreateApiKeyRespPayload),
+    Status200(models::User),
     UnknownValue(serde_json::Value),
 }
 
@@ -89,10 +103,13 @@ pub enum WhoamiError {
 
 
 /// OpenID Connect callback  This is the callback route for the OAuth provider, it should not be called directly. Redirects to browser with set-cookie header.
-pub async fn callback(configuration: &configuration::Configuration) -> Result<ResponseContent<CallbackSuccess>, Error<CallbackError>> {
+pub async fn callback(configuration: &configuration::Configuration, params: CallbackParams) -> Result<ResponseContent<CallbackSuccess>, Error<CallbackError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let state = params.state;
+    let session_state = params.session_state;
+    let code = params.code;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -100,6 +117,9 @@ pub async fn callback(configuration: &configuration::Configuration) -> Result<Re
     let local_var_uri_str = format!("{}/api/auth/callback", local_var_configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
+    local_var_req_builder = local_var_req_builder.query(&[("state", &state.to_string())]);
+    local_var_req_builder = local_var_req_builder.query(&[("session_state", &session_state.to_string())]);
+    local_var_req_builder = local_var_req_builder.query(&[("code", &code.to_string())]);
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
@@ -163,10 +183,11 @@ pub async fn login(configuration: &configuration::Configuration, params: LoginPa
 }
 
 /// Logout  Invalidate your current auth credential stored typically stored in a cookie. This does not invalidate your API key.
-pub async fn logout(configuration: &configuration::Configuration) -> Result<ResponseContent<LogoutSuccess>, Error<LogoutError>> {
+pub async fn logout(configuration: &configuration::Configuration, params: LogoutParams) -> Result<ResponseContent<LogoutSuccess>, Error<LogoutError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let redirect_uri = params.redirect_uri;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -174,6 +195,9 @@ pub async fn logout(configuration: &configuration::Configuration) -> Result<Resp
     let local_var_uri_str = format!("{}/api/auth", local_var_configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
+    if let Some(ref local_var_str) = redirect_uri {
+        local_var_req_builder = local_var_req_builder.query(&[("redirect_uri", &local_var_str.to_string())]);
+    }
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }

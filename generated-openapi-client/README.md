@@ -37,8 +37,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
+ - [User](docs/User.md)
 
 
 To get access to the crate's generated documentation, use:

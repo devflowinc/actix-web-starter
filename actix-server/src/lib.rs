@@ -14,6 +14,7 @@ use actix_web::{
     web::{self, PayloadConfig},
     App, HttpServer,
 };
+use data::models;
 use diesel_async::pooled_connection::AsyncDieselConnectionManager;
 use diesel_async::pooled_connection::ManagerConfig;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
@@ -119,6 +120,7 @@ impl Modify for SecurityAddon {
         schemas(
             handlers::api_key_handler::CreateApiKeyRespPayload,
             handlers::api_key_handler::CreateApiKeyReqPayload,
+            models::User,
             errors::ErrorRespPayload,
         )
     ),

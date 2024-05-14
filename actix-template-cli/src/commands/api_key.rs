@@ -1,6 +1,6 @@
 use actix_web_starter_client::{
     apis::{api_key_api::CreateApiKeyParams, configuration::Configuration},
-    models::CreateApiKeyRespPayload,
+    models::{CreateApiKeyReqPayload, CreateApiKeyRespPayload},
 };
 
 use super::configure::ActixTemplateConfiguration;
@@ -28,10 +28,9 @@ pub async fn generate_api_key(
         ..Default::default()
     };
 
+    let payload = CreateApiKeyReqPayload::new(name.clone());
     let data = CreateApiKeyParams {
-        body: CreateApiKeyRespPayload {
-            api_key: name.clone(),
-        },
+        create_api_key_req_payload: payload,
     };
 
     let user = actix_web_starter_client::apis::api_key_api::create_api_key(&config, data)
