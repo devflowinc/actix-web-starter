@@ -1,0 +1,276 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Trieve API",
+    "description": "Trieve OpenAPI Specification. This document describes all of the operations available through the Trieve API.",
+    "contact": {
+      "name": "Trieve Team",
+      "url": "https://trieve.ai",
+      "email": "developers@trieve.ai"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/devflowinc/actix-web-template/blob/main/LICENSE.txt"
+    },
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8090",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/api/api_key": {
+      "post": {
+        "tags": [
+          "api_key"
+        ],
+        "summary": "Set User Api Key",
+        "description": "Set User Api Key\n\nCreate a new api key for the auth'ed user. Successful response will contain the newly created api key. The api key will have permission level of the auth'ed user who calls this endpoint.",
+        "operationId": "create_api_key",
+        "requestBody": {
+          "description": "JSON request payload to create a new user api key",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetUserApiKeyReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "JSON body representing the api_key for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateApiKeyRespPayload"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Service error relating to creating api_key for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/auth": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "description": "Login\n\nThis will redirect you to the OAuth provider for authentication with email/pass, SSO, Google, Github, etc.",
+        "operationId": "login",
+        "parameters": [
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "description": "URL to redirect to after successful login",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "inv_code",
+            "in": "query",
+            "description": "Code sent via email as a result of successful call to send_invitation",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "303": {
+            "description": "Response that redirects to OAuth provider through a Location header to be handled by browser."
+          },
+          "400": {
+            "description": "OAuth error likely with OIDC provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "description": "Logout\n\nInvalidate your current auth credential stored typically stored in a cookie. This does not invalidate your API key.",
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": "Confirmation that your current auth token has been invalidated. This does not invalidate your API key."
+          }
+        }
+      }
+    },
+    "/api/auth/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "OpenID Connect callback",
+        "description": "OpenID Connect callback\n\nThis is the callback route for the OAuth provider, it should not be called directly. Redirects to browser with set-cookie header.",
+        "operationId": "callback",
+        "responses": {
+          "303": {
+            "description": "Response that returns with set-cookie header"
+          },
+          "400": {
+            "description": "Email or password empty or incorrect",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/whoami": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Currently Auth'ed User",
+        "description": "Get Currently Auth'ed User\n\nGet the currently auth'ed user. This will return the user object for the currently auth'ed user.",
+        "operationId": "whoami",
+        "responses": {
+          "200": {
+            "description": "JSON body containing the user object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateApiKeyRespPayload"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Service error relating to getting the currently auth'ed user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Check",
+        "description": "Health Check\n\nConfirmation that the service is healthy",
+        "operationId": "health_check",
+        "responses": {
+          "200": {
+            "description": "Confirmation that the service is healthy"
+          },
+          "400": {
+            "description": "Service error relating to overall service health",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateApiKeyRespPayload": {
+        "type": "object",
+        "required": [
+          "api_key"
+        ],
+        "properties": {
+          "api_key": {
+            "type": "string",
+            "description": "The api key which was created. This is the value which should be used in the Authorization header."
+          }
+        }
+      },
+      "ErrorRespPayload": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "message": "Bad Request"
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authentication endpoints. Used to authenticate users."
+    },
+    {
+      "name": "api_key",
+      "description": "API Key endpoints. Used to manage user API keys."
+    },
+    {
+      "name": "health",
+      "description": "Health check endpoint. Used to check if the server is up and running."
+    }
+  ]
+}

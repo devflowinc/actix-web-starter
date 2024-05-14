@@ -2,7 +2,6 @@
 
 ## Local Development Start Guide
 
-
 ### Install OS Dependencies 
 
 `apt-get update -y && apt-get -y install pkg-config libssl-dev libpq-dev`
@@ -45,3 +44,9 @@ cargo watch -x run
 cd actix-template-cli
 cargo install --path .
 ```
+
+## Setup the Generated Rust Client
+
+1. `cargo run --features runtime-env --manifest-path actix-server/Cargo.toml --bin redoc_ci > ./generated-openapi-client/openapi.json`
+2. `cd generated-openapi-client`
+3. `npx @openapitools/openapi-generator-cli generate -i openapi.json -g rust -c ./openapi-generator.yaml -o ./ --skip-validate-spec`
