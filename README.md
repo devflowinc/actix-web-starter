@@ -53,3 +53,9 @@ Note: You must have Java installed on your system to run the openapi-generator-c
 1. `cargo run --features runtime-env --manifest-path actix-server/Cargo.toml --bin redoc_ci > ./generated-openapi-client/openapi.json`
 2. `cd generated-openapi-client`
 3. `npx @openapitools/openapi-generator-cli generate -i openapi.json -g rust -c ./openapi-generator.yaml -o ./ --skip-validate-spec`
+
+### Publishing Your Generated Client
+
+Documentation for your generated client can be viewed locally by running `cargo doc --open` from the folder containing the library. 
+
+In order for other's to view your documentation on [docs.rs](https://docs.rs/), you must publish the client on Cargo. Please refer to [The Cargo Book's Guide](https://doc.rust-lang.org/cargo/reference/publishing.html) for how to publish on crates.io. After doing so, your documentation will automatically be made available. 
