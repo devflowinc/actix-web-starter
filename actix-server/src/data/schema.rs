@@ -21,8 +21,7 @@ diesel::table! {
     org_users (id) {
         id -> Uuid,
         user_id -> Uuid,
-        org_id -> Uuid,
-        role -> Int4,
+        org_id -> Uuid
     }
 }
 
