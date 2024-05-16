@@ -77,8 +77,7 @@ diesel::table! {
         email -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
-        first_name -> Nullable<Text>,
-        last_name -> Nullable<Text>,
+        name -> Nullable<Text>,
     }
 }
 
