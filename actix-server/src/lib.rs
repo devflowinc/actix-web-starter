@@ -275,6 +275,12 @@ pub fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/api")
                         .service(
+                            web::scope("/orgs").service(
+                                web::resource("")
+                                    .route(web::post().to(handlers::org_handler::create_org)),
+                            ),
+                        )
+                        .service(
                             web::scope("/auth")
                                 .service(
                                     web::resource("")

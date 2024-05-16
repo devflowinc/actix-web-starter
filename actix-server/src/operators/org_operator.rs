@@ -4,10 +4,12 @@ use crate::{
 };
 use actix_web::web;
 use diesel_async::RunQueryDsl;
-use uuid::Uuid;
 
 #[tracing::instrument(skip(pg_pool))]
-pub async fn create_org(name: String, pg_pool: web::Data<PgPool>) -> Result<Org, ServiceError> {
+pub async fn create_org_query(
+    name: String,
+    pg_pool: web::Data<PgPool>,
+) -> Result<Org, ServiceError> {
     use crate::data::schema::orgs::dsl as orgs_columns;
 
     let mut conn = pg_pool.get().await.unwrap();
