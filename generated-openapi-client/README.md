@@ -33,12 +33,16 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**logout**](docs/AuthApi.md#logout) | **DELETE** /api/auth | Logout
 *AuthApi* | [**whoami**](docs/AuthApi.md#whoami) | **GET** /api/auth/whoami | Get Currently Auth'ed User
 *HealthApi* | [**health_check**](docs/HealthApi.md#health_check) | **GET** /api/health | Health Check
+*OrgsApi* | [**create_org**](docs/OrgsApi.md#create_org) | **POST** /api/orgs | 
+*OrgsApi* | [**delete_org**](docs/OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
 
 
 ## Documentation For Models
 
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
+ - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
+ - [CreateOrgResp](docs/CreateOrgResp.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [User](docs/User.md)
 

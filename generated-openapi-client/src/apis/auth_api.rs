@@ -90,6 +90,7 @@ pub enum LoginError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum LogoutError {
+    Status401(),
     UnknownValue(serde_json::Value),
 }
 

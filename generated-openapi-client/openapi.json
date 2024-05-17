@@ -41,7 +41,7 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "JSON body representing the api_key for the user",
             "content": {
               "application/json": {
@@ -51,7 +51,17 @@
               }
             }
           },
-          "400": {
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          },
+          "500": {
             "description": "Service error relating to creating api_key for the user",
             "content": {
               "application/json": {
@@ -139,6 +149,9 @@
         "responses": {
           "204": {
             "description": "Confirmation that your current auth token has been invalidated. This does not invalidate your API key."
+          },
+          "401": {
+            "description": "The user is already logged out / does not have an account"
           }
         }
       }
@@ -257,6 +270,95 @@
           }
         }
       }
+    },
+    "/api/orgs": {
+      "post": {
+        "tags": [
+          "orgs"
+        ],
+        "operationId": "create_org",
+        "requestBody": {
+          "description": "JSON request payload to create a new organization",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrgReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "JSON body representing the organization that was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrgResp"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/orgs/{org_id}": {
+      "delete": {
+        "tags": [
+          "orgs"
+        ],
+        "operationId": "delete_org",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blank body indicating that the organization was successfully deleted"
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -282,6 +384,28 @@
           "api_key": {
             "type": "string",
             "description": "The api key which was created. This is the value which should be used in the Authorization header."
+          }
+        }
+      },
+      "CreateOrgReqPayload": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateOrgResp": {
+        "type": "object",
+        "required": [
+          "org"
+        ],
+        "properties": {
+          "org": {
+            "$ref": "#/components/schemas/Org"
           }
         }
       },
@@ -349,6 +473,10 @@
     {
       "name": "auth",
       "description": "Authentication endpoints. Used to authenticate users."
+    },
+    {
+      "name": "orgs",
+      "description": "Organization endpoints. Used to manage organizations"
     },
     {
       "name": "api_key",
