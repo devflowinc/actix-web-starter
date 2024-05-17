@@ -115,17 +115,23 @@ impl Modify for SecurityAddon {
         handlers::auth_handler::callback,
         handlers::api_key_handler::create_api_key,
         handlers::auth_handler::health_check,
+        handlers::org_handler::create_org,
+        handlers::org_handler::delete_org,
     ),
     components(
         schemas(
             handlers::api_key_handler::CreateApiKeyRespPayload,
             handlers::api_key_handler::CreateApiKeyReqPayload,
+            handlers::api_key_handler::CreateApiKeyReqPayload,
+            handlers::org_handler::CreateOrgReqPayload,
+            handlers::org_handler::CreateOrgResp,
             models::User,
             errors::ErrorRespPayload,
         )
     ),
     tags(
         (name = "auth", description = "Authentication endpoints. Used to authenticate users."),
+        (name = "orgs", description = "Organization endpoints. Used to manage organizations"),
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
     ),
@@ -275,10 +281,15 @@ pub fn main() -> std::io::Result<()> {
                 .service(
                     web::scope("/api")
                         .service(
-                            web::scope("/orgs").service(
-                                web::resource("")
-                                    .route(web::post().to(handlers::org_handler::create_org)),
-                            ),
+                            web::scope("/orgs")
+                                .service(
+                                    web::resource("")
+                                        .route(web::post().to(handlers::org_handler::create_org)),
+                                )
+                                .service(
+                                    web::resource("/{org_id}")
+                                        .route(web::delete().to(handlers::org_handler::delete_org)),
+                                ),
                         )
                         .service(
                             web::scope("/auth")
