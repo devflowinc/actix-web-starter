@@ -1,7 +1,12 @@
-use crate::{data::models::Org, data::models::PgPool, operators::org_operator::create_org_query};
+use crate::{
+    data::models::{Org, PgPool},
+    operators::org_operator::create_org_query,
+};
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+
+use super::auth_handler::AuthedUser;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct CreateOrgReqPayload {
@@ -22,7 +27,6 @@ pub struct CreateOrgResp {
   responses(
       (status = 201, description = "JSON body representing the organization that was created", body = CreateApiKeyRespPayload),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
-      (status = 500, description = "Service error relating to creating api_key for the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -31,10 +35,11 @@ pub struct CreateOrgResp {
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_org(
     req_payload: web::Json<CreateOrgReqPayload>,
+    authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let name = req_payload.name.clone();
-    let org = create_org_query(name, pg_pool).await?;
+    let org = create_org_query(name, authed_user, pg_pool).await?;
 
     Ok(HttpResponse::Created().json(CreateOrgResp { org }))
 }
