@@ -11,7 +11,7 @@ use utoipa::ToSchema;
 use super::auth_handler::AuthedUser;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct CreateOrgReqPayload {
+pub struct OrgNameReqPayload {
     name: String,
 }
 
@@ -25,7 +25,7 @@ pub struct SingleOrgResp {
   path = "/orgs",
   context_path = "/api",
   tag = "orgs",
-  request_body(content = CreateOrgReqPayload, description = "JSON request payload to create a new organization", content_type = "application/json"),
+  request_body(content = OrgNameReqPayload, description = "JSON request payload to create a new organization", content_type = "application/json"),
   responses(
       (status = 201, description = "JSON body representing the organization that was created", body = SingleOrgResp),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
@@ -36,7 +36,7 @@ pub struct SingleOrgResp {
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_org(
-    req_payload: web::Json<CreateOrgReqPayload>,
+    req_payload: web::Json<OrgNameReqPayload>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -92,10 +92,17 @@ pub async fn delete_org(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_org_by_id(
     path: web::Path<uuid::Uuid>,
+    authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
-    let org = get_org_by_id_query(org_id, pg_pool.get_ref()).await?;
-
-    Ok(HttpResponse::Ok().json(org))
+    match user_in_org(org_id, authed_user.id, &pg_pool).await {
+        Err(e) => Err(e.into()),
+        Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
+        Ok(true) => {
+            return get_org_by_id_query(org_id.into(), &pg_pool)
+                .await
+                .map(|_| Ok(HttpResponse::Ok().finish()))?;
+        }
+    }
 }
