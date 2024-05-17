@@ -124,7 +124,7 @@ impl Modify for SecurityAddon {
             handlers::api_key_handler::CreateApiKeyReqPayload,
             handlers::api_key_handler::CreateApiKeyReqPayload,
             handlers::org_handler::CreateOrgReqPayload,
-            handlers::org_handler::CreateOrgResp,
+            handlers::org_handler::SingleOrgResp,
             models::User,
             errors::ErrorRespPayload,
         )
@@ -288,7 +288,8 @@ pub fn main() -> std::io::Result<()> {
                                 )
                                 .service(
                                     web::resource("/{org_id}")
-                                        .route(web::delete().to(handlers::org_handler::delete_org)),
+                                        .route(web::delete().to(handlers::org_handler::delete_org))
+                                        .route(web::get().to(handlers::org_handler::get_org_by_id)),
                                 ),
                         )
                         .service(

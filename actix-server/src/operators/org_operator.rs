@@ -145,3 +145,20 @@ pub fn build_all_perms(org_user_id: uuid::Uuid) -> Vec<OrgUserPerm> {
 
     perm_list
 }
+
+pub async fn get_org_by_id_query(
+    org_id: uuid::Uuid,
+    pg_pool: &PgPool,
+) -> Result<Org, ServiceError> {
+    use crate::data::schema::orgs::dsl as orgs_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let org = orgs_columns::orgs
+        .filter(orgs_columns::id.eq(org_id))
+        .first::<Org>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::NotFound)?;
+
+    Ok(org)
+}
