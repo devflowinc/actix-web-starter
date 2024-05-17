@@ -16,11 +16,6 @@ pub struct OrgNameReqPayload {
     name: String,
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct SingleOrgResp {
-    org: Org,
-}
-
 #[utoipa::path(
   post,
   path = "/orgs",
@@ -28,7 +23,7 @@ pub struct SingleOrgResp {
   tag = "orgs",
   request_body(content = OrgNameReqPayload, description = "JSON request payload to create a new organization", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the organization that was created", body = SingleOrgResp),
+      (status = 201, description = "JSON body representing the organization that was created", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -44,7 +39,7 @@ pub async fn create_org(
     let name = req_payload.name.clone();
     let org = create_org_query(name, authed_user, pg_pool).await?;
 
-    Ok(HttpResponse::Created().json(SingleOrgResp { org }))
+    Ok(HttpResponse::Created().json(org))
 }
 
 #[utoipa::path(
@@ -83,7 +78,7 @@ pub async fn delete_org(
   context_path = "/api",
   tag = "orgs",
   responses(
-      (status = 200, description = "Blank body indicating that the organization was successfully deleted", body = SingleOrgResp),
+      (status = 200, description = "JSON object representing the requested organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -103,7 +98,7 @@ pub async fn get_org_by_id(
         Ok(true) => {
             return get_org_by_id_query(org_id.into(), &pg_pool)
                 .await
-                .map(|_| Ok(HttpResponse::Ok().finish()))?;
+                .map(|org| Ok(HttpResponse::Ok().json(org)))?;
         }
     }
 }
@@ -115,7 +110,7 @@ pub async fn get_org_by_id(
   tag = "orgs",
   request_body(content = OrgNameReqPayload, description = "JSON request payload to rename the organization", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed organization", body = SingleOrgResp),
+      (status = 200, description = "Object representing the renamed organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -136,7 +131,7 @@ pub async fn update_org_name(
         Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
         Ok(true) => rename_org_query(org_id, req_payload.name.clone(), &pg_pool)
             .await
-            .map(|org| Ok(HttpResponse::Ok().json(SingleOrgResp { org })))?,
+            .map(|org| Ok(HttpResponse::Ok().json(org)))?,
     }
 }
 
