@@ -162,3 +162,21 @@ pub async fn get_org_by_id_query(
 
     Ok(org)
 }
+
+pub async fn rename_org_query(
+    org_id: uuid::Uuid,
+    new_name: String,
+    pg_pool: &PgPool,
+) -> Result<Org, ServiceError> {
+    use crate::data::schema::orgs::dsl as orgs_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let org = diesel::update(orgs_columns::orgs.filter(orgs_columns::id.eq(org_id)))
+        .set(orgs_columns::name.eq(new_name))
+        .get_result::<Org>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::NotFound)?;
+
+    Ok(org)
+}

@@ -1,7 +1,7 @@
 use crate::{
     data::models::{Org, PgPool},
     operators::org_operator::{
-        create_org_query, delete_org_query, get_org_by_id_query, user_in_org,
+        create_org_query, delete_org_query, get_org_by_id_query, rename_org_query, user_in_org,
     },
 };
 use actix_web::{web, HttpResponse};
@@ -104,5 +104,37 @@ pub async fn get_org_by_id(
                 .await
                 .map(|_| Ok(HttpResponse::Ok().finish()))?;
         }
+    }
+}
+
+#[utoipa::path(
+  put,
+  path = "/orgs/{org_id}",
+  context_path = "/api",
+  tag = "orgs",
+  request_body(content = OrgNameReqPayload, description = "JSON request payload to rename the organization", content_type = "application/json"),
+  responses(
+      (status = 200, description = "Object representing the renamed organization", body = SingleOrgResp),
+      (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  security(
+      ("ApiKey" = ["readonly"]),
+  )
+)]
+#[tracing::instrument(skip(pg_pool))]
+pub async fn update_org_name(
+    req_payload: web::Json<OrgNameReqPayload>,
+    path: web::Path<uuid::Uuid>,
+    authed_user: AuthedUser,
+    pg_pool: web::Data<PgPool>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let org_id = path.into_inner();
+    // TODO: Should check if user has permissions to rename
+    match user_in_org(org_id, authed_user.id, &pg_pool).await {
+        Err(e) => Err(e.into()),
+        Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
+        Ok(true) => rename_org_query(org_id, req_payload.name.clone(), &pg_pool)
+            .await
+            .map(|org| Ok(HttpResponse::Ok().json(SingleOrgResp { org })))?,
     }
 }
