@@ -4,6 +4,7 @@ use crate::{
     handlers::auth_handler::AuthedUser,
 };
 use actix_web::web;
+use diesel::{ExpressionMethods, QueryDsl};
 use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
@@ -41,6 +42,46 @@ pub async fn create_org_query(
     };
 
     Ok(org)
+}
+
+pub async fn user_in_org(
+    org_id: uuid::Uuid,
+    user_id: uuid::Uuid,
+    pg_pool: &PgPool,
+) -> Result<bool, ServiceError> {
+    use crate::data::schema::org_users::dsl as orgs_users_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let user_in_org = diesel::select(diesel::dsl::exists(
+        orgs_users_columns::org_users
+            .filter(orgs_users_columns::org_id.eq(org_id))
+            .filter(orgs_users_columns::user_id.eq(user_id)),
+    ))
+    .get_result::<bool>(&mut conn)
+    .await
+    .map_err(|_| ServiceError::InternalServerError("Error checking if user in org".to_string()))?;
+
+    Ok(user_in_org)
+}
+
+pub async fn delete_org_query(
+    org_id: uuid::Uuid,
+    pg_pool: web::Data<PgPool>,
+) -> Result<(), ServiceError> {
+    use crate::data::schema::orgs::dsl as orgs_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    diesel::delete(orgs_columns::orgs)
+        .filter(orgs_columns::id.eq(org_id))
+        .execute(&mut conn)
+        .await
+        .map_err(|_| {
+            ServiceError::InternalServerError("Error deleting organization".to_string())
+        })?;
+
+    Ok(())
 }
 
 #[tracing::instrument(skip(pg_pool))]
