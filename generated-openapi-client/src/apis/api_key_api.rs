@@ -26,7 +26,7 @@ pub struct CreateApiKeyParams {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateApiKeySuccess {
-    Status200(models::CreateApiKeyRespPayload),
+    Status201(models::CreateApiKeyRespPayload),
     UnknownValue(serde_json::Value),
 }
 
@@ -34,7 +34,8 @@ pub enum CreateApiKeySuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateApiKeyError {
-    Status400(models::ErrorRespPayload),
+    Status401(models::ErrorRespPayload),
+    Status500(models::ErrorRespPayload),
     UnknownValue(serde_json::Value),
 }
 
