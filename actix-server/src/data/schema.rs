@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 pub mod sql_types {
-    #[derive(diesel::sql_types::SqlType)]
+    #[derive(diesel::query_builder::QueryId, diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "perm"))]
     pub struct Perm;
 }
@@ -21,7 +21,7 @@ diesel::table! {
     org_users (id) {
         id -> Uuid,
         user_id -> Uuid,
-        org_id -> Uuid
+        org_id -> Uuid,
     }
 }
 

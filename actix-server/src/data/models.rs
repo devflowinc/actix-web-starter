@@ -80,6 +80,25 @@ impl Org {
     }
 }
 
+#[derive(diesel_derive_enum::DbEnum, Debug, Clone, Deserialize, Serialize)]
+#[ExistingTypePath = "crate::data::schema::sql_types::Perm"]
+pub enum Perm {
+    Subscription,
+}
+
+// TODO: Way to not have to update manually?
+impl Perm {
+    pub const ALL_PERMS: [Self; 1] = [Self::Subscription];
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[diesel(table_name = org_users_perms)]
+pub struct OrgUserPerm {
+    pub org_user_id: uuid::Uuid,
+    pub perm: Option<Perm>,
+    pub has: bool,
+}
+
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
 #[schema(example = json!({
     "id": "f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1",
