@@ -1,7 +1,8 @@
 use crate::{
     data::models::{Org, PgPool},
     operators::org_operator::{
-        create_org_query, delete_org_query, get_org_by_id_query, rename_org_query, user_in_org,
+        create_org_query, delete_org_query, get_my_orgs_query, get_org_by_id_query,
+        rename_org_query, user_in_org,
     },
 };
 use actix_web::{web, HttpResponse};
@@ -137,4 +138,40 @@ pub async fn update_org_name(
             .await
             .map(|org| Ok(HttpResponse::Ok().json(SingleOrgResp { org })))?,
     }
+}
+
+#[utoipa::path(
+  get,
+  path = "/orgs",
+  context_path = "/api",
+  tag = "orgs",
+  params(
+      ("limit" = Option<i64>, Query, description = "Limit the number of results. Default is 30"),
+      ("skip" = Option<i64>, Query, description = "Skip the number of results"),
+  ),
+  responses(
+      (status = 200, description = "List of organizations the user belongs to", body = [Org]),
+      (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  security(
+      ("ApiKey" = ["readonly"]),
+  )
+)]
+#[tracing::instrument(skip(pg_pool))]
+pub async fn get_my_orgs(
+    query: web::Query<MyOrgsQuery>,
+    authed_user: AuthedUser,
+    pg_pool: web::Data<PgPool>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let MyOrgsQuery { limit, skip } = query.into_inner();
+    match get_my_orgs_query(authed_user.id, &pg_pool, limit, skip).await {
+        Err(e) => Err(e.into()),
+        Ok(orgs) => Ok(HttpResponse::Ok().json(orgs)),
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MyOrgsQuery {
+    limit: Option<i64>,
+    skip: Option<i64>,
 }

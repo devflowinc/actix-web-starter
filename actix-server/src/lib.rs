@@ -118,6 +118,7 @@ impl Modify for SecurityAddon {
         handlers::org_handler::create_org,
         handlers::org_handler::delete_org,
         handlers::org_handler::update_org_name,
+        handlers::org_handler::get_my_orgs,
     ),
     components(
         schemas(
@@ -286,7 +287,8 @@ pub fn main() -> std::io::Result<()> {
                             web::scope("/orgs")
                                 .service(
                                     web::resource("")
-                                        .route(web::post().to(handlers::org_handler::create_org)),
+                                        .route(web::post().to(handlers::org_handler::create_org))
+                                        .route(web::get().to(handlers::org_handler::get_my_orgs)),
                                 )
                                 .service(
                                     web::resource("/{org_id}")

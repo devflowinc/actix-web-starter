@@ -4,7 +4,7 @@ use crate::{
     handlers::auth_handler::AuthedUser,
 };
 use actix_web::web;
-use diesel::{ExpressionMethods, QueryDsl};
+use diesel::{ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
@@ -179,4 +179,32 @@ pub async fn rename_org_query(
         .map_err(|_| ServiceError::NotFound)?;
 
     Ok(org)
+}
+
+pub async fn get_my_orgs_query(
+    user_id: uuid::Uuid,
+    pg_pool: &PgPool,
+    limit: Option<i64>,
+    skip: Option<i64>,
+) -> Result<Vec<Org>, ServiceError> {
+    use crate::data::schema::org_users::dsl as orgs_users_columns;
+    use crate::data::schema::orgs::dsl as orgs_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    // Set default values if limit and skip are None
+    let limit = limit.unwrap_or(30); // Default limit of 10
+    let skip = skip.unwrap_or(0); // Default skip of 0
+
+    let orgs = orgs_columns::orgs
+        .inner_join(orgs_users_columns::org_users)
+        .filter(orgs_users_columns::user_id.eq(user_id))
+        .select(Org::as_select())
+        .limit(limit)
+        .offset(skip)
+        .load::<Org>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error getting user's orgs".to_string()))?;
+
+    Ok(orgs)
 }
