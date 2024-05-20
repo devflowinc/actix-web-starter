@@ -102,7 +102,10 @@ pub async fn get_org_by_id(
     }
 }
 
-pub type UpdateOrgReqPayload = CreateOrgReqPayload;
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct UpdateOrgReqPayload {
+    name: String,
+}
 
 #[utoipa::path(
   put,

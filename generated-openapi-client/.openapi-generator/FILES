@@ -6,11 +6,12 @@ docs/ApiKeyApi.md
 docs/AuthApi.md
 docs/CreateApiKeyReqPayload.md
 docs/CreateApiKeyRespPayload.md
+docs/CreateOrgReqPayload.md
 docs/ErrorRespPayload.md
 docs/HealthApi.md
 docs/Org.md
-docs/OrgNameReqPayload.md
 docs/OrgsApi.md
+docs/UpdateOrgReqPayload.md
 docs/User.md
 git_push.sh
 src/apis/api_key_api.rs
@@ -22,8 +23,9 @@ src/apis/orgs_api.rs
 src/lib.rs
 src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
+src/models/create_org_req_payload.rs
 src/models/error_resp_payload.rs
 src/models/mod.rs
 src/models/org.rs
-src/models/org_name_req_payload.rs
+src/models/update_org_req_payload.rs
 src/models/user.rs

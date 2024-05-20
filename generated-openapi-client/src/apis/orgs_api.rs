@@ -18,7 +18,7 @@ use super::{Error, configuration};
 #[derive(Clone, Debug)]
 pub struct CreateOrgParams {
     /// JSON request payload to create a new organization
-    pub org_name_req_payload: models::OrgNameReqPayload
+    pub create_org_req_payload: models::CreateOrgReqPayload
 }
 
 /// struct for passing parameters to the method [`delete_org`]
@@ -30,10 +30,10 @@ pub struct DeleteOrgParams {
 /// struct for passing parameters to the method [`get_my_orgs`]
 #[derive(Clone, Debug)]
 pub struct GetMyOrgsParams {
-    /// Limit the number of results. Default is 30
+    /// Limit the number of results. Default is 10
     pub limit: Option<i64>,
-    /// Skip the number of results
-    pub skip: Option<i64>
+    /// Offset the results. Default is 0
+    pub offset: Option<i64>
 }
 
 /// struct for passing parameters to the method [`update_org_name`]
@@ -41,7 +41,7 @@ pub struct GetMyOrgsParams {
 pub struct UpdateOrgNameParams {
     pub org_id: String,
     /// JSON request payload to rename the organization
-    pub org_name_req_payload: models::OrgNameReqPayload
+    pub update_org_req_payload: models::UpdateOrgReqPayload
 }
 
 
@@ -114,7 +114,7 @@ pub async fn create_org(configuration: &configuration::Configuration, params: Cr
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let org_name_req_payload = params.org_name_req_payload;
+    let create_org_req_payload = params.create_org_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -133,7 +133,7 @@ pub async fn create_org(configuration: &configuration::Configuration, params: Cr
         };
         local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
     };
-    local_var_req_builder = local_var_req_builder.json(&org_name_req_payload);
+    local_var_req_builder = local_var_req_builder.json(&create_org_req_payload);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -198,7 +198,7 @@ pub async fn get_my_orgs(configuration: &configuration::Configuration, params: G
 
     // unbox the parameters
     let limit = params.limit;
-    let skip = params.skip;
+    let offset = params.offset;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -209,8 +209,8 @@ pub async fn get_my_orgs(configuration: &configuration::Configuration, params: G
     if let Some(ref local_var_str) = limit {
         local_var_req_builder = local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
     }
-    if let Some(ref local_var_str) = skip {
-        local_var_req_builder = local_var_req_builder.query(&[("skip", &local_var_str.to_string())]);
+    if let Some(ref local_var_str) = offset {
+        local_var_req_builder = local_var_req_builder.query(&[("offset", &local_var_str.to_string())]);
     }
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
@@ -246,7 +246,7 @@ pub async fn update_org_name(configuration: &configuration::Configuration, param
 
     // unbox the parameters
     let org_id = params.org_id;
-    let org_name_req_payload = params.org_name_req_payload;
+    let update_org_req_payload = params.update_org_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -265,7 +265,7 @@ pub async fn update_org_name(configuration: &configuration::Configuration, param
         };
         local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
     };
-    local_var_req_builder = local_var_req_builder.json(&org_name_req_payload);
+    local_var_req_builder = local_var_req_builder.json(&update_org_req_payload);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;

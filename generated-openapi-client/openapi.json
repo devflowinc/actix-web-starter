@@ -281,7 +281,7 @@
           {
             "name": "limit",
             "in": "query",
-            "description": "Limit the number of results. Default is 30",
+            "description": "Limit the number of results. Default is 10",
             "required": false,
             "schema": {
               "type": "integer",
@@ -290,9 +290,9 @@
             }
           },
           {
-            "name": "skip",
+            "name": "offset",
             "in": "query",
-            "description": "Skip the number of results",
+            "description": "Offset the results. Default is 0",
             "required": false,
             "schema": {
               "type": "integer",
@@ -344,7 +344,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrgNameReqPayload"
+                "$ref": "#/components/schemas/CreateOrgReqPayload"
               }
             }
           },
@@ -403,7 +403,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrgNameReqPayload"
+                "$ref": "#/components/schemas/UpdateOrgReqPayload"
               }
             }
           },
@@ -457,7 +457,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Blank body indicating that the organization was successfully deleted"
+            "description": "No content response indicating that the organization was successfully deleted"
           },
           "401": {
             "description": "Service error relating to authentication status of the user",
@@ -503,6 +503,17 @@
           "api_key": {
             "type": "string",
             "description": "The api key which was created. This is the value which should be used in the Authorization header."
+          }
+        }
+      },
+      "CreateOrgReqPayload": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -552,7 +563,7 @@
           "updated_at": "2021-01-01T00:00:00"
         }
       },
-      "OrgNameReqPayload": {
+      "UpdateOrgReqPayload": {
         "type": "object",
         "required": [
           "name"

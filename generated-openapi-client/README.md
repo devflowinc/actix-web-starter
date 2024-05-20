@@ -43,9 +43,10 @@ Class | Method | HTTP request | Description
 
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
+ - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Org](docs/Org.md)
- - [OrgNameReqPayload](docs/OrgNameReqPayload.md)
+ - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
  - [User](docs/User.md)
 
 

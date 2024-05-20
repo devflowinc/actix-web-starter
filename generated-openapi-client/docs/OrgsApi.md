@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_org
 
-> models::Org create_org(org_name_req_payload)
+> models::Org create_org(create_org_req_payload)
 
 
 ### Parameters
@@ -21,7 +21,7 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**org_name_req_payload** | [**OrgNameReqPayload**](OrgNameReqPayload.md) | JSON request payload to create a new organization | [required] |
+**create_org_req_payload** | [**CreateOrgReqPayload**](CreateOrgReqPayload.md) | JSON request payload to create a new organization | [required] |
 
 ### Return type
 
@@ -69,7 +69,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_my_orgs
 
-> Vec<models::Org> get_my_orgs(limit, skip)
+> Vec<models::Org> get_my_orgs(limit, offset)
 
 
 ### Parameters
@@ -77,8 +77,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**limit** | Option<**i64**> | Limit the number of results. Default is 30 |  |
-**skip** | Option<**i64**> | Skip the number of results |  |
+**limit** | Option<**i64**> | Limit the number of results. Default is 10 |  |
+**offset** | Option<**i64**> | Offset the results. Default is 0 |  |
 
 ### Return type
 
@@ -98,7 +98,7 @@ Name | Type | Description  | Required | Notes
 
 ## update_org_name
 
-> models::Org update_org_name(org_id, org_name_req_payload)
+> models::Org update_org_name(org_id, update_org_req_payload)
 
 
 ### Parameters
@@ -107,7 +107,7 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **org_id** | **uuid::Uuid** |  | [required] |
-**org_name_req_payload** | [**OrgNameReqPayload**](OrgNameReqPayload.md) | JSON request payload to rename the organization | [required] |
+**update_org_req_payload** | [**UpdateOrgReqPayload**](UpdateOrgReqPayload.md) | JSON request payload to rename the organization | [required] |
 
 ### Return type
 
