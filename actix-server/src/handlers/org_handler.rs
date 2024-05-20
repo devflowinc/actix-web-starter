@@ -1,5 +1,5 @@
 use crate::{
-    data::models::{Org, PgPool},
+    data::models::PgPool,
     operators::org_operator::{
         create_org_query, delete_org_query, get_my_orgs_query, get_org_by_id_query,
         rename_org_query, user_in_org,

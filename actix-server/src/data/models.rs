@@ -123,6 +123,46 @@ impl OrgUserLink {
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
 #[schema(example = json!({
+    "id": "b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "stripe_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+    "num_users": 4,
+    "num_deals": 5,
+    "price_per_month": 40,
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(table_name=plans)]
+pub struct Plan {
+    pub id: uuid::Uuid,
+    pub stripe_id: String,
+    pub num_users: i32,
+    pub num_deals: i32,
+    pub price_per_month: i32,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl Plan {
+    pub fn from_details(
+        stripe_id: String,
+        num_users: i32,
+        num_deals: i32,
+        price_per_month: i32,
+    ) -> Self {
+        Plan {
+            id: uuid::Uuid::new_v4(),
+            stripe_id,
+            num_users,
+            num_deals,
+            price_per_month,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
     "id": "afafafaf-afaf-afaf-afaf-afafafafafaf",
     "user_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
     "name": "my-api-key",
