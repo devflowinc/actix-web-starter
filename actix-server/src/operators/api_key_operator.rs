@@ -44,7 +44,12 @@ pub async fn create_api_key_query(
         .values(&api_key_struct)
         .execute(&mut conn)
         .await
-        .map_err(|_| ServiceError::BadRequest("Error creating api key".to_string()))?;
+        .map_err(|e| {
+            ServiceError::BadRequest(format!(
+                "Error creating api key for create_api_key_query: {}",
+                e
+            ))
+        })?;
 
     Ok(raw_api_key)
 }

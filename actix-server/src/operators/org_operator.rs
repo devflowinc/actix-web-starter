@@ -17,29 +17,20 @@ pub async fn create_org_query(
 
     let mut conn = pg_pool.get().await.unwrap();
 
-    // TODO: Maybe want a db transaction for all 3 steps?
     let org = Org::from_details(name);
     let org = diesel::insert_into(orgs_columns::orgs)
         .values(&org)
         .get_result::<Org>(&mut conn)
         .await
-        .map_err(|_| {
+        .map_err(|e| {
             ServiceError::InternalServerError(
-                "Error creating user for create_user_query".to_string(),
+                format!("Error creating org for create_org_query: {}", e).to_string(),
             )
         })?;
 
-    let Ok(link) = link_org_with_user(org.id, authed_user.id, &pg_pool).await else {
-        return Err(ServiceError::InternalServerError(
-            "Error linking user with organization".to_string(),
-        ));
-    };
+    let link = link_org_with_user(org.id, authed_user.id, &pg_pool).await?;
 
-    let Ok(_) = grant_user_all_perms(link.id, &pg_pool).await else {
-        return Err(ServiceError::InternalServerError(
-            "Error granting user all permissions".to_string(),
-        ));
-    };
+    grant_user_all_perms(link.id, &pg_pool).await?;
 
     Ok(org)
 }
@@ -60,7 +51,9 @@ pub async fn user_in_org(
     ))
     .get_result::<bool>(&mut conn)
     .await
-    .map_err(|_| ServiceError::InternalServerError("Error checking if user in org".to_string()))?;
+    .map_err(|e| {
+        ServiceError::InternalServerError(format!("Error checking if user is in org: {}", e))
+    })?;
 
     Ok(user_in_org)
 }
@@ -77,8 +70,8 @@ pub async fn delete_org_query(
         .filter(orgs_columns::id.eq(org_id))
         .execute(&mut conn)
         .await
-        .map_err(|_| {
-            ServiceError::InternalServerError("Error deleting organization".to_string())
+        .map_err(|e| {
+            ServiceError::InternalServerError(format!("Error deleting org by id: {}", e))
         })?;
 
     Ok(())
@@ -105,9 +98,10 @@ pub async fn link_org_with_user(
                 diesel::result::DatabaseErrorKind::UniqueViolation,
                 _,
             ) => ServiceError::BadRequest("User and organization already linked".to_string()),
-            _ => ServiceError::InternalServerError(
-                "Error connecting user with organization".to_string(),
-            ),
+            e => ServiceError::InternalServerError(format!(
+                "Error linking user with organization: {}",
+                e
+            )),
         })?;
 
     Ok(org_user_link)
@@ -127,8 +121,10 @@ pub async fn grant_user_all_perms(
         .values(&perms)
         .execute(&mut conn)
         .await
-        .map_err(|_| {
-            ServiceError::InternalServerError("Error granting user all perms".to_string())
+        .map_err(|e| {
+            ServiceError::InternalServerError(
+                format!("Error granting user all permissions: {}", e).to_string(),
+            )
         })?;
 
     Ok(perms)
@@ -158,7 +154,10 @@ pub async fn get_org_by_id_query(
         .filter(orgs_columns::id.eq(org_id))
         .first::<Org>(&mut conn)
         .await
-        .map_err(|_| ServiceError::NotFound)?;
+        .map_err(|e| match e {
+            diesel::result::Error::NotFound => ServiceError::NotFound,
+            _ => ServiceError::InternalServerError(format!("Error getting org by id: {}", e)),
+        })?;
 
     Ok(org)
 }
@@ -176,7 +175,10 @@ pub async fn rename_org_query(
         .set(orgs_columns::name.eq(new_name))
         .get_result::<Org>(&mut conn)
         .await
-        .map_err(|_| ServiceError::NotFound)?;
+        .map_err(|e| match e {
+            diesel::result::Error::NotFound => ServiceError::NotFound,
+            _ => ServiceError::InternalServerError(format!("Error renaming org: {}", e)),
+        })?;
 
     Ok(org)
 }
@@ -185,26 +187,27 @@ pub async fn get_my_orgs_query(
     user_id: uuid::Uuid,
     pg_pool: &PgPool,
     limit: Option<i64>,
-    skip: Option<i64>,
+    offset: Option<i64>,
 ) -> Result<Vec<Org>, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
     use crate::data::schema::orgs::dsl as orgs_columns;
 
     let mut conn = pg_pool.get().await.unwrap();
 
-    // Set default values if limit and skip are None
-    let limit = limit.unwrap_or(30); // Default limit of 10
-    let skip = skip.unwrap_or(0); // Default skip of 0
+    let limit = limit.unwrap_or(10);
+    let offset = offset.unwrap_or(0);
 
     let orgs = orgs_columns::orgs
         .inner_join(orgs_users_columns::org_users)
         .filter(orgs_users_columns::user_id.eq(user_id))
         .select(Org::as_select())
         .limit(limit)
-        .offset(skip)
+        .offset(offset)
         .load::<Org>(&mut conn)
         .await
-        .map_err(|_| ServiceError::InternalServerError("Error getting user's orgs".to_string()))?;
+        .map_err(|e| {
+            ServiceError::InternalServerError(format!("Error getting orgs for user: {}", e))
+        })?;
 
     Ok(orgs)
 }

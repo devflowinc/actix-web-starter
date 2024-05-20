@@ -21,8 +21,11 @@ pub async fn get_user_by_id_query(
         .select(User::as_select())
         .first::<User>(&mut conn)
         .await
-        .map_err(|_| {
-            ServiceError::BadRequest("Error loading user for get_user_by_id_query".to_string())
+        .map_err(|e| {
+            ServiceError::BadRequest(format!(
+                "Error loading user for get_user_by_id_query: {}",
+                e
+            ))
         })?;
 
     Ok(user)
@@ -45,15 +48,15 @@ pub async fn create_user_query(
         .values(&user)
         .get_result::<User>(&mut conn)
         .await
-        .map_err(|_| {
-            ServiceError::BadRequest("Error creating user for create_user_query".to_string())
+        .map_err(|e| {
+            ServiceError::BadRequest(format!("Error creating user for create_user_query: {}", e))
         })?;
 
     Ok(user)
 }
 
 #[tracing::instrument(skip(pg_pool))]
-pub async fn get_user_from_api_key(
+pub async fn get_user_from_api_key_query(
     api_key: &str,
     pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
@@ -70,8 +73,11 @@ pub async fn get_user_from_api_key(
         .select(User::as_select())
         .first::<User>(&mut conn)
         .await
-        .map_err(|_| {
-            ServiceError::BadRequest("Error loading user for get_user_from_api_key".to_string())
+        .map_err(|e| {
+            ServiceError::BadRequest(format!(
+                "Error loading user for get_user_from_api_key_query: {}",
+                e
+            ))
         })?;
 
     Ok(user)

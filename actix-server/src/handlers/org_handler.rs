@@ -1,3 +1,4 @@
+use super::auth_handler::AuthedUser;
 use crate::{
     data::models::PgPool,
     operators::org_operator::{
@@ -9,10 +10,8 @@ use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
-use super::auth_handler::AuthedUser;
-
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct OrgNameReqPayload {
+pub struct CreateOrgReqPayload {
     name: String,
 }
 
@@ -21,7 +20,7 @@ pub struct OrgNameReqPayload {
   path = "/orgs",
   context_path = "/api",
   tag = "orgs",
-  request_body(content = OrgNameReqPayload, description = "JSON request payload to create a new organization", content_type = "application/json"),
+  request_body(content = CreateOrgReqPayload, description = "JSON request payload to create a new organization", content_type = "application/json"),
   responses(
       (status = 201, description = "JSON body representing the organization that was created", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
@@ -32,7 +31,7 @@ pub struct OrgNameReqPayload {
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_org(
-    req_payload: web::Json<OrgNameReqPayload>,
+    req_payload: web::Json<CreateOrgReqPayload>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -48,7 +47,7 @@ pub async fn create_org(
   context_path = "/api",
   tag = "orgs",
   responses(
-      (status = 200, description = "Blank body indicating that the organization was successfully deleted"),
+      (status = 200, description = "No content response indicating that the organization was successfully deleted"),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -103,12 +102,14 @@ pub async fn get_org_by_id(
     }
 }
 
+pub type UpdateOrgReqPayload = CreateOrgReqPayload;
+
 #[utoipa::path(
   put,
   path = "/orgs/{org_id}",
   context_path = "/api",
   tag = "orgs",
-  request_body(content = OrgNameReqPayload, description = "JSON request payload to rename the organization", content_type = "application/json"),
+  request_body(content = UpdateOrgReqPayload, description = "JSON request payload to rename the organization", content_type = "application/json"),
   responses(
       (status = 200, description = "Object representing the renamed organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
@@ -119,7 +120,7 @@ pub async fn get_org_by_id(
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_org_name(
-    req_payload: web::Json<OrgNameReqPayload>,
+    req_payload: web::Json<UpdateOrgReqPayload>,
     path: web::Path<uuid::Uuid>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
@@ -135,14 +136,20 @@ pub async fn update_org_name(
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub struct GetMyOrgsReqQuery {
+    limit: Option<i64>,
+    offset: Option<i64>,
+}
+
 #[utoipa::path(
   get,
   path = "/orgs",
   context_path = "/api",
   tag = "orgs",
   params(
-      ("limit" = Option<i64>, Query, description = "Limit the number of results. Default is 30"),
-      ("skip" = Option<i64>, Query, description = "Skip the number of results"),
+      ("limit" = Option<i64>, Query, description = "Limit the number of results. Default is 10"),
+      ("offset" = Option<i64>, Query, description = "Offset the results. Default is 0"),
   ),
   responses(
       (status = 200, description = "List of organizations the user belongs to", body = [Org]),
@@ -154,19 +161,11 @@ pub async fn update_org_name(
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_my_orgs(
-    query: web::Query<MyOrgsQuery>,
+    query: web::Query<GetMyOrgsReqQuery>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let MyOrgsQuery { limit, skip } = query.into_inner();
-    match get_my_orgs_query(authed_user.id, &pg_pool, limit, skip).await {
-        Err(e) => Err(e.into()),
-        Ok(orgs) => Ok(HttpResponse::Ok().json(orgs)),
-    }
-}
+    let user_orgs = get_my_orgs_query(authed_user.id, &pg_pool, query.limit, query.offset).await?;
 
-#[derive(Debug, Deserialize)]
-pub struct MyOrgsQuery {
-    limit: Option<i64>,
-    skip: Option<i64>,
+    Ok(HttpResponse::Ok().json(user_orgs))
 }

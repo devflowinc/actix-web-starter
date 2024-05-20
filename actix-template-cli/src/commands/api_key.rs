@@ -1,6 +1,6 @@
 use actix_web_starter_client::{
     apis::{api_key_api::CreateApiKeyParams, configuration::Configuration},
-    models::{CreateApiKeyReqPayload, CreateApiKeyRespPayload},
+    models::CreateApiKeyReqPayload,
 };
 
 use super::configure::ActixTemplateConfiguration;
@@ -44,7 +44,7 @@ pub async fn generate_api_key(
         .unwrap();
 
     match user {
-        actix_web_starter_client::apis::api_key_api::CreateApiKeySuccess::Status200(api_key) => {
+        actix_web_starter_client::apis::api_key_api::CreateApiKeySuccess::Status201(api_key) => {
             println!("\nAPI Key generated successfully!\n");
             println!("Name: {}", name);
             println!("API Key: {}", api_key.api_key);

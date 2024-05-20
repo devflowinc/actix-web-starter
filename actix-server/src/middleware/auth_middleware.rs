@@ -1,6 +1,6 @@
 use crate::{
     data::models::{PgPool, User},
-    operators::user_operator::get_user_from_api_key,
+    operators::user_operator::get_user_from_api_key_query,
 };
 use actix_identity::Identity;
 use actix_web::{
@@ -71,7 +71,7 @@ async fn get_user(req: &HttpRequest, pl: &mut Payload, tx: Transaction) -> Optio
 
     if let Some(auth_header) = req.headers().get("Authorization") {
         if let Ok(auth_header) = auth_header.to_str() {
-            let user = get_user_from_api_key(
+            let user = get_user_from_api_key_query(
                 auth_header,
                 req.app_data::<web::Data<PgPool>>()
                     .expect("PgPool will always be in server state")

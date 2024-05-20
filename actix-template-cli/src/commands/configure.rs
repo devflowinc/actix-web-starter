@@ -127,9 +127,7 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
     let result = get_user(api_url.clone(), api_key.clone().unwrap()).await;
 
     match result {
-        WhoamiSuccess::Status200(user) => {
-            // println!("\nWelcome, {}!", user.email.unwrap().unwrap());
-
+        WhoamiSuccess::Status200(_) => {
             ActixTemplateConfiguration {
                 api_key: api_key.unwrap(),
                 api_url: api_url.clone(),

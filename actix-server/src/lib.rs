@@ -125,7 +125,7 @@ impl Modify for SecurityAddon {
             handlers::api_key_handler::CreateApiKeyRespPayload,
             handlers::api_key_handler::CreateApiKeyReqPayload,
             handlers::api_key_handler::CreateApiKeyReqPayload,
-            handlers::org_handler::OrgNameReqPayload,
+            handlers::org_handler::CreateOrgReqPayload,
             models::User,
             models::Org,
             errors::ErrorRespPayload,
