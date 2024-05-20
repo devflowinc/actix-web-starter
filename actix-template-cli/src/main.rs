@@ -30,6 +30,21 @@ enum Commands {
     /// Command to manage profiles
     #[command(subcommand)]
     Profile(Profile),
+
+    /// Command to manage organizations
+    #[command(subcommand)]
+    Orgs(OrgCommands),
+}
+
+#[derive(Subcommand)]
+enum OrgCommands {
+    Create(CreateOrg),
+}
+
+#[derive(Args)]
+struct CreateOrg {
+    /// The name of the organization you want to create
+    name: String,
 }
 
 #[derive(Subcommand)]
