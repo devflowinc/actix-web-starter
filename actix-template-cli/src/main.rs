@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand};
-use commands::configure::ActixTemplateProfile;
+use commands::{configure::ActixTemplateProfile, orgs};
 
 mod commands;
 
@@ -30,7 +30,6 @@ enum Commands {
     /// Command to manage profiles
     #[command(subcommand)]
     Profile(Profile),
-
     /// Command to manage organizations
     #[command(subcommand)]
     Orgs(OrgCommands),
@@ -44,7 +43,7 @@ enum OrgCommands {
 #[derive(Args)]
 struct CreateOrg {
     /// The name of the organization you want to create
-    name: String,
+    name: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -159,6 +158,9 @@ async fn main() {
                     })
                     .unwrap();
             }
+        },
+        Some(Commands::Orgs(org)) => match org {
+            OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
         },
         _ => {
             println!("Command not implemented yet");
