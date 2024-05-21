@@ -38,6 +38,7 @@ enum Commands {
 #[derive(Subcommand)]
 enum OrgCommands {
     Create(CreateOrg),
+    Delete,
 }
 
 #[derive(Args)]
@@ -161,6 +162,7 @@ async fn main() {
         },
         Some(Commands::Orgs(org)) => match org {
             OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
+            OrgCommands::Delete => orgs::delete_org(settings).await,
         },
         _ => {
             println!("Command not implemented yet");
