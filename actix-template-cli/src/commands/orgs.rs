@@ -132,6 +132,10 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
 
     let selected = match select_from_my_orgs(&config, "Select an organization to delete:").await {
         Ok(ans) => ans,
+        Err(OrgSelectError::NoOrgs) => {
+            println!("No organizations found.");
+            std::process::exit(0);
+        }
         _ => {
             eprintln!("Error fetching organizations.");
             std::process::exit(1);
