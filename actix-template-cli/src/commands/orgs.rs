@@ -9,7 +9,7 @@ use actix_web_starter_client::{
     },
     models::CreateOrgReqPayload,
 };
-use inquire::Select;
+use inquire::{Confirm, Select};
 
 use super::configure::ActixTemplateConfiguration;
 
@@ -80,7 +80,7 @@ impl Display for OrgSelectOption {
 async fn select_from_my_orgs(
     config: &Configuration,
     prompt: &str,
-) -> Result<uuid::Uuid, OrgSelectError> {
+) -> Result<OrgSelectOption, OrgSelectError> {
     let orgs = actix_web_starter_client::apis::orgs_api::get_my_orgs(
         &config,
         GetMyOrgsParams {
@@ -116,7 +116,7 @@ async fn select_from_my_orgs(
         .prompt()
         .expect("Prompt is configured correctly");
 
-    Ok(ans.id)
+    Ok(ans)
 }
 
 pub async fn delete_org(settings: ActixTemplateConfiguration) {
@@ -142,10 +142,21 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         }
     };
 
+    // Prompt for confirmation
+    let ans = Confirm::new(format!("Are you sure you want to delete {}?", selected.name).as_str())
+        .with_default(false)
+        .prompt()
+        .expect("Prompt is configured correctly");
+
+    if ans == false {
+        println!("Deletion cancelled.");
+        std::process::exit(0);
+    }
+
     let deleted = actix_web_starter_client::apis::orgs_api::delete_org(
         &config,
         actix_web_starter_client::apis::orgs_api::DeleteOrgParams {
-            org_id: selected.to_string(),
+            org_id: selected.id.to_string(),
         },
     )
     .await
@@ -156,17 +167,12 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
     .entity;
 
     if deleted.is_none() {
-        eprintln!("Error deleting organization.");
-        std::process::exit(1);
+        eprintln!("Organization successfully deleted");
+        std::process::exit(0);
     }
 
-    // TODO: FIX!!!
     match deleted.unwrap() {
-        DeleteOrgSuccess::Status200() => {
-            println!("\nOrganization deleted successfully!\n");
-        }
-
-        DeleteOrgSuccess::UnknownValue(_) => {
+        _ => {
             eprintln!("Error deleting organization.");
             std::process::exit(1);
         }
