@@ -178,3 +178,65 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         }
     };
 }
+
+pub async fn rename_org(settings: ActixTemplateConfiguration) {
+    // Fetch the list of orgs
+    let config = Configuration {
+        base_path: settings.api_url.clone(),
+        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+            prefix: None,
+            key: settings.api_key.clone(),
+        }),
+        ..Default::default()
+    };
+
+    let selected = match select_from_my_orgs(&config, "Select an organization to rename:").await {
+        Ok(ans) => ans,
+        Err(OrgSelectError::NoOrgs) => {
+            println!("No organizations found.");
+            std::process::exit(0);
+        }
+        _ => {
+            eprintln!("Error fetching organizations.");
+            std::process::exit(1);
+        }
+    };
+
+    // Prompt for new name
+    let new_name = inquire::Text::new("Enter the new name for the organization:")
+        .prompt()
+        .expect("Prompt configured correctly");
+
+    // Send the rename request
+    let rename_payload = actix_web_starter_client::models::UpdateOrgReqPayload { name: new_name };
+
+    let renamed = actix_web_starter_client::apis::orgs_api::update_org_name(
+        &config,
+        actix_web_starter_client::apis::orgs_api::UpdateOrgNameParams {
+            org_id: selected.id.to_string(),
+            update_org_req_payload: rename_payload,
+        },
+    )
+    .await
+    .map_err(|e| {
+        eprintln!("Error renaming organization: {:?}", e);
+    })
+    .unwrap()
+    .entity;
+
+    if renamed.is_none() {
+        println!("Organization renamed successfully.");
+        std::process::exit(0);
+    }
+
+    match renamed.unwrap() {
+        actix_web_starter_client::apis::orgs_api::UpdateOrgNameSuccess::Status200(org) => {
+            println!("Organization renamed successfully.");
+            println!("Name: {}", org.name);
+        }
+        _ => {
+            eprintln!("Error renaming organization.");
+            std::process::exit(1);
+        }
+    };
+}
