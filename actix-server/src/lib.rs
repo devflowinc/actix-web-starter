@@ -119,6 +119,7 @@ impl Modify for SecurityAddon {
         handlers::org_handler::delete_org,
         handlers::org_handler::update_org_name,
         handlers::org_handler::get_my_orgs,
+        handlers::org_handler::get_org_by_id,
     ),
     components(
         schemas(
