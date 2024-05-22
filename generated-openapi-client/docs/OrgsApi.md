@@ -6,9 +6,8 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_org**](OrgsApi.md#create_org) | **POST** /api/orgs | 
 [**delete_org**](OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
-[**get_my_orgs**](OrgsApi.md#get_my_orgs) | **GET** /api/orgs | 
-[**get_org_by_id**](OrgsApi.md#get_org_by_id) | **GET** /api/orgs/{org_id} | 
-[**update_org_name**](OrgsApi.md#update_org_name) | **PUT** /api/orgs/{org_id} | 
+[**get_orgs_for_authed_user**](OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
+[**update_org**](OrgsApi.md#update_org) | **PUT** /api/orgs/{org_id} | 
 
 
 
@@ -68,9 +67,9 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## get_my_orgs
+## get_orgs_for_authed_user
 
-> Vec<models::Org> get_my_orgs(limit, offset)
+> Vec<models::Org> get_orgs_for_authed_user(limit, offset)
 
 
 ### Parameters
@@ -97,37 +96,9 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## get_org_by_id
+## update_org
 
-> models::Org get_org_by_id(org_id)
-
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**org_id** | **uuid::Uuid** |  | [required] |
-
-### Return type
-
-[**models::Org**](Org.md)
-
-### Authorization
-
-[ApiKey](../README.md#ApiKey)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## update_org_name
-
-> models::Org update_org_name(org_id, update_org_req_payload)
+> models::Org update_org(org_id, update_org_req_payload)
 
 
 ### Parameters

@@ -117,9 +117,8 @@ impl Modify for SecurityAddon {
         handlers::auth_handler::health_check,
         handlers::org_handler::create_org,
         handlers::org_handler::delete_org,
-        handlers::org_handler::update_org_name,
-        handlers::org_handler::get_my_orgs,
-        handlers::org_handler::get_org_by_id,
+        handlers::org_handler::update_org,
+        handlers::org_handler::get_orgs_for_authed_user,
     ),
     components(
         schemas(
@@ -289,15 +288,17 @@ pub fn main() -> std::io::Result<()> {
                                 .service(
                                     web::resource("")
                                         .route(web::post().to(handlers::org_handler::create_org))
-                                        .route(web::get().to(handlers::org_handler::get_my_orgs)),
+                                        .route(
+                                            web::get().to(
+                                                handlers::org_handler::get_orgs_for_authed_user,
+                                            ),
+                                        ),
                                 )
                                 .service(
                                     web::resource("/{org_id}")
                                         .route(web::delete().to(handlers::org_handler::delete_org))
-                                        .route(web::get().to(handlers::org_handler::get_org_by_id))
-                                        .route(
-                                            web::put().to(handlers::org_handler::update_org_name),
-                                        ),
+                                        .route(web::get().to(handlers::org_handler::get_org))
+                                        .route(web::put().to(handlers::org_handler::update_org)),
                                 ),
                         )
                         .service(

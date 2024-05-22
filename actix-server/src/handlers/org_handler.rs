@@ -1,9 +1,8 @@
 use super::auth_handler::AuthedUser;
 use crate::{
-    data::models::PgPool,
+    data::models::{Org, PgPool},
     operators::org_operator::{
-        create_org_query, delete_org_query, get_my_orgs_query, get_org_by_id_query,
-        rename_org_query, user_in_org,
+        create_org_query, delete_org_query, get_orgs_for_user_query, update_org_query, user_in_org_query,
     },
 };
 use actix_web::{web, HttpResponse};
@@ -47,7 +46,7 @@ pub async fn create_org(
   context_path = "/api",
   tag = "orgs",
   responses(
-      (status = 200, description = "No content response indicating that the organization was successfully deleted"),
+      (status = 204, description = "No content response indicating that the organization was successfully deleted"),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -62,12 +61,11 @@ pub async fn delete_org(
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
 
-    match user_in_org(org_id, authed_user.id, &pg_pool).await {
-        Err(e) => Err(e.into()),
-        Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
-        Ok(true) => delete_org_query(org_id.into(), pg_pool)
+    match user_in_org_query(org_id, authed_user.id, &pg_pool).await? {
+        Some(org) => delete_org_query(org.id, pg_pool)
             .await
-            .map(|_| Ok(HttpResponse::Ok().finish()))?,
+            .map(|_| Ok(HttpResponse::NoContent().finish()))?,
+        None => Ok(HttpResponse::Unauthorized().finish()),
     }
 }
 
@@ -85,20 +83,16 @@ pub async fn delete_org(
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn get_org_by_id(
+pub async fn get_org(
     path: web::Path<uuid::Uuid>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
-    match user_in_org(org_id, authed_user.id, &pg_pool).await {
-        Err(e) => Err(e.into()),
-        Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
-        Ok(true) => {
-            return get_org_by_id_query(org_id.into(), &pg_pool)
-                .await
-                .map(|org| Ok(HttpResponse::Ok().json(org)))?;
-        }
+
+    match user_in_org_query(org_id, authed_user.id, &pg_pool).await? {
+        Some(org) => Ok(HttpResponse::Ok().json(org)),
+        None => Ok(HttpResponse::Unauthorized().finish()),
     }
 }
 
@@ -122,20 +116,26 @@ pub struct UpdateOrgReqPayload {
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn update_org_name(
+pub async fn update_org(
     req_payload: web::Json<UpdateOrgReqPayload>,
     path: web::Path<uuid::Uuid>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
-    // TODO: Should check if user has permissions to rename
-    match user_in_org(org_id, authed_user.id, &pg_pool).await {
+    let mut org = Org::from_details_with_id(org_id, req_payload.name.clone());
+
+    match user_in_org_query(org_id, authed_user.id, &pg_pool).await {
+        Ok(opt_org) => match opt_org {
+            Some(prev_org) => {
+                org.created_at = prev_org.created_at;
+                update_org_query(org, &pg_pool)
+                    .await
+                    .map(|org| Ok(HttpResponse::Ok().json(org)))?
+            }
+            None => Ok(HttpResponse::Unauthorized().finish()),
+        },
         Err(e) => Err(e.into()),
-        Ok(false) => Ok(HttpResponse::Unauthorized().finish()),
-        Ok(true) => rename_org_query(org_id, req_payload.name.clone(), &pg_pool)
-            .await
-            .map(|org| Ok(HttpResponse::Ok().json(org)))?,
     }
 }
 
@@ -163,12 +163,12 @@ pub struct GetMyOrgsReqQuery {
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn get_my_orgs(
+pub async fn get_orgs_for_authed_user(
     query: web::Query<GetMyOrgsReqQuery>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let user_orgs = get_my_orgs_query(authed_user.id, &pg_pool, query.limit, query.offset).await?;
+    let user_orgs = get_orgs_for_user_query(authed_user.id, &pg_pool, query.limit, query.offset).await?;
 
     Ok(HttpResponse::Ok().json(user_orgs))
 }

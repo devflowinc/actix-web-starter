@@ -27,24 +27,18 @@ pub struct DeleteOrgParams {
     pub org_id: String
 }
 
-/// struct for passing parameters to the method [`get_my_orgs`]
+/// struct for passing parameters to the method [`get_orgs_for_authed_user`]
 #[derive(Clone, Debug)]
-pub struct GetMyOrgsParams {
+pub struct GetOrgsForAuthedUserParams {
     /// Limit the number of results. Default is 10
     pub limit: Option<i64>,
     /// Offset the results. Default is 0
     pub offset: Option<i64>
 }
 
-/// struct for passing parameters to the method [`get_org_by_id`]
+/// struct for passing parameters to the method [`update_org`]
 #[derive(Clone, Debug)]
-pub struct GetOrgByIdParams {
-    pub org_id: String
-}
-
-/// struct for passing parameters to the method [`update_org_name`]
-#[derive(Clone, Debug)]
-pub struct UpdateOrgNameParams {
+pub struct UpdateOrgParams {
     pub org_id: String,
     /// JSON request payload to rename the organization
     pub update_org_req_payload: models::UpdateOrgReqPayload
@@ -63,30 +57,22 @@ pub enum CreateOrgSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteOrgSuccess {
-    Status200(),
+    Status204(),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed successes of method [`get_my_orgs`]
+/// struct for typed successes of method [`get_orgs_for_authed_user`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMyOrgsSuccess {
+pub enum GetOrgsForAuthedUserSuccess {
     Status200(Vec<models::Org>),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed successes of method [`get_org_by_id`]
+/// struct for typed successes of method [`update_org`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrgByIdSuccess {
-    Status200(models::Org),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed successes of method [`update_org_name`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum UpdateOrgNameSuccess {
+pub enum UpdateOrgSuccess {
     Status200(models::Org),
     UnknownValue(serde_json::Value),
 }
@@ -107,26 +93,18 @@ pub enum DeleteOrgError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_my_orgs`]
+/// struct for typed errors of method [`get_orgs_for_authed_user`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMyOrgsError {
+pub enum GetOrgsForAuthedUserError {
     Status401(models::ErrorRespPayload),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_org_by_id`]
+/// struct for typed errors of method [`update_org`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrgByIdError {
-    Status401(models::ErrorRespPayload),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`update_org_name`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum UpdateOrgNameError {
+pub enum UpdateOrgError {
     Status401(models::ErrorRespPayload),
     UnknownValue(serde_json::Value),
 }
@@ -215,7 +193,7 @@ pub async fn delete_org(configuration: &configuration::Configuration, params: De
     }
 }
 
-pub async fn get_my_orgs(configuration: &configuration::Configuration, params: GetMyOrgsParams) -> Result<ResponseContent<GetMyOrgsSuccess>, Error<GetMyOrgsError>> {
+pub async fn get_orgs_for_authed_user(configuration: &configuration::Configuration, params: GetOrgsForAuthedUserParams) -> Result<ResponseContent<GetOrgsForAuthedUserSuccess>, Error<GetOrgsForAuthedUserError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
@@ -253,58 +231,17 @@ pub async fn get_my_orgs(configuration: &configuration::Configuration, params: G
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        let local_var_entity: Option<GetMyOrgsSuccess> = serde_json::from_str(&local_var_content).ok();
+        let local_var_entity: Option<GetOrgsForAuthedUserSuccess> = serde_json::from_str(&local_var_content).ok();
         let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Ok(local_var_result)
     } else {
-        let local_var_entity: Option<GetMyOrgsError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_entity: Option<GetOrgsForAuthedUserError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }
 }
 
-pub async fn get_org_by_id(configuration: &configuration::Configuration, params: GetOrgByIdParams) -> Result<ResponseContent<GetOrgByIdSuccess>, Error<GetOrgByIdError>> {
-    let local_var_configuration = configuration;
-
-    // unbox the parameters
-    let org_id = params.org_id;
-
-
-    let local_var_client = &local_var_configuration.client;
-
-    let local_var_uri_str = format!("{}/api/orgs/{org_id}", local_var_configuration.base_path, org_id=crate::apis::urlencode(org_id));
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_apikey) = local_var_configuration.api_key {
-        let local_var_key = local_var_apikey.key.clone();
-        let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
-            None => local_var_key,
-        };
-        local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        let local_var_entity: Option<GetOrgByIdSuccess> = serde_json::from_str(&local_var_content).ok();
-        let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Ok(local_var_result)
-    } else {
-        let local_var_entity: Option<GetOrgByIdError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-pub async fn update_org_name(configuration: &configuration::Configuration, params: UpdateOrgNameParams) -> Result<ResponseContent<UpdateOrgNameSuccess>, Error<UpdateOrgNameError>> {
+pub async fn update_org(configuration: &configuration::Configuration, params: UpdateOrgParams) -> Result<ResponseContent<UpdateOrgSuccess>, Error<UpdateOrgError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
@@ -337,11 +274,11 @@ pub async fn update_org_name(configuration: &configuration::Configuration, param
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        let local_var_entity: Option<UpdateOrgNameSuccess> = serde_json::from_str(&local_var_content).ok();
+        let local_var_entity: Option<UpdateOrgSuccess> = serde_json::from_str(&local_var_content).ok();
         let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Ok(local_var_result)
     } else {
-        let local_var_entity: Option<UpdateOrgNameError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_entity: Option<UpdateOrgError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }

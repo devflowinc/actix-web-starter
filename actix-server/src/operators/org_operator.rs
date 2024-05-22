@@ -35,27 +35,28 @@ pub async fn create_org_query(
     Ok(org)
 }
 
-pub async fn user_in_org(
+pub async fn user_in_org_query(
     org_id: uuid::Uuid,
     user_id: uuid::Uuid,
     pg_pool: &PgPool,
-) -> Result<bool, ServiceError> {
+) -> Result<Option<Org>, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
+    use crate::data::schema::orgs::dsl as orgs_columns;
 
     let mut conn = pg_pool.get().await.unwrap();
 
-    let user_in_org = diesel::select(diesel::dsl::exists(
-        orgs_users_columns::org_users
-            .filter(orgs_users_columns::org_id.eq(org_id))
-            .filter(orgs_users_columns::user_id.eq(user_id)),
-    ))
-    .get_result::<bool>(&mut conn)
-    .await
-    .map_err(|e| {
-        ServiceError::InternalServerError(format!("Error checking if user is in org: {}", e))
-    })?;
+    let orgs: Vec<Org> = orgs_columns::orgs
+        .inner_join(orgs_users_columns::org_users)
+        .filter(orgs_columns::id.eq(org_id))
+        .filter(orgs_users_columns::user_id.eq(user_id))
+        .select(Org::as_select())
+        .load::<Org>(&mut conn)
+        .await
+        .map_err(|e| match e {
+            _ => ServiceError::InternalServerError(format!("Error validating user_in_org: {}", e)),
+        })?;
 
-    Ok(user_in_org)
+    Ok(orgs.into_iter().next())
 }
 
 pub async fn delete_org_query(
@@ -142,37 +143,13 @@ pub fn build_all_perms(org_user_id: uuid::Uuid) -> Vec<OrgUserPerm> {
     perm_list
 }
 
-pub async fn get_org_by_id_query(
-    org_id: uuid::Uuid,
-    pg_pool: &PgPool,
-) -> Result<Org, ServiceError> {
+pub async fn update_org_query(org: Org, pg_pool: &PgPool) -> Result<Org, ServiceError> {
     use crate::data::schema::orgs::dsl as orgs_columns;
 
     let mut conn = pg_pool.get().await.unwrap();
 
-    let org = orgs_columns::orgs
-        .filter(orgs_columns::id.eq(org_id))
-        .first::<Org>(&mut conn)
-        .await
-        .map_err(|e| match e {
-            diesel::result::Error::NotFound => ServiceError::NotFound,
-            _ => ServiceError::InternalServerError(format!("Error getting org by id: {}", e)),
-        })?;
-
-    Ok(org)
-}
-
-pub async fn rename_org_query(
-    org_id: uuid::Uuid,
-    new_name: String,
-    pg_pool: &PgPool,
-) -> Result<Org, ServiceError> {
-    use crate::data::schema::orgs::dsl as orgs_columns;
-
-    let mut conn = pg_pool.get().await.unwrap();
-
-    let org = diesel::update(orgs_columns::orgs.filter(orgs_columns::id.eq(org_id)))
-        .set(orgs_columns::name.eq(new_name))
+    let org = diesel::update(orgs_columns::orgs.filter(orgs_columns::id.eq(org.id)))
+        .set(&org)
         .get_result::<Org>(&mut conn)
         .await
         .map_err(|e| match e {
@@ -183,7 +160,7 @@ pub async fn rename_org_query(
     Ok(org)
 }
 
-pub async fn get_my_orgs_query(
+pub async fn get_orgs_for_user_query(
     user_id: uuid::Uuid,
     pg_pool: &PgPool,
     limit: Option<i64>,

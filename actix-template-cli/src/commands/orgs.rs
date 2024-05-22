@@ -4,7 +4,8 @@ use actix_web_starter_client::{
     apis::{
         configuration::Configuration,
         orgs_api::{
-            CreateOrgParams, CreateOrgSuccess, DeleteOrgSuccess, GetMyOrgsParams, GetMyOrgsSuccess,
+            CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
+            GetOrgsForAuthedUserSuccess,
         },
     },
     models::CreateOrgReqPayload,
@@ -81,9 +82,9 @@ async fn select_from_my_orgs(
     config: &Configuration,
     prompt: &str,
 ) -> Result<OrgSelectOption, OrgSelectError> {
-    let orgs = actix_web_starter_client::apis::orgs_api::get_my_orgs(
+    let orgs = actix_web_starter_client::apis::orgs_api::get_orgs_for_authed_user(
         &config,
-        GetMyOrgsParams {
+        GetOrgsForAuthedUserParams {
             limit: None,
             offset: None,
         },
@@ -94,8 +95,8 @@ async fn select_from_my_orgs(
     .unwrap();
 
     let org_list = match orgs {
-        GetMyOrgsSuccess::Status200(org_list) => org_list,
-        GetMyOrgsSuccess::UnknownValue(_) => {
+        GetOrgsForAuthedUserSuccess::Status200(org_list) => org_list,
+        GetOrgsForAuthedUserSuccess::UnknownValue(_) => {
             return Err(OrgSelectError::OrgFetchFailure);
         }
     };
@@ -142,7 +143,6 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         }
     };
 
-    // Prompt for confirmation
     let ans = Confirm::new(format!("Are you sure you want to delete {}?", selected.name).as_str())
         .with_default(false)
         .prompt()
@@ -153,7 +153,7 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         std::process::exit(0);
     }
 
-    let deleted = actix_web_starter_client::apis::orgs_api::delete_org(
+    match actix_web_starter_client::apis::orgs_api::delete_org(
         &config,
         actix_web_starter_client::apis::orgs_api::DeleteOrgParams {
             org_id: selected.id.to_string(),
@@ -164,19 +164,18 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         eprintln!("Error deleting organization: {:?}", e);
     })
     .unwrap()
-    .entity;
-
-    if deleted.is_none() {
-        eprintln!("Organization successfully deleted");
-        std::process::exit(0);
-    }
-
-    match deleted.unwrap() {
-        _ => {
+    .status
+    .is_success()
+    {
+        true => {
+            println!("Organization deleted successfully.");
+            std::process::exit(0);
+        }
+        false => {
             eprintln!("Error deleting organization.");
             std::process::exit(1);
         }
-    };
+    }
 }
 
 pub async fn rename_org(settings: ActixTemplateConfiguration) {
@@ -210,9 +209,9 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
     // Send the rename request
     let rename_payload = actix_web_starter_client::models::UpdateOrgReqPayload { name: new_name };
 
-    let renamed = actix_web_starter_client::apis::orgs_api::update_org_name(
+    let renamed = actix_web_starter_client::apis::orgs_api::update_org(
         &config,
-        actix_web_starter_client::apis::orgs_api::UpdateOrgNameParams {
+        actix_web_starter_client::apis::orgs_api::UpdateOrgParams {
             org_id: selected.id.to_string(),
             update_org_req_payload: rename_payload,
         },
@@ -230,7 +229,7 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
     }
 
     match renamed.unwrap() {
-        actix_web_starter_client::apis::orgs_api::UpdateOrgNameSuccess::Status200(org) => {
+        actix_web_starter_client::apis::orgs_api::UpdateOrgSuccess::Status200(org) => {
             println!("Organization renamed successfully.");
             println!("Name: {}", org.name);
         }

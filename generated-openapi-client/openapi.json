@@ -276,7 +276,7 @@
         "tags": [
           "orgs"
         ],
-        "operationId": "get_my_orgs",
+        "operationId": "get_orgs_for_authed_user",
         "parameters": [
           {
             "name": "limit",
@@ -382,57 +382,11 @@
       }
     },
     "/api/orgs/{org_id}": {
-      "get": {
-        "tags": [
-          "orgs"
-        ],
-        "operationId": "get_org_by_id",
-        "parameters": [
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "JSON object representing the requested organization",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Org"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Service error relating to authentication status of the user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorRespPayload"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "ApiKey": [
-              "readonly"
-            ]
-          }
-        ]
-      },
       "put": {
         "tags": [
           "orgs"
         ],
-        "operationId": "update_org_name",
+        "operationId": "update_org",
         "parameters": [
           {
             "name": "org_id",
@@ -502,7 +456,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "No content response indicating that the organization was successfully deleted"
           },
           "401": {
