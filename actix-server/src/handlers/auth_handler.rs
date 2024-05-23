@@ -1,4 +1,4 @@
-use crate::data::models::RedisPool;
+use crate::data::models::{OrgUserLink, RedisPool};
 use crate::operators::user_operator::create_user_query;
 use crate::{
     data::models::{PgPool, User},
@@ -41,6 +41,23 @@ pub struct OpCallback {
     pub state: String,
     pub session_state: String,
     pub code: String,
+}
+
+pub type AuthedOrgMembership = OrgUserLink;
+
+impl FromRequest for AuthedOrgMembership {
+    type Error = actix_web::Error;
+    type Future = std::future::Ready<Result<AuthedOrgMembership, actix_web::Error>>;
+
+    #[inline]
+    fn from_request(req: &HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
+        std::future::ready(
+            req.extensions()
+                .get::<OrgUserLink>()
+                .cloned()
+                .ok_or(ServiceError::Unauthorized.into()),
+        )
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq)]

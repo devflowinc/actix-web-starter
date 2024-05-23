@@ -1,6 +1,8 @@
 use crate::{
     data::models::{PgPool, User},
-    operators::user_operator::get_user_from_api_key_query,
+    operators::{
+        org_operator::get_org_user_link_query, user_operator::get_user_from_api_key_query,
+    },
 };
 use actix_identity::Identity;
 use actix_web::{
@@ -44,6 +46,27 @@ where
             let user = get_user(http_req, pl, transaction.clone()).await;
             if let Some(ref user) = user {
                 req.extensions_mut().insert(user.clone());
+
+                // Try to grab the organization from the header and verify membership
+                if let Some(org_header) = req.headers().get("Organization") {
+                    if let Ok(org_header) = org_header.to_str() {
+                        if let Ok(org_uuid) = uuid::Uuid::parse_str(org_header) {
+                            let org_user_link = get_org_user_link_query(
+                                user.id,
+                                org_uuid,
+                                &req.app_data::<web::Data<PgPool>>()
+                                    .expect("PgPool will always be in server state"),
+                            )
+                            .await
+                            .ok();
+
+                            if let Some(org_user_link) = org_user_link {
+                                log::info!("User is a member of the organization");
+                                req.extensions_mut().insert(org_user_link);
+                            }
+                        }
+                    }
+                }
             };
 
             get_user_span.finish();
