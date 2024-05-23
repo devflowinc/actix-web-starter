@@ -167,10 +167,8 @@ pub struct GetMyOrgsReqQuery {
 pub async fn get_orgs_for_authed_user(
     query: web::Query<GetMyOrgsReqQuery>,
     authed_user: AuthedUser,
-    org_membership: AuthedOrgMembership,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    println!("{:?}", org_membership);
     let user_orgs =
         get_orgs_for_user_query(authed_user.id, &pg_pool, query.limit, query.offset).await?;
 
