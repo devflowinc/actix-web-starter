@@ -188,3 +188,26 @@ pub async fn get_orgs_for_user_query(
 
     Ok(orgs)
 }
+
+pub async fn get_org_user_link_query(
+    user_id: uuid::Uuid,
+    org_id: uuid::Uuid,
+    pg_pool: &PgPool,
+) -> Result<OrgUserLink, ServiceError> {
+    use crate::data::schema::org_users::dsl as orgs_users_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let org_user_link = orgs_users_columns::org_users
+        .filter(orgs_users_columns::user_id.eq(user_id))
+        .filter(orgs_users_columns::org_id.eq(org_id))
+        .select(OrgUserLink::as_select())
+        .first::<OrgUserLink>(&mut conn)
+        .await
+        .map_err(|e| match e {
+            diesel::result::Error::NotFound => ServiceError::NotFound,
+            _ => ServiceError::InternalServerError(format!("Error getting org user link: {}", e)),
+        })?;
+
+    Ok(org_user_link)
+}
