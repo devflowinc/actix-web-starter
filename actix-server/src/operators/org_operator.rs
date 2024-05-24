@@ -1,5 +1,5 @@
 use crate::{
-    data::models::{Org, OrgUserLink, OrgUserPerm, Perm, PgPool},
+    data::models::{Org, OrgUserLink, PgPool, UserRole},
     errors::ServiceError,
     handlers::auth_handler::AuthedUser,
 };
@@ -28,11 +28,45 @@ pub async fn create_org_query(
             )
         })?;
 
-    let link = link_org_with_user(org.id, authed_user.id, &pg_pool).await?;
-
-    grant_user_all_perms(link.id, &pg_pool).await?;
+    // Make the user an owner
+    add_user_to_org_query(authed_user.id, org.id, UserRole::Owner, &pg_pool).await?;
 
     Ok(org)
+}
+
+pub async fn add_user_to_org_query(
+    user_id: uuid::Uuid,
+    org_id: uuid::Uuid,
+    role: UserRole,
+    pg_pool: &PgPool,
+) -> Result<OrgUserLink, ServiceError> {
+    use crate::data::schema::org_users::dsl as orgs_users_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let org_user_link = OrgUserLink {
+        id: uuid::Uuid::new_v4(),
+        user_id,
+        org_id,
+        role: role.into(),
+    };
+
+    let org_user_link = diesel::insert_into(orgs_users_columns::org_users)
+        .values(&org_user_link)
+        .get_result::<OrgUserLink>(&mut conn)
+        .await
+        .map_err(|e| match e {
+            diesel::result::Error::DatabaseError(
+                diesel::result::DatabaseErrorKind::UniqueViolation,
+                _,
+            ) => ServiceError::BadRequest("User and organization already linked".to_string()),
+            e => ServiceError::InternalServerError(format!(
+                "Error linking user with organization: {}",
+                e
+            )),
+        })?;
+
+    Ok(org_user_link)
 }
 
 pub async fn user_in_org_query(
@@ -76,71 +110,6 @@ pub async fn delete_org_query(
         })?;
 
     Ok(())
-}
-
-#[tracing::instrument(skip(pg_pool))]
-pub async fn link_org_with_user(
-    org_id: uuid::Uuid,
-    user_id: uuid::Uuid,
-    pg_pool: &PgPool,
-) -> Result<OrgUserLink, ServiceError> {
-    use crate::data::schema::org_users::dsl as orgs_users_columns;
-
-    let mut conn = pg_pool.get().await.unwrap();
-
-    let org_user_link = OrgUserLink::from_details(user_id, org_id);
-
-    let org_user_link = diesel::insert_into(orgs_users_columns::org_users)
-        .values(&org_user_link)
-        .get_result::<OrgUserLink>(&mut conn)
-        .await
-        .map_err(|e| match e {
-            diesel::result::Error::DatabaseError(
-                diesel::result::DatabaseErrorKind::UniqueViolation,
-                _,
-            ) => ServiceError::BadRequest("User and organization already linked".to_string()),
-            e => ServiceError::InternalServerError(format!(
-                "Error linking user with organization: {}",
-                e
-            )),
-        })?;
-
-    Ok(org_user_link)
-}
-
-pub async fn grant_user_all_perms(
-    org_user_id: uuid::Uuid,
-    pg_pool: &PgPool,
-) -> Result<Vec<OrgUserPerm>, ServiceError> {
-    use crate::data::schema::org_users_perms::dsl as orgs_users_perms_columns;
-
-    let mut conn = pg_pool.get().await.unwrap();
-
-    let perms = build_all_perms(org_user_id);
-
-    diesel::insert_into(orgs_users_perms_columns::org_users_perms)
-        .values(&perms)
-        .execute(&mut conn)
-        .await
-        .map_err(|e| {
-            ServiceError::InternalServerError(
-                format!("Error granting user all permissions: {}", e).to_string(),
-            )
-        })?;
-
-    Ok(perms)
-}
-
-pub fn build_all_perms(org_user_id: uuid::Uuid) -> Vec<OrgUserPerm> {
-    let perm_list: Vec<OrgUserPerm> = Perm::ALL_PERMS
-        .map(|perm| OrgUserPerm {
-            org_user_id,
-            perm: Some(perm),
-            has: true,
-        })
-        .to_vec();
-
-    perm_list
 }
 
 pub async fn update_org_query(org: Org, pg_pool: &PgPool) -> Result<Org, ServiceError> {

@@ -1,4 +1,4 @@
-use super::auth_handler::{AuthedOrgMembership, AuthedUser};
+use super::auth_handler::AuthedUser;
 use crate::{
     data::models::{Org, PgPool},
     operators::org_operator::{
