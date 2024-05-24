@@ -1,4 +1,4 @@
-use crate::data::models::{OrgUserLink, RedisPool};
+use crate::data::models::{OrgUserLink, RedisPool, UserRole};
 use crate::operators::user_operator::create_user_query;
 use crate::{
     data::models::{PgPool, User},
@@ -43,20 +43,78 @@ pub struct OpCallback {
     pub code: String,
 }
 
-pub type AuthedOrgMembership = OrgUserLink;
+pub struct AuthedMember {
+    org_id: uuid::Uuid,
+    role: UserRole,
+}
 
-impl FromRequest for AuthedOrgMembership {
+impl FromRequest for AuthedMember {
     type Error = actix_web::Error;
-    type Future = std::future::Ready<Result<AuthedOrgMembership, actix_web::Error>>;
+    type Future = std::future::Ready<Result<AuthedMember, actix_web::Error>>;
 
     #[inline]
     fn from_request(req: &HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
-        std::future::ready(
-            req.extensions()
-                .get::<OrgUserLink>()
-                .cloned()
-                .ok_or(ServiceError::Unauthorized.into()),
-        )
+        std::future::ready(match req.extensions().get::<OrgUserLink>() {
+            Some(org_user_link) => Ok(AuthedMember {
+                org_id: org_user_link.org_id,
+                role: org_user_link.role.into(),
+            }),
+            None => Err(ServiceError::Unauthorized.into()),
+        })
+    }
+}
+
+pub struct AdminMember {
+    org_id: uuid::Uuid,
+    role: UserRole,
+}
+
+impl FromRequest for AdminMember {
+    type Error = actix_web::Error;
+    type Future = std::future::Ready<Result<AdminMember, actix_web::Error>>;
+
+    #[inline]
+    fn from_request(req: &HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
+        std::future::ready(match req.extensions().get::<OrgUserLink>() {
+            Some(org_user_link) => {
+                if org_user_link.role >= 1 {
+                    Ok(AdminMember {
+                        org_id: org_user_link.org_id,
+                        role: org_user_link.role.into(),
+                    })
+                } else {
+                    Err(ServiceError::Unauthorized.into())
+                }
+            }
+            None => Err(ServiceError::Unauthorized.into()),
+        })
+    }
+}
+
+pub struct OwnerMember {
+    org_id: uuid::Uuid,
+    role: UserRole,
+}
+
+impl FromRequest for OwnerMember {
+    type Error = actix_web::Error;
+    type Future = std::future::Ready<Result<OwnerMember, actix_web::Error>>;
+
+    #[inline]
+    fn from_request(req: &HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
+        std::future::ready(match req.extensions().get::<OrgUserLink>() {
+            Some(org_user_link) => {
+                if org_user_link.role == 2 {
+                    Ok(OwnerMember {
+                        org_id: org_user_link.org_id,
+                        role: org_user_link.role.into(),
+                    })
+                } else {
+                    Err(ServiceError::Unauthorized.into())
+                }
+            }
+            None => Err(ServiceError::Unauthorized.into()),
+        })
     }
 }
 
