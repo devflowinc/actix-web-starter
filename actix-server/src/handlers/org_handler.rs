@@ -1,4 +1,4 @@
-use super::auth_handler::AuthedUser;
+use super::auth_handler::{AuthedUser, OwnerMember};
 use crate::{
     data::models::{Org, PgPool},
     operators::org_operator::{
@@ -50,6 +50,9 @@ pub async fn create_org(
       (status = 204, description = "No content response indicating that the organization was successfully deleted"),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+  ),
   security(
       ("ApiKey" = ["readonly"]),
   )
@@ -57,10 +60,15 @@ pub async fn create_org(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn delete_org(
     authed_user: AuthedUser,
+    org_user: OwnerMember,
     path: web::Path<uuid::Uuid>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
+
+    if org_user.org_id != org_id {
+        return Ok(HttpResponse::Unauthorized().finish());
+    }
 
     match user_in_org_query(org_id, authed_user.id, &pg_pool).await? {
         Some(org) => delete_org_query(org.id, pg_pool)
