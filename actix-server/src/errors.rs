@@ -45,13 +45,13 @@ impl ResponseError for ServiceError {
                 })
             }
             ServiceError::Unauthorized => HttpResponse::Unauthorized().json(ErrorRespPayload {
-                message: "Unauthorized".to_string()
+                message: "Unauthorized".to_string(),
             }),
             ServiceError::Forbidden => HttpResponse::Forbidden().json(ErrorRespPayload {
-                message: "Forbidden".to_string()
+                message: "Forbidden".to_string(),
             }),
             ServiceError::NotFound => HttpResponse::NotFound().json(ErrorRespPayload {
-                message: "Record not found".to_string()
+                message: "Record not found".to_string(),
             }),
         }
     }

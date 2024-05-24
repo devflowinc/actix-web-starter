@@ -43,9 +43,10 @@ pub struct OpCallback {
     pub code: String,
 }
 
+#[derive(Debug, Deserialize, IntoParams)]
 pub struct AuthedMember {
-    org_id: uuid::Uuid,
-    role: UserRole,
+    pub org_id: uuid::Uuid,
+    pub role: UserRole,
 }
 
 impl FromRequest for AuthedMember {
@@ -64,9 +65,10 @@ impl FromRequest for AuthedMember {
     }
 }
 
+#[derive(Debug, Deserialize, IntoParams)]
 pub struct AdminMember {
-    org_id: uuid::Uuid,
-    role: UserRole,
+    pub org_id: uuid::Uuid,
+    pub role: UserRole,
 }
 
 impl FromRequest for AdminMember {
@@ -91,9 +93,10 @@ impl FromRequest for AdminMember {
     }
 }
 
+#[derive(Debug, Deserialize, IntoParams)]
 pub struct OwnerMember {
-    org_id: uuid::Uuid,
-    role: UserRole,
+    pub org_id: uuid::Uuid,
+    pub role: UserRole,
 }
 
 impl FromRequest for OwnerMember {
