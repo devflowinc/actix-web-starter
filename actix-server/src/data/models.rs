@@ -82,23 +82,31 @@ impl Org {
     }
 }
 
-#[derive(diesel_derive_enum::DbEnum, Debug, Clone, Deserialize, Serialize)]
-#[ExistingTypePath = "crate::data::schema::sql_types::Perm"]
-pub enum Perm {
-    Subscription,
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Ord, PartialOrd)]
+pub enum UserRole {
+    Owner = 2,
+    Admin = 1,
+    User = 0,
 }
 
-// TODO: Way to not have to update manually?
-impl Perm {
-    pub const ALL_PERMS: [Self; 1] = [Self::Subscription];
+impl From<i32> for UserRole {
+    fn from(role: i32) -> Self {
+        match role {
+            2 => UserRole::Owner,
+            1 => UserRole::Admin,
+            _ => UserRole::User,
+        }
+    }
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
-#[diesel(table_name = org_users_perms)]
-pub struct OrgUserPerm {
-    pub org_user_id: uuid::Uuid,
-    pub perm: Option<Perm>,
-    pub has: bool,
+impl From<UserRole> for i32 {
+    fn from(role: UserRole) -> Self {
+        match role {
+            UserRole::Owner => 2,
+            UserRole::Admin => 1,
+            UserRole::User => 0,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
@@ -112,13 +120,15 @@ pub struct OrgUserLink {
     pub id: uuid::Uuid,
     pub user_id: uuid::Uuid,
     pub org_id: uuid::Uuid,
+    pub role: i32,
 }
 impl OrgUserLink {
-    pub fn from_details(user_id: uuid::Uuid, org_id: uuid::Uuid) -> Self {
+    pub fn from_details(user_id: uuid::Uuid, org_id: uuid::Uuid, role: UserRole) -> Self {
         OrgUserLink {
             id: uuid::Uuid::new_v4(),
             user_id,
             org_id,
+            role: role.into(),
         }
     }
 }
