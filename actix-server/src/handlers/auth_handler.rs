@@ -46,6 +46,7 @@ pub struct OpCallback {
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct AuthedMember {
     pub org_id: uuid::Uuid,
+    pub user_id: uuid::Uuid,
     pub role: UserRole,
 }
 
@@ -58,6 +59,7 @@ impl FromRequest for AuthedMember {
         std::future::ready(match req.extensions().get::<OrgUserLink>() {
             Some(org_user_link) => Ok(AuthedMember {
                 org_id: org_user_link.org_id,
+                user_id: org_user_link.user_id,
                 role: org_user_link.role.into(),
             }),
             None => Err(ServiceError::Unauthorized.into()),

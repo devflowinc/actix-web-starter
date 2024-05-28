@@ -1,4 +1,4 @@
-use super::auth_handler::{AuthedUser, OwnerMember};
+use super::auth_handler::{AuthedMember, AuthedUser, OwnerMember};
 use crate::{
     data::models::{Org, PgPool},
     operators::org_operator::{
@@ -94,12 +94,12 @@ pub async fn delete_org(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_org(
     path: web::Path<uuid::Uuid>,
-    authed_user: AuthedUser,
+    org_member: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
 
-    match user_in_org_query(org_id, authed_user.id, &pg_pool).await? {
+    match user_in_org_query(org_id, org_member.user_id, &pg_pool).await? {
         Some(org) => Ok(HttpResponse::Ok().json(org)),
         None => Ok(HttpResponse::Unauthorized().finish()),
     }
