@@ -12,6 +12,19 @@ diesel::table! {
 }
 
 diesel::table! {
+    invitations (id) {
+        id -> Uuid,
+        #[max_length = 100]
+        email -> Varchar,
+        organization_id -> Uuid,
+        used -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+        role -> Int4,
+    }
+}
+
+diesel::table! {
     org_users (id) {
         id -> Uuid,
         user_id -> Uuid,
@@ -65,12 +78,14 @@ diesel::table! {
 }
 
 diesel::joinable!(api_keys -> users (user_id));
+diesel::joinable!(invitations -> orgs (organization_id));
 diesel::joinable!(org_users -> orgs (org_id));
 diesel::joinable!(org_users -> users (user_id));
 diesel::joinable!(subscriptions -> orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     api_keys,
+    invitations,
     org_users,
     orgs,
     plans,
