@@ -1,5 +1,6 @@
 use super::schema::*;
 use bb8_redis::{bb8, RedisConnectionManager};
+use diesel::expression::ValidGrouping;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -169,6 +170,33 @@ impl Plan {
             price_per_month,
             created_at: chrono::Utc::now().naive_local(),
             updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, ValidGrouping)]
+#[diesel(table_name = invitations)]
+pub struct Invitation {
+    pub id: uuid::Uuid,
+    pub email: String,
+    pub organization_id: uuid::Uuid,
+    pub used: bool,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+    pub role: i32,
+}
+
+// any type that implements Into<String> can be used to create Invitation
+impl Invitation {
+    pub fn from_details(email: String, organization_id: uuid::Uuid, role: i32) -> Self {
+        Invitation {
+            id: uuid::Uuid::new_v4(),
+            email,
+            organization_id,
+            used: false,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+            role,
         }
     }
 }
