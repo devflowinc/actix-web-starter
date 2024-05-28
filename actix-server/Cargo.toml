@@ -76,6 +76,7 @@ utoipa-swagger-ui = { version = "7.0.1", features = ["actix-web"] }
 blake3 = "1.5.1"
 bb8-redis = "0.15.0"
 rand = "0.8.5"
+lettre = "0.11.7"
 
 [build-dependencies]
 dotenvy = "0.15.7"
