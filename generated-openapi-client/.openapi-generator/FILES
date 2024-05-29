@@ -9,6 +9,10 @@ docs/CreateApiKeyRespPayload.md
 docs/CreateOrgReqPayload.md
 docs/ErrorRespPayload.md
 docs/HealthApi.md
+docs/Invitation.md
+docs/InvitationApi.md
+docs/InvitationData.md
+docs/InvitationResponse.md
 docs/Org.md
 docs/OrgsApi.md
 docs/UpdateOrgReqPayload.md
@@ -18,6 +22,7 @@ src/apis/api_key_api.rs
 src/apis/auth_api.rs
 src/apis/configuration.rs
 src/apis/health_api.rs
+src/apis/invitation_api.rs
 src/apis/mod.rs
 src/apis/orgs_api.rs
 src/lib.rs
@@ -25,6 +30,9 @@ src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
 src/models/create_org_req_payload.rs
 src/models/error_resp_payload.rs
+src/models/invitation.rs
+src/models/invitation_data.rs
+src/models/invitation_response.rs
 src/models/mod.rs
 src/models/org.rs
 src/models/update_org_req_payload.rs

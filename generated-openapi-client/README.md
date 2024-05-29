@@ -33,6 +33,9 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**logout**](docs/AuthApi.md#logout) | **DELETE** /api/auth | Logout
 *AuthApi* | [**whoami**](docs/AuthApi.md#whoami) | **GET** /api/auth/whoami | Get Currently Auth'ed User
 *HealthApi* | [**health_check**](docs/HealthApi.md#health_check) | **GET** /api/health | Health Check
+*InvitationApi* | [**delete_invitation**](docs/InvitationApi.md#delete_invitation) | **DELETE** /api/invitation/{invitation_id} | Delete Invitation
+*InvitationApi* | [**get_invitations**](docs/InvitationApi.md#get_invitations) | **GET** /api/invitation/{organization_id} | Get Invitations
+*InvitationApi* | [**post_invitation**](docs/InvitationApi.md#post_invitation) | **POST** /api/invitation | Send Invitation
 *OrgsApi* | [**create_org**](docs/OrgsApi.md#create_org) | **POST** /api/orgs | 
 *OrgsApi* | [**delete_org**](docs/OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
 *OrgsApi* | [**get_orgs_for_authed_user**](docs/OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
@@ -45,6 +48,9 @@ Class | Method | HTTP request | Description
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
+ - [Invitation](docs/Invitation.md)
+ - [InvitationData](docs/InvitationData.md)
+ - [InvitationResponse](docs/InvitationResponse.md)
  - [Org](docs/Org.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
  - [User](docs/User.md)
