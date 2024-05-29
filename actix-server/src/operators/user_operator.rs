@@ -82,3 +82,27 @@ pub async fn get_user_from_api_key_query(
 
     Ok(user)
 }
+
+#[tracing::instrument(skip(pg_pool))]
+pub async fn get_user_by_email_query(
+    email: &str,
+    pg_pool: web::Data<PgPool>,
+) -> Result<User, ServiceError> {
+    use crate::data::schema::users::dsl as users_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    let user: User = users_columns::users
+        .filter(users_columns::email.eq(email))
+        .select(User::as_select())
+        .first::<User>(&mut conn)
+        .await
+        .map_err(|e| {
+            ServiceError::BadRequest(format!(
+                "Error loading user for get_user_by_email_query: {}",
+                e
+            ))
+        })?;
+
+    Ok(user)
+}

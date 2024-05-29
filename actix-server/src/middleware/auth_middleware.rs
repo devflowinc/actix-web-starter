@@ -54,8 +54,9 @@ where
                             let org_user_link = get_org_user_link_query(
                                 user.id,
                                 org_uuid,
-                                &req.app_data::<web::Data<PgPool>>()
-                                    .expect("PgPool will always be in server state"),
+                                req.app_data::<web::Data<PgPool>>()
+                                    .expect("PgPool will always be in server state")
+                                    .to_owned(),
                             )
                             .await
                             .ok();
