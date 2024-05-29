@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_org
 
-> delete_org(org_id)
+> delete_org(organization, org_id)
 
 
 ### Parameters
@@ -49,6 +49,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The organization id to use for the request | [required] |
 **org_id** | **uuid::Uuid** |  | [required] |
 
 ### Return type

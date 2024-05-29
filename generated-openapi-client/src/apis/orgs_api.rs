@@ -24,6 +24,8 @@ pub struct CreateOrgParams {
 /// struct for passing parameters to the method [`delete_org`]
 #[derive(Clone, Debug)]
 pub struct DeleteOrgParams {
+    /// The organization id to use for the request
+    pub organization: String,
     pub org_id: String
 }
 
@@ -156,6 +158,7 @@ pub async fn delete_org(configuration: &configuration::Configuration, params: De
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let organization = params.organization;
     let org_id = params.org_id;
 
 
@@ -167,6 +170,7 @@ pub async fn delete_org(configuration: &configuration::Configuration, params: De
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
