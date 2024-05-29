@@ -1,9 +1,9 @@
 use super::auth_handler::{AuthedMember, AuthedUser, OwnerMember};
 use crate::{
-    data::models::{Org, PgPool},
+    data::models::{Org, PgPool, UserRole},
     operators::org_operator::{
-        create_org_query, delete_org_query, get_orgs_for_user_query, update_org_query,
-        user_in_org_query,
+        create_org_query, delete_org_query, get_orgs_for_user_query, remove_user_from_org_query,
+        update_org_query, user_in_org_query,
     },
 };
 use actix_web::{web, HttpResponse};
@@ -76,6 +76,40 @@ pub async fn delete_org(
             .map(|_| Ok(HttpResponse::NoContent().finish()))?,
         None => Ok(HttpResponse::Unauthorized().finish()),
     }
+}
+
+#[utoipa::path(
+  delete,
+  path = "/orgs/leave/{org_id}",
+  context_path = "/api",
+  tag = "orgs",
+  responses(
+      (status = 204, description = "No content response indicating that the user has left the organization"),
+      (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+      (status = 400, description = "Error indicating that an owner can't leave an organization that they own", body = ErrorRespPayload),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+  ),
+  security(
+      ("ApiKey" = ["readonly"]),
+  )
+)]
+#[tracing::instrument(skip(pg_pool))]
+pub async fn leave_org(
+    org_user: AuthedMember,
+    path: web::Path<uuid::Uuid>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let org_id = path.into_inner();
+
+    if org_user.role == UserRole::Owner {
+        return Ok(HttpResponse::BadRequest().finish());
+    }
+
+    remove_user_from_org_query(org_id, org_user.user_id, pg_pool)
+        .await
+        .map(|_| Ok(HttpResponse::NoContent().finish()))?
 }
 
 #[utoipa::path(

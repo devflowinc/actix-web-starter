@@ -318,3 +318,62 @@ pub async fn invite_user(
         }
     }
 }
+
+pub async fn leave_org(org_id: Option<uuid::Uuid>, settings: ActixTemplateConfiguration) {
+    let org_id = if org_id.is_none() {
+        let config = Configuration {
+            base_path: settings.api_url.clone(),
+            api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+                prefix: None,
+                key: settings.api_key.clone(),
+            }),
+            ..Default::default()
+        };
+
+        match select_from_my_orgs(&config, "Select an organization to leave:").await {
+            Ok(ans) => ans.id,
+            Err(OrgSelectError::NoOrgs) => {
+                println!("No organizations found.");
+                std::process::exit(0);
+            }
+            _ => {
+                eprintln!("Error fetching organizations.");
+                std::process::exit(1);
+            }
+        }
+    } else {
+        org_id.unwrap()
+    };
+
+    let config = Configuration {
+        base_path: settings.api_url.clone(),
+        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+            prefix: None,
+            key: settings.api_key.clone(),
+        }),
+        ..Default::default()
+    };
+
+    let left = actix_web_starter_client::apis::orgs_api::leave_org(
+        &config,
+        actix_web_starter_client::apis::orgs_api::LeaveOrgParams {
+            org_id: org_id.to_string(),
+            organization: org_id.to_string(),
+        },
+    )
+    .await
+    .map_err(|e| {
+        eprintln!("Error leaving organization: {:?}", e);
+    })
+    .unwrap()
+    .status
+    .is_success();
+
+    if left {
+        println!("Left organization successfully.");
+        std::process::exit(0);
+    } else {
+        eprintln!("Error leaving organization.");
+        std::process::exit(1);
+    }
+}
