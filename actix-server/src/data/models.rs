@@ -174,7 +174,7 @@ impl Plan {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, ValidGrouping)]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, ValidGrouping, ToSchema)]
 #[diesel(table_name = invitations)]
 pub struct Invitation {
     pub id: uuid::Uuid,

@@ -271,6 +271,156 @@
         }
       }
     },
+    "/api/invitation": {
+      "post": {
+        "tags": [
+          "invitation"
+        ],
+        "summary": "Send Invitation",
+        "description": "Send Invitation\n\nInvitations act as a way to invite users to join an organization. After a user is invited, they will automatically be added to the organization with the role specified in the invitation once they set their.",
+        "operationId": "post_invitation",
+        "parameters": [
+          {
+            "name": "TR-Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON request payload to send an invitation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Ok response. Indicates that invitation email was sent correctly."
+          },
+          "400": {
+            "description": "Invalid email or some other error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "admin"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/invitation/{invitation_id}": {
+      "delete": {
+        "tags": [
+          "invitation"
+        ],
+        "summary": "Delete Invitation",
+        "description": "Delete Invitation\n\nDelete an invitation by id.",
+        "operationId": "delete_invitation",
+        "parameters": [
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ok response. Indicates that invitation was deleted."
+          },
+          "400": {
+            "description": "Service error relating to deleting invitation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "admin"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/invitation/{organization_id}": {
+      "get": {
+        "tags": [
+          "invitation"
+        ],
+        "summary": "Get Invitations",
+        "description": "Get Invitations\n\nGet all invitations for the organization.",
+        "operationId": "get_invitations",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitations for the dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invitation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Service error relating to getting invitations for the dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "admin"
+            ]
+          }
+        ]
+      }
+    },
     "/api/orgs": {
       "get": {
         "tags": [
@@ -540,6 +690,91 @@
           "message": "Bad Request"
         }
       },
+      "Invitation": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "organization_id",
+          "used",
+          "created_at",
+          "updated_at",
+          "role"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "used": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InvitationData": {
+        "type": "object",
+        "required": [
+          "organization_id",
+          "user_role",
+          "email",
+          "app_url",
+          "redirect_uri"
+        ],
+        "properties": {
+          "app_url": {
+            "type": "string",
+            "description": "The url of the app that the user will be directed to in order to set their password. Usually admin.trieve.ai, but may differ for local dev or self-hosted setups."
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the user to invite. Must be a valid email as they will be sent an email to register."
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the organization to invite the user to."
+          },
+          "redirect_uri": {
+            "type": "string",
+            "description": "The url that the user will be redirected to after setting their password."
+          },
+          "user_role": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The role the user will have in the organization. 0 = User, 1 = Admin, 2 = Owner."
+          }
+        }
+      },
+      "InvitationResponse": {
+        "type": "object",
+        "required": [
+          "registration_url"
+        ],
+        "properties": {
+          "registration_url": {
+            "type": "string"
+          }
+        }
+      },
       "Org": {
         "type": "object",
         "required": [
@@ -633,6 +868,10 @@
     {
       "name": "auth",
       "description": "Authentication endpoints. Used to authenticate users."
+    },
+    {
+      "name": "invitation",
+      "description": "Invitation endpoint. Exists to invite users to an organization."
     },
     {
       "name": "orgs",

@@ -133,6 +133,7 @@ impl Modify for SecurityAddon {
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             models::User,
+            models::Invitation,
             models::Org,
             errors::ErrorRespPayload,
         )
@@ -313,17 +314,14 @@ pub fn main() -> std::io::Result<()> {
                                     web::post().to(handlers::invitation_handler::post_invitation),
                                 ))
                                 .service(
-                                    web::resource("/{organization_id}")
-                                        .route(
-                                            web::get()
-                                                .to(handlers::invitation_handler::get_invitations),
-                                        )
-                                        .route(
-                                            web::delete().to(
-                                                handlers::invitation_handler::delete_invitation,
-                                            ),
-                                        ),
-                                ),
+                                    web::resource("/{invitation_id}").route(
+                                        web::delete()
+                                            .to(handlers::invitation_handler::delete_invitation),
+                                    ),
+                                )
+                                .service(web::resource("/{organization_id}").route(
+                                    web::get().to(handlers::invitation_handler::get_invitations),
+                                )),
                         )
                         .service(
                             web::scope("/auth")
