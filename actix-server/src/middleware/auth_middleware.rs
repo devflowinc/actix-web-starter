@@ -62,7 +62,6 @@ where
                             .ok();
 
                             if let Some(org_user_link) = org_user_link {
-                                log::info!("User is a member of the organization");
                                 req.extensions_mut().insert(org_user_link);
                             }
                         }
