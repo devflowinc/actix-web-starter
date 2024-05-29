@@ -119,6 +119,9 @@ impl Modify for SecurityAddon {
         handlers::org_handler::delete_org,
         handlers::org_handler::update_org,
         handlers::org_handler::get_orgs_for_authed_user,
+        handlers::invitation_handler::post_invitation,
+        handlers::invitation_handler::get_invitations,
+        handlers::invitation_handler::delete_invitation,
     ),
     components(
         schemas(
@@ -127,6 +130,8 @@ impl Modify for SecurityAddon {
             handlers::api_key_handler::CreateApiKeyReqPayload,
             handlers::org_handler::CreateOrgReqPayload,
             handlers::org_handler::UpdateOrgReqPayload,
+            handlers::invitation_handler::InvitationResponse,
+            handlers::invitation_handler::InvitationData,
             models::User,
             models::Org,
             errors::ErrorRespPayload,
@@ -134,6 +139,7 @@ impl Modify for SecurityAddon {
     ),
     tags(
         (name = "auth", description = "Authentication endpoints. Used to authenticate users."),
+        (name = "invitation", description = "Invitation endpoint. Exists to invite users to an organization."),
         (name = "orgs", description = "Organization endpoints. Used to manage organizations"),
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
@@ -299,6 +305,24 @@ pub fn main() -> std::io::Result<()> {
                                         .route(web::delete().to(handlers::org_handler::delete_org))
                                         .route(web::get().to(handlers::org_handler::get_org))
                                         .route(web::put().to(handlers::org_handler::update_org)),
+                                ),
+                        )
+                        .service(
+                            web::scope("/invitation")
+                                .service(web::resource("").route(
+                                    web::post().to(handlers::invitation_handler::post_invitation),
+                                ))
+                                .service(
+                                    web::resource("/{organization_id}")
+                                        .route(
+                                            web::get()
+                                                .to(handlers::invitation_handler::get_invitations),
+                                        )
+                                        .route(
+                                            web::delete().to(
+                                                handlers::invitation_handler::delete_invitation,
+                                            ),
+                                        ),
                                 ),
                         )
                         .service(

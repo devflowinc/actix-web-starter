@@ -83,10 +83,10 @@ pub async fn post_invitation(
     let existing_user_org_id = invitation_data.organization_id;
     let existing_user_role = invitation_data.user_role;
 
-    let db_user = get_user_by_email_query(email.as_str(), pool.clone());
+    let db_user = get_user_by_email_query(email.as_str(), pool.clone()).await?;
 
     let added_user_to_org = add_user_to_org_query(
-        user.user_id,
+        db_user.id,
         existing_user_org_id,
         existing_user_role.into(),
         pool.clone(),
