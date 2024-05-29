@@ -41,12 +41,19 @@ enum OrgCommands {
     Delete,
     Rename,
     Invite(InviteToOrg),
+    Leave(LeaveOrg),
 }
 
 #[derive(Args)]
 struct CreateOrg {
     /// The name of the organization you want to create
     name: Option<String>,
+}
+
+#[derive(Args)]
+struct LeaveOrg {
+    /// The name of the organization you want to create
+    id: Option<uuid::Uuid>,
 }
 
 #[derive(Args)]
@@ -178,6 +185,9 @@ async fn main() {
             OrgCommands::Rename => orgs::rename_org(settings).await,
             OrgCommands::Invite(invite) => {
                 orgs::invite_user(invite.id, invite.email, settings).await
+            }
+            OrgCommands::Leave(leave_org) => {
+                orgs::leave_org(leave_org.id, settings).await;
             }
         },
         _ => {

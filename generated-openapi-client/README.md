@@ -39,6 +39,7 @@ Class | Method | HTTP request | Description
 *OrgsApi* | [**create_org**](docs/OrgsApi.md#create_org) | **POST** /api/orgs | 
 *OrgsApi* | [**delete_org**](docs/OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
 *OrgsApi* | [**get_orgs_for_authed_user**](docs/OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
+*OrgsApi* | [**leave_org**](docs/OrgsApi.md#leave_org) | **DELETE** /api/orgs/leave/{org_id} | 
 *OrgsApi* | [**update_org**](docs/OrgsApi.md#update_org) | **PUT** /api/orgs/{org_id} | 
 
 

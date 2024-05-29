@@ -531,6 +531,66 @@
         ]
       }
     },
+    "/api/orgs/leave/{org_id}": {
+      "delete": {
+        "tags": [
+          "orgs"
+        ],
+        "operationId": "leave_org",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the user has left the organization"
+          },
+          "400": {
+            "description": "Error indicating that an owner can't leave an organization that they own",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
     "/api/orgs/{org_id}": {
       "put": {
         "tags": [

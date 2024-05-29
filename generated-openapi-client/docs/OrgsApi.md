@@ -7,6 +7,7 @@ Method | HTTP request | Description
 [**create_org**](OrgsApi.md#create_org) | **POST** /api/orgs | 
 [**delete_org**](OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
 [**get_orgs_for_authed_user**](OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
+[**leave_org**](OrgsApi.md#leave_org) | **DELETE** /api/orgs/leave/{org_id} | 
 [**update_org**](OrgsApi.md#update_org) | **PUT** /api/orgs/{org_id} | 
 
 
@@ -84,6 +85,35 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
 [**Vec<models::Org>**](Org.md)
+
+### Authorization
+
+[ApiKey](../README.md#ApiKey)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## leave_org
+
+> leave_org(organization, org_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The organization id to use for the request | [required] |
+**org_id** | **uuid::Uuid** |  | [required] |
+
+### Return type
+
+ (empty response body)
 
 ### Authorization
 

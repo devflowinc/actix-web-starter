@@ -119,6 +119,7 @@ impl Modify for SecurityAddon {
         handlers::org_handler::delete_org,
         handlers::org_handler::update_org,
         handlers::org_handler::get_orgs_for_authed_user,
+        handlers::org_handler::leave_org,
         handlers::invitation_handler::post_invitation,
         handlers::invitation_handler::get_invitations,
         handlers::invitation_handler::delete_invitation,
@@ -300,6 +301,10 @@ pub fn main() -> std::io::Result<()> {
                                                 handlers::org_handler::get_orgs_for_authed_user,
                                             ),
                                         ),
+                                )
+                                .service(
+                                    web::resource("/leave/{org_id}")
+                                        .route(web::delete().to(handlers::org_handler::leave_org)),
                                 )
                                 .service(
                                     web::resource("/{org_id}")

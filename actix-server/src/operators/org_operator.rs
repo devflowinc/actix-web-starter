@@ -34,6 +34,29 @@ pub async fn create_org_query(
     Ok(org)
 }
 
+pub async fn remove_user_from_org_query(
+    user_id: uuid::Uuid,
+    org_id: uuid::Uuid,
+    pg_pool: web::Data<PgPool>,
+) -> Result<(), ServiceError> {
+    use crate::data::schema::org_users::dsl as orgs_users_columns;
+
+    let mut conn = pg_pool.get().await.unwrap();
+
+    diesel::delete(
+        orgs_users_columns::org_users
+            .filter(orgs_users_columns::user_id.eq(user_id))
+            .filter(orgs_users_columns::org_id.eq(org_id)),
+    )
+    .execute(&mut conn)
+    .await
+    .map_err(|e| {
+        ServiceError::InternalServerError(format!("Error removing user from org: {}", e))
+    })?;
+
+    Ok(())
+}
+
 pub async fn add_user_to_org_query(
     user_id: uuid::Uuid,
     org_id: uuid::Uuid,
