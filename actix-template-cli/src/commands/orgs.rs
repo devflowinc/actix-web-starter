@@ -157,6 +157,7 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
         &config,
         actix_web_starter_client::apis::orgs_api::DeleteOrgParams {
             org_id: selected.id.to_string(),
+            organization: selected.id.to_string(),
         },
     )
     .await

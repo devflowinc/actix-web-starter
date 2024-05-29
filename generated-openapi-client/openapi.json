@@ -446,6 +446,15 @@
         "operationId": "delete_org",
         "parameters": [
           {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "org_id",
             "in": "path",
             "required": true,
