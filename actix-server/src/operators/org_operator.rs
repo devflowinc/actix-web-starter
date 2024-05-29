@@ -29,7 +29,7 @@ pub async fn create_org_query(
         })?;
 
     // Make the user an owner
-    add_user_to_org_query(authed_user.id, org.id, UserRole::Owner, &pg_pool).await?;
+    add_user_to_org_query(authed_user.id, org.id, UserRole::Owner, pg_pool).await?;
 
     Ok(org)
 }
@@ -38,7 +38,7 @@ pub async fn add_user_to_org_query(
     user_id: uuid::Uuid,
     org_id: uuid::Uuid,
     role: UserRole,
-    pg_pool: &PgPool,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<OrgUserLink, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
 
@@ -72,7 +72,7 @@ pub async fn add_user_to_org_query(
 pub async fn user_in_org_query(
     org_id: uuid::Uuid,
     user_id: uuid::Uuid,
-    pg_pool: &PgPool,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<Option<Org>, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
     use crate::data::schema::orgs::dsl as orgs_columns;
@@ -112,7 +112,7 @@ pub async fn delete_org_query(
     Ok(())
 }
 
-pub async fn update_org_query(org: Org, pg_pool: &PgPool) -> Result<Org, ServiceError> {
+pub async fn update_org_query(org: Org, pg_pool: web::Data<PgPool>) -> Result<Org, ServiceError> {
     use crate::data::schema::orgs::dsl as orgs_columns;
 
     let mut conn = pg_pool.get().await.unwrap();
@@ -131,7 +131,7 @@ pub async fn update_org_query(org: Org, pg_pool: &PgPool) -> Result<Org, Service
 
 pub async fn get_orgs_for_user_query(
     user_id: uuid::Uuid,
-    pg_pool: &PgPool,
+    pg_pool: web::Data<PgPool>,
     limit: Option<i64>,
     offset: Option<i64>,
 ) -> Result<Vec<Org>, ServiceError> {
@@ -161,7 +161,7 @@ pub async fn get_orgs_for_user_query(
 pub async fn get_org_user_link_query(
     user_id: uuid::Uuid,
     org_id: uuid::Uuid,
-    pg_pool: &PgPool,
+    pg_pool: web::Data<PgPool>,
 ) -> Result<OrgUserLink, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
 

@@ -70,7 +70,7 @@ pub async fn delete_org(
         return Ok(HttpResponse::Unauthorized().finish());
     }
 
-    match user_in_org_query(org_id, authed_user.id, &pg_pool).await? {
+    match user_in_org_query(org_id, authed_user.id, pg_pool.clone()).await? {
         Some(org) => delete_org_query(org.id, pg_pool)
             .await
             .map(|_| Ok(HttpResponse::NoContent().finish()))?,
@@ -99,7 +99,7 @@ pub async fn get_org(
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
 
-    match user_in_org_query(org_id, org_member.user_id, &pg_pool).await? {
+    match user_in_org_query(org_id, org_member.user_id, pg_pool).await? {
         Some(org) => Ok(HttpResponse::Ok().json(org)),
         None => Ok(HttpResponse::Unauthorized().finish()),
     }
@@ -134,11 +134,11 @@ pub async fn update_org(
     let org_id = path.into_inner();
     let mut org = Org::from_details_with_id(org_id, req_payload.name.clone());
 
-    match user_in_org_query(org_id, authed_user.id, &pg_pool).await {
+    match user_in_org_query(org_id, authed_user.id, pg_pool.clone()).await {
         Ok(opt_org) => match opt_org {
             Some(prev_org) => {
                 org.created_at = prev_org.created_at;
-                update_org_query(org, &pg_pool)
+                update_org_query(org, pg_pool)
                     .await
                     .map(|org| Ok(HttpResponse::Ok().json(org)))?
             }
@@ -178,7 +178,7 @@ pub async fn get_orgs_for_authed_user(
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let user_orgs =
-        get_orgs_for_user_query(authed_user.id, &pg_pool, query.limit, query.offset).await?;
+        get_orgs_for_user_query(authed_user.id, pg_pool, query.limit, query.offset).await?;
 
     Ok(HttpResponse::Ok().json(user_orgs))
 }
