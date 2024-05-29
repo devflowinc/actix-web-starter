@@ -72,7 +72,7 @@ Name | Type | Description  | Required | Notes
 
 ## post_invitation
 
-> post_invitation(tr_organization, invitation_data)
+> post_invitation(organization, invitation_data)
 Send Invitation
 
 Send Invitation  Invitations act as a way to invite users to join an organization. After a user is invited, they will automatically be added to the organization with the role specified in the invitation once they set their.
@@ -82,7 +82,7 @@ Send Invitation  Invitations act as a way to invite users to join an organizatio
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**tr_organization** | **String** | The organization id to use for the request | [required] |
+**organization** | **String** | The organization id to use for the request | [required] |
 **invitation_data** | [**InvitationData**](InvitationData.md) | JSON request payload to send an invitation | [required] |
 
 ### Return type
