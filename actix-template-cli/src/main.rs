@@ -40,12 +40,23 @@ enum OrgCommands {
     Create(CreateOrg),
     Delete,
     Rename,
+    Invite(InviteToOrg),
 }
 
 #[derive(Args)]
 struct CreateOrg {
     /// The name of the organization you want to create
     name: Option<String>,
+}
+
+#[derive(Args)]
+struct InviteToOrg {
+    /// The id of the organization you want to invite the user to
+    #[arg(short, long)]
+    id: Option<uuid::Uuid>,
+    /// The user's email
+    #[arg(short, long)]
+    email: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -165,6 +176,9 @@ async fn main() {
             OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
             OrgCommands::Delete => orgs::delete_org(settings).await,
             OrgCommands::Rename => orgs::rename_org(settings).await,
+            OrgCommands::Invite(invite) => {
+                orgs::invite_user(invite.id, invite.email, settings).await
+            }
         },
         _ => {
             println!("Command not implemented yet");

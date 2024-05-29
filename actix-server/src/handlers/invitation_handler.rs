@@ -54,7 +54,7 @@ pub struct InvitationData {
         (status = 400, description = "Invalid email or some other error", body = ErrorRespPayload),
     ),
     params(
-        ("TR-Organization" = String, Header, description = "The organization id to use for the request"),
+        ("Organization" = String, Header, description = "The organization id to use for the request"),
     ),
     security(
         ("ApiKey" = ["admin"]),

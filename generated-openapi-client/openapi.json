@@ -281,7 +281,7 @@
         "operationId": "post_invitation",
         "parameters": [
           {
-            "name": "TR-Organization",
+            "name": "Organization",
             "in": "header",
             "description": "The organization id to use for the request",
             "required": true,

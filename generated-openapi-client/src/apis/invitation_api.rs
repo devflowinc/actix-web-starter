@@ -30,7 +30,7 @@ pub struct GetInvitationsParams {
 #[derive(Clone, Debug)]
 pub struct PostInvitationParams {
     /// The organization id to use for the request
-    pub tr_organization: String,
+    pub organization: String,
     /// JSON request payload to send an invitation
     pub invitation_data: models::InvitationData
 }
@@ -174,7 +174,7 @@ pub async fn post_invitation(configuration: &configuration::Configuration, param
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let tr_organization = params.tr_organization;
+    let organization = params.organization;
     let invitation_data = params.invitation_data;
 
 
@@ -186,7 +186,7 @@ pub async fn post_invitation(configuration: &configuration::Configuration, param
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("TR-Organization", tr_organization.to_string());
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {

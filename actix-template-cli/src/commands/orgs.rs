@@ -3,12 +3,13 @@ use std::fmt::Display;
 use actix_web_starter_client::{
     apis::{
         configuration::Configuration,
+        invitation_api,
         orgs_api::{
             CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
             GetOrgsForAuthedUserSuccess,
         },
     },
-    models::CreateOrgReqPayload,
+    models::{CreateOrgReqPayload, InvitationData},
 };
 use inquire::{Confirm, Select};
 
@@ -239,4 +240,81 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
             std::process::exit(1);
         }
     };
+}
+
+pub async fn invite_user(
+    org_id: Option<uuid::Uuid>,
+    email: Option<String>,
+    settings: ActixTemplateConfiguration,
+) {
+    let org_id = if org_id.is_none() {
+        let config = Configuration {
+            base_path: settings.api_url.clone(),
+            api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+                prefix: None,
+                key: settings.api_key.clone(),
+            }),
+            ..Default::default()
+        };
+
+        match select_from_my_orgs(&config, "Select an organization to invite the user to:").await {
+            Ok(ans) => ans.id,
+            Err(OrgSelectError::NoOrgs) => {
+                println!("No organizations found.");
+                std::process::exit(0);
+            }
+            _ => {
+                eprintln!("Error fetching organizations.");
+                std::process::exit(1);
+            }
+        }
+    } else {
+        org_id.unwrap()
+    };
+    let email = if email.is_none() {
+        inquire::Text::new("Enter the email address of the user to invite:")
+            .prompt()
+            .expect("Prompt configured correctly")
+    } else {
+        email.unwrap()
+    };
+
+    let config = Configuration {
+        base_path: settings.api_url.clone(),
+        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+            prefix: None,
+            key: settings.api_key.clone(),
+        }),
+        ..Default::default()
+    };
+
+    let invitation = invitation_api::post_invitation(
+        &config,
+        invitation_api::PostInvitationParams {
+            organization: org_id.to_string(),
+            invitation_data: InvitationData {
+                user_role: 0,
+                organization_id: org_id,
+                email: email,
+                app_url: "http://localhost:8090/api".to_owned(),
+                redirect_uri: "http://localhost:8090/api/auth/whoami".to_owned(),
+            },
+        },
+    )
+    .await
+    .map_err(|e| {
+        eprintln!("Error renaming organization: {:?}", e);
+    })
+    .unwrap()
+    .entity;
+
+    match invitation {
+        Some(invitation_api::PostInvitationSuccess::Status204()) => {
+            println!("Invitation sent successfully.");
+        }
+        _ => {
+            eprintln!("Error sending invitation.");
+            std::process::exit(1);
+        }
+    }
 }
