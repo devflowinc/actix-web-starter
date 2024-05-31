@@ -1,6 +1,7 @@
 use crate::{
     data::models::{ApiKey, PgPool},
     errors::ServiceError,
+    prefixes::{PrefixedUuid, UserPrefix},
 };
 use actix_web::web;
 use diesel_async::RunQueryDsl;
@@ -27,7 +28,7 @@ pub fn hash_api_key(password: &str) -> String {
 
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_api_key_query(
-    user_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
     name: String,
     pg_pool: web::Data<PgPool>,
 ) -> Result<String, ServiceError> {

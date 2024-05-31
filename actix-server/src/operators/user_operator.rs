@@ -2,6 +2,7 @@ use crate::{
     data::models::{PgPool, User},
     errors::ServiceError,
     operators::api_key_operator::hash_api_key,
+    prefixes::{PrefixedUuid, UserPrefix},
 };
 use actix_web::web;
 use diesel::prelude::*;
@@ -9,7 +10,7 @@ use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_user_by_id_query(
-    user_id: &uuid::Uuid,
+    user_id: &PrefixedUuid<UserPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
     use crate::data::schema::users::dsl as users_columns;
@@ -33,7 +34,7 @@ pub async fn get_user_by_id_query(
 
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_user_query(
-    user_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
     email: String,
     name: Option<String>,
     pg_pool: web::Data<PgPool>,

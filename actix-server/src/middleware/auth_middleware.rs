@@ -3,17 +3,20 @@ use crate::{
     operators::{
         org_operator::get_org_user_link_query, user_operator::get_user_from_api_key_query,
     },
+    prefixes::{OrgPrefix, PrefixedUuid},
 };
 use actix_identity::Identity;
 use actix_web::{
     dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform},
     web, Error, FromRequest, HttpMessage, HttpRequest,
 };
+use chrono::format::parse;
 use futures_util::future::LocalBoxFuture;
 use sentry::Transaction;
 use std::{
     future::{ready, Ready},
     rc::Rc,
+    str::FromStr,
 };
 
 pub struct AuthenticationMiddleware<S> {
@@ -50,7 +53,7 @@ where
                 // Try to grab the organization from the header and verify membership
                 if let Some(org_header) = req.headers().get("Organization") {
                     if let Ok(org_header) = org_header.to_str() {
-                        if let Ok(org_uuid) = uuid::Uuid::parse_str(org_header) {
+                        if let Ok(org_uuid) = PrefixedUuid::<OrgPrefix>::from_str(org_header) {
                             let org_user_link = get_org_user_link_query(
                                 user.id,
                                 org_uuid,
