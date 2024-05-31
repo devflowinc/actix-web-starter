@@ -83,6 +83,39 @@ impl Org {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+    "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+    "size": 4.0,
+    "active": true,
+}))]
+#[diesel(table_name = deals)]
+pub struct Deal {
+    pub id: uuid::Uuid,
+    pub name: Option<String>,
+    pub org_id: uuid::Uuid,
+    pub size: Option<f32>,
+    pub active: bool,
+}
+
+impl Deal {
+    pub fn from_details(
+        org_id: uuid::Uuid,
+        name: Option<String>,
+        size: Option<f32>,
+        active: bool,
+    ) -> Self {
+        Deal {
+            id: uuid::Uuid::new_v4(),
+            name,
+            org_id,
+            size,
+            active,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Ord, PartialOrd)]
 pub enum UserRole {
     Owner = 2,

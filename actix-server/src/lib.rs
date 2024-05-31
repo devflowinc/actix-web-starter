@@ -123,6 +123,10 @@ impl Modify for SecurityAddon {
         handlers::invitation_handler::post_invitation,
         handlers::invitation_handler::get_invitations,
         handlers::invitation_handler::delete_invitation,
+        handlers::deal_handler::create_deal,
+        handlers::deal_handler::delete_deal,
+        handlers::deal_handler::update_deal,
+        handlers::deal_handler::get_deal,
     ),
     components(
         schemas(
@@ -131,6 +135,8 @@ impl Modify for SecurityAddon {
             handlers::api_key_handler::CreateApiKeyReqPayload,
             handlers::org_handler::CreateOrgReqPayload,
             handlers::org_handler::UpdateOrgReqPayload,
+            handlers::deal_handler::CreateDealReqPayload,
+            handlers::deal_handler::UpdateDealReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             models::User,
@@ -143,6 +149,7 @@ impl Modify for SecurityAddon {
         (name = "auth", description = "Authentication endpoints. Used to authenticate users."),
         (name = "invitation", description = "Invitation endpoint. Exists to invite users to an organization."),
         (name = "orgs", description = "Organization endpoints. Used to manage organizations"),
+        (name = "deals", description = "Deal endpoints. Used to manage deals"),
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
     ),
@@ -350,6 +357,21 @@ pub fn main() -> std::io::Result<()> {
                                     web::post().to(handlers::api_key_handler::create_api_key),
                                 ),
                             ),
+                        )
+                        .service(
+                            web::scope("/deals")
+                                .service(
+                                    web::resource("")
+                                        .route(web::post().to(handlers::deal_handler::create_deal)),
+                                )
+                                .service(
+                                    web::resource("/{deal_id}")
+                                        .route(
+                                            web::delete().to(handlers::deal_handler::delete_deal),
+                                        )
+                                        .route(web::get().to(handlers::deal_handler::get_deal))
+                                        .route(web::put().to(handlers::deal_handler::update_deal)),
+                                ),
                         )
                         .service(
                             web::resource("/health")
