@@ -17,7 +17,7 @@ pub struct User {
     #[serde(rename = "email")]
     pub email: String,
     #[serde(rename = "id")]
-    pub id: uuid::Uuid,
+    pub id: String,
     #[serde(rename = "name", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub name: Option<Option<String>>,
     #[serde(rename = "updated_at")]
@@ -25,7 +25,7 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(created_at: String, email: String, id: uuid::Uuid, updated_at: String) -> User {
+    pub fn new(created_at: String, email: String, id: String, updated_at: String) -> User {
         User {
             created_at,
             email,

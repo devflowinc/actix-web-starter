@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **created_at** | **String** |  | 
 **email** | **String** |  | 
-**id** | [**uuid::Uuid**](uuid::Uuid.md) |  | 
+**id** | **String** |  | 
 **name** | Option<**String**> |  | [optional]
 **updated_at** | **String** |  | 
 

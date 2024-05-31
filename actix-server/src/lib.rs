@@ -144,6 +144,9 @@ impl Modify for SecurityAddon {
             models::Invitation,
             models::Org,
             errors::ErrorRespPayload,
+            prefixes::PrefixedUuid<prefixes::OrgPrefix>,
+            prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
+            prefixes::PrefixedUuid<prefixes::UserPrefix>,
         )
     ),
     tags(

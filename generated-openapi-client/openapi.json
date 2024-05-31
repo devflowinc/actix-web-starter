@@ -546,15 +546,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
           }
         ],
         "responses": {
@@ -597,17 +588,6 @@
           "orgs"
         ],
         "operationId": "update_org",
-        "parameters": [
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
         "requestBody": {
           "description": "JSON request payload to rename the organization",
           "content": {
@@ -662,15 +642,6 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "org_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
             }
           }
         ],
@@ -774,8 +745,7 @@
             "format": "uuid"
           },
           "organization_id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/PrefixedUuid"
           },
           "role": {
             "type": "integer",
@@ -809,9 +779,7 @@
             "description": "The email of the user to invite. Must be a valid email as they will be sent an email to register."
           },
           "organization_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "The id of the organization to invite the user to."
+            "$ref": "#/components/schemas/PrefixedUuid"
           },
           "redirect_uri": {
             "type": "string",
@@ -849,8 +817,7 @@
             "format": "date-time"
           },
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/PrefixedUuid"
           },
           "name": {
             "type": "string"
@@ -866,6 +833,9 @@
           "name": "Trieve Team",
           "updated_at": "2021-01-01T00:00:00"
         }
+      },
+      "PrefixedUuid": {
+        "type": "string"
       },
       "UpdateOrgReqPayload": {
         "type": "object",
@@ -895,8 +865,7 @@
             "type": "string"
           },
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/PrefixedUuid"
           },
           "name": {
             "type": "string",

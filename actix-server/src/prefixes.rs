@@ -5,6 +5,7 @@ use std::{
 
 use diesel::{deserialize::FromSql, pg::PgValue, serialize::ToSql};
 use serde::{Deserialize, Deserializer, Serialize};
+use utoipa::{openapi::ObjectBuilder, schema, ToSchema};
 
 pub trait Prefix:
     Clone
@@ -20,10 +21,32 @@ pub trait Prefix:
 }
 
 #[derive(Clone, AsExpression, Debug, Default, FromSqlRow, Copy, PartialEq, Eq)]
-#[sql_type = "diesel::sql_types::Uuid"]
+#[diesel(sql_type = diesel::sql_types::Uuid)]
 pub struct PrefixedUuid<P: Prefix> {
     pub prefix: P,
     pub id: uuid::Uuid,
+}
+
+impl<'__s, P: Prefix> ToSchema<'__s> for PrefixedUuid<P> {
+    fn schema() -> (
+        &'__s str,
+        utoipa::openapi::RefOr<utoipa::openapi::schema::Schema>,
+    ) {
+        let schema = ObjectBuilder::new()
+            .schema_type(utoipa::openapi::SchemaType::String)
+            .build();
+        return ("PrefixedUuid", schema.into());
+    }
+
+    fn aliases() -> Vec<(&'__s str, utoipa::openapi::schema::Schema)> {
+        vec![(
+            "PrefixedUuid",
+            ObjectBuilder::new()
+                .schema_type(utoipa::openapi::SchemaType::String)
+                .build()
+                .into(),
+        )]
+    }
 }
 
 impl<P: Prefix> Display for PrefixedUuid<P> {
@@ -116,7 +139,7 @@ impl<P: Prefix + Default> FromSql<diesel::sql_types::Uuid, diesel::pg::Pg> for P
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
 pub struct OrgPrefix;
 
 impl Display for OrgPrefix {
@@ -139,7 +162,7 @@ impl FromStr for OrgPrefix {
 
 impl Prefix for OrgPrefix {}
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, ToSchema)]
 pub struct OrgUserPrefix;
 
 impl Display for OrgUserPrefix {
@@ -162,7 +185,7 @@ impl FromStr for OrgUserPrefix {
 
 impl Prefix for OrgUserPrefix {}
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
 pub struct UserPrefix;
 
 impl Display for UserPrefix {

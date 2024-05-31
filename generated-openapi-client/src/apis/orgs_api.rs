@@ -25,8 +25,7 @@ pub struct CreateOrgParams {
 #[derive(Clone, Debug)]
 pub struct DeleteOrgParams {
     /// The organization id to use for the request
-    pub organization: String,
-    pub org_id: String
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`get_orgs_for_authed_user`]
@@ -42,14 +41,12 @@ pub struct GetOrgsForAuthedUserParams {
 #[derive(Clone, Debug)]
 pub struct LeaveOrgParams {
     /// The organization id to use for the request
-    pub organization: String,
-    pub org_id: String
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`update_org`]
 #[derive(Clone, Debug)]
 pub struct UpdateOrgParams {
-    pub org_id: String,
     /// JSON request payload to rename the organization
     pub update_org_req_payload: models::UpdateOrgReqPayload
 }
@@ -184,12 +181,11 @@ pub async fn delete_org(configuration: &configuration::Configuration, params: De
 
     // unbox the parameters
     let organization = params.organization;
-    let org_id = params.org_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/orgs/{org_id}", local_var_configuration.base_path, org_id=crate::apis::urlencode(org_id));
+    let local_var_uri_str = format!("{}/api/orgs/{org_id}", local_var_configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
@@ -275,12 +271,11 @@ pub async fn leave_org(configuration: &configuration::Configuration, params: Lea
 
     // unbox the parameters
     let organization = params.organization;
-    let org_id = params.org_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/orgs/leave/{org_id}", local_var_configuration.base_path, org_id=crate::apis::urlencode(org_id));
+    let local_var_uri_str = format!("{}/api/orgs/leave/{org_id}", local_var_configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
@@ -317,13 +312,12 @@ pub async fn update_org(configuration: &configuration::Configuration, params: Up
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let org_id = params.org_id;
     let update_org_req_payload = params.update_org_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/orgs/{org_id}", local_var_configuration.base_path, org_id=crate::apis::urlencode(org_id));
+    let local_var_uri_str = format!("{}/api/orgs/{org_id}", local_var_configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {

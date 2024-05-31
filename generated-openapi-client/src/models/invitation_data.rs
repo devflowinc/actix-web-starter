@@ -18,9 +18,8 @@ pub struct InvitationData {
     /// The email of the user to invite. Must be a valid email as they will be sent an email to register.
     #[serde(rename = "email")]
     pub email: String,
-    /// The id of the organization to invite the user to.
     #[serde(rename = "organization_id")]
-    pub organization_id: uuid::Uuid,
+    pub organization_id: String,
     /// The url that the user will be redirected to after setting their password.
     #[serde(rename = "redirect_uri")]
     pub redirect_uri: String,
@@ -30,7 +29,7 @@ pub struct InvitationData {
 }
 
 impl InvitationData {
-    pub fn new(app_url: String, email: String, organization_id: uuid::Uuid, redirect_uri: String, user_role: i32) -> InvitationData {
+    pub fn new(app_url: String, email: String, organization_id: String, redirect_uri: String, user_role: i32) -> InvitationData {
         InvitationData {
             app_url,
             email,

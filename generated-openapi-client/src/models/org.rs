@@ -15,7 +15,7 @@ pub struct Org {
     #[serde(rename = "created_at")]
     pub created_at: String,
     #[serde(rename = "id")]
-    pub id: uuid::Uuid,
+    pub id: String,
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "updated_at")]
@@ -23,7 +23,7 @@ pub struct Org {
 }
 
 impl Org {
-    pub fn new(created_at: String, id: uuid::Uuid, name: String, updated_at: String) -> Org {
+    pub fn new(created_at: String, id: String, name: String, updated_at: String) -> Org {
         Org {
             created_at,
             id,

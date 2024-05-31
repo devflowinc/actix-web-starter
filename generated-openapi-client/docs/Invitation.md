@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **created_at** | **String** |  | 
 **email** | **String** |  | 
 **id** | [**uuid::Uuid**](uuid::Uuid.md) |  | 
-**organization_id** | [**uuid::Uuid**](uuid::Uuid.md) |  | 
+**organization_id** | **String** |  | 
 **role** | **i32** |  | 
 **updated_at** | **String** |  | 
 **used** | **bool** |  | 
