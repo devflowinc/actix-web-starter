@@ -12,6 +12,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    contacts (id) {
+        id -> Uuid,
+        org_id -> Uuid,
+        first_name -> Text,
+        last_name -> Text,
+    }
+}
+
+diesel::table! {
     deals (id) {
         id -> Uuid,
         name -> Nullable<Text>,
@@ -88,6 +97,7 @@ diesel::table! {
 }
 
 diesel::joinable!(api_keys -> users (user_id));
+diesel::joinable!(contacts -> orgs (org_id));
 diesel::joinable!(deals -> orgs (org_id));
 diesel::joinable!(invitations -> orgs (organization_id));
 diesel::joinable!(org_users -> orgs (org_id));
@@ -96,6 +106,7 @@ diesel::joinable!(subscriptions -> orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     api_keys,
+    contacts,
     deals,
     invitations,
     org_users,
