@@ -141,6 +141,10 @@ impl Modify for SecurityAddon {
         handlers::link_handler::delete_link,
         handlers::link_handler::update_link,
         handlers::link_handler::get_link,
+        handlers::email_handler::create_email,
+        handlers::email_handler::delete_email,
+        handlers::email_handler::update_email,
+        handlers::email_handler::get_email,
     ),
     components(
         schemas(
@@ -155,6 +159,8 @@ impl Modify for SecurityAddon {
             handlers::contact_handler::UpdateContactReqPayload,
             handlers::link_handler::CreateLinkReqPayload,
             handlers::link_handler::UpdateLinkReqPayload,
+            handlers::email_handler::CreateEmailReqPayload,
+            handlers::email_handler::UpdateEmailReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             handlers::note_handler::CreateNoteReqPayload,
@@ -178,6 +184,7 @@ impl Modify for SecurityAddon {
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
         (name = "links", description = "Link endpoints. Used to manage links"),
+        (name = "emails", description = "Email endpoints. Used to manage emails"),
     ),
 )]
 pub struct ApiDoc;
@@ -453,6 +460,24 @@ pub fn main() -> std::io::Result<()> {
                                         )
                                         .route(web::get().to(handlers::link_handler::get_link))
                                         .route(web::put().to(handlers::link_handler::update_link)),
+                                ),
+                        )
+                        .service(
+                            web::scope("/emails")
+                                .service(
+                                    web::resource("").route(
+                                        web::post().to(handlers::email_handler::create_email),
+                                    ),
+                                )
+                                .service(
+                                    web::resource("/{email_id}")
+                                        .route(
+                                            web::delete().to(handlers::email_handler::delete_email),
+                                        )
+                                        .route(web::get().to(handlers::email_handler::get_email))
+                                        .route(
+                                            web::put().to(handlers::email_handler::update_email),
+                                        ),
                                 ),
                         )
                         .service(
