@@ -32,6 +32,10 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**login**](docs/AuthApi.md#login) | **GET** /api/auth | Login
 *AuthApi* | [**logout**](docs/AuthApi.md#logout) | **DELETE** /api/auth | Logout
 *AuthApi* | [**whoami**](docs/AuthApi.md#whoami) | **GET** /api/auth/whoami | Get Currently Auth'ed User
+*DealsApi* | [**create_deal**](docs/DealsApi.md#create_deal) | **POST** /api/deals | 
+*DealsApi* | [**delete_deal**](docs/DealsApi.md#delete_deal) | **DELETE** /api/deals/{deal_id} | 
+*DealsApi* | [**get_deal**](docs/DealsApi.md#get_deal) | **GET** /api/deals/{deal_id} | 
+*DealsApi* | [**update_deal**](docs/DealsApi.md#update_deal) | **PUT** /api/deals/{deal_id} | 
 *HealthApi* | [**health_check**](docs/HealthApi.md#health_check) | **GET** /api/health | Health Check
 *InvitationApi* | [**delete_invitation**](docs/InvitationApi.md#delete_invitation) | **DELETE** /api/invitation/{invitation_id} | Delete Invitation
 *InvitationApi* | [**get_invitations**](docs/InvitationApi.md#get_invitations) | **GET** /api/invitation/{organization_id} | Get Invitations
@@ -47,12 +51,14 @@ Class | Method | HTTP request | Description
 
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
+ - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
  - [InvitationResponse](docs/InvitationResponse.md)
  - [Org](docs/Org.md)
+ - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
  - [User](docs/User.md)
 

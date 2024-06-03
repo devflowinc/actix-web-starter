@@ -2,6 +2,7 @@ use crate::{
     data::models::{Org, OrgUserLink, PgPool, UserRole},
     errors::ServiceError,
     handlers::auth_handler::AuthedUser,
+    prefixes::{OrgPrefix, OrgUserPrefix, PrefixedUuid, UserPrefix},
 };
 use actix_web::web;
 use diesel::{ExpressionMethods, QueryDsl, SelectableHelper};
@@ -35,8 +36,8 @@ pub async fn create_org_query(
 }
 
 pub async fn remove_user_from_org_query(
-    user_id: uuid::Uuid,
-    org_id: uuid::Uuid,
+    org_id: PrefixedUuid<OrgPrefix>,
+    user_id: PrefixedUuid<UserPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<(), ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
@@ -58,8 +59,8 @@ pub async fn remove_user_from_org_query(
 }
 
 pub async fn add_user_to_org_query(
-    user_id: uuid::Uuid,
-    org_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
+    org_id: PrefixedUuid<OrgPrefix>,
     role: UserRole,
     pg_pool: web::Data<PgPool>,
 ) -> Result<OrgUserLink, ServiceError> {
@@ -68,7 +69,7 @@ pub async fn add_user_to_org_query(
     let mut conn = pg_pool.get().await.unwrap();
 
     let org_user_link = OrgUserLink {
-        id: uuid::Uuid::new_v4(),
+        id: PrefixedUuid::create(OrgUserPrefix),
         user_id,
         org_id,
         role: role.into(),
@@ -93,8 +94,8 @@ pub async fn add_user_to_org_query(
 }
 
 pub async fn user_in_org_query(
-    org_id: uuid::Uuid,
-    user_id: uuid::Uuid,
+    org_id: PrefixedUuid<OrgPrefix>,
+    user_id: PrefixedUuid<UserPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<Option<Org>, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;
@@ -117,7 +118,7 @@ pub async fn user_in_org_query(
 }
 
 pub async fn delete_org_query(
-    org_id: uuid::Uuid,
+    org_id: PrefixedUuid<OrgPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<(), ServiceError> {
     use crate::data::schema::orgs::dsl as orgs_columns;
@@ -153,7 +154,7 @@ pub async fn update_org_query(org: Org, pg_pool: web::Data<PgPool>) -> Result<Or
 }
 
 pub async fn get_orgs_for_user_query(
-    user_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
     pg_pool: web::Data<PgPool>,
     limit: Option<i64>,
     offset: Option<i64>,
@@ -182,8 +183,8 @@ pub async fn get_orgs_for_user_query(
 }
 
 pub async fn get_org_user_link_query(
-    user_id: uuid::Uuid,
-    org_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
+    org_id: PrefixedUuid<OrgPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<OrgUserLink, ServiceError> {
     use crate::data::schema::org_users::dsl as orgs_users_columns;

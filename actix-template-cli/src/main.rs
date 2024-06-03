@@ -53,14 +53,14 @@ struct CreateOrg {
 #[derive(Args)]
 struct LeaveOrg {
     /// The name of the organization you want to create
-    id: Option<uuid::Uuid>,
+    id: Option<String>,
 }
 
 #[derive(Args)]
 struct InviteToOrg {
     /// The id of the organization you want to invite the user to
     #[arg(short, long)]
-    id: Option<uuid::Uuid>,
+    id: Option<String>,
     /// The user's email
     #[arg(short, long)]
     email: Option<String>,

@@ -1,3 +1,5 @@
+use crate::prefixes::{OrgPrefix, OrgUserPrefix, PrefixedUuid, UserPrefix};
+
 use super::schema::*;
 use bb8_redis::{bb8, RedisConnectionManager};
 use diesel::expression::ValidGrouping;
@@ -17,7 +19,7 @@ pub type RedisPool = bb8::Pool<RedisConnectionManager>;
 }))]
 #[diesel(table_name = users)]
 pub struct User {
-    pub id: uuid::Uuid,
+    pub id: PrefixedUuid<UserPrefix>,
     pub email: String,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
@@ -27,7 +29,7 @@ pub struct User {
 impl User {
     pub fn from_details(email: String, name: Option<String>) -> Self {
         User {
-            id: uuid::Uuid::new_v4(),
+            id: PrefixedUuid::create(UserPrefix),
             email: email.into(),
             created_at: chrono::Utc::now().naive_local(),
             updated_at: chrono::Utc::now().naive_local(),
@@ -35,7 +37,11 @@ impl User {
         }
     }
 
-    pub fn from_details_with_id(id: uuid::Uuid, email: String, name: Option<String>) -> Self {
+    pub fn from_details_with_id(
+        id: PrefixedUuid<UserPrefix>,
+        email: String,
+        name: Option<String>,
+    ) -> Self {
         User {
             id: id.into(),
             email: email.into(),
@@ -57,7 +63,7 @@ impl User {
 }))]
 #[diesel(table_name = orgs)]
 pub struct Org {
-    pub id: uuid::Uuid,
+    pub id: PrefixedUuid<OrgPrefix>,
     pub name: String,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
@@ -66,14 +72,14 @@ pub struct Org {
 impl Org {
     pub fn from_details(name: String) -> Self {
         Org {
-            id: uuid::Uuid::new_v4(),
+            id: PrefixedUuid::create(OrgPrefix),
             name,
             created_at: chrono::Utc::now().naive_local(),
             updated_at: chrono::Utc::now().naive_local(),
         }
     }
 
-    pub fn from_details_with_id(id: uuid::Uuid, name: String) -> Self {
+    pub fn from_details_with_id(id: PrefixedUuid<OrgPrefix>, name: String) -> Self {
         Org {
             id: id.into(),
             name,
@@ -94,14 +100,14 @@ impl Org {
 pub struct Deal {
     pub id: uuid::Uuid,
     pub name: Option<String>,
-    pub org_id: uuid::Uuid,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub size: Option<f32>,
     pub active: bool,
 }
 
 impl Deal {
     pub fn from_details(
-        org_id: uuid::Uuid,
+        org_id: PrefixedUuid<OrgPrefix>,
         name: Option<String>,
         size: Option<f32>,
         active: bool,
@@ -151,15 +157,19 @@ impl From<UserRole> for i32 {
 }))]
 #[diesel(table_name = org_users)]
 pub struct OrgUserLink {
-    pub id: uuid::Uuid,
-    pub user_id: uuid::Uuid,
-    pub org_id: uuid::Uuid,
+    pub id: PrefixedUuid<OrgUserPrefix>,
+    pub user_id: PrefixedUuid<UserPrefix>,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub role: i32,
 }
 impl OrgUserLink {
-    pub fn from_details(user_id: uuid::Uuid, org_id: uuid::Uuid, role: UserRole) -> Self {
+    pub fn from_details(
+        user_id: PrefixedUuid<UserPrefix>,
+        org_id: PrefixedUuid<OrgPrefix>,
+        role: UserRole,
+    ) -> Self {
         OrgUserLink {
-            id: uuid::Uuid::new_v4(),
+            id: PrefixedUuid::create(OrgUserPrefix),
             user_id,
             org_id,
             role: role.into(),
@@ -212,7 +222,7 @@ impl Plan {
 pub struct Invitation {
     pub id: uuid::Uuid,
     pub email: String,
-    pub organization_id: uuid::Uuid,
+    pub organization_id: PrefixedUuid<OrgPrefix>,
     pub used: bool,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
@@ -221,7 +231,11 @@ pub struct Invitation {
 
 // any type that implements Into<String> can be used to create Invitation
 impl Invitation {
-    pub fn from_details(email: String, organization_id: uuid::Uuid, role: i32) -> Self {
+    pub fn from_details(
+        email: String,
+        organization_id: PrefixedUuid<OrgPrefix>,
+        role: i32,
+    ) -> Self {
         Invitation {
             id: uuid::Uuid::new_v4(),
             email,
@@ -246,7 +260,7 @@ impl Invitation {
 #[diesel(table_name = api_keys)]
 pub struct ApiKey {
     pub id: uuid::Uuid,
-    pub user_id: uuid::Uuid,
+    pub user_id: PrefixedUuid<UserPrefix>,
     pub name: String,
     pub blake3_hash: String,
     pub created_at: chrono::NaiveDateTime,
@@ -254,7 +268,11 @@ pub struct ApiKey {
 }
 
 impl ApiKey {
-    pub fn from_details(user_id: uuid::Uuid, name: String, blake3_hash: String) -> Self {
+    pub fn from_details(
+        user_id: PrefixedUuid<UserPrefix>,
+        name: String,
+        blake3_hash: String,
+    ) -> Self {
         ApiKey {
             id: uuid::Uuid::new_v4(),
             user_id,

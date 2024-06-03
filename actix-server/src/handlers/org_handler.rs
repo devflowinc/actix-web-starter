@@ -5,6 +5,7 @@ use crate::{
         create_org_query, delete_org_query, get_orgs_for_user_query, remove_user_from_org_query,
         update_org_query, user_in_org_query,
     },
+    prefixes::{OrgPrefix, PrefixedUuid},
 };
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
@@ -52,6 +53,7 @@ pub async fn create_org(
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -61,7 +63,7 @@ pub async fn create_org(
 pub async fn delete_org(
     authed_user: AuthedUser,
     org_user: OwnerMember,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<OrgPrefix>>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
@@ -90,6 +92,7 @@ pub async fn delete_org(
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -98,7 +101,7 @@ pub async fn delete_org(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn leave_org(
     org_user: AuthedMember,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<OrgPrefix>>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let org_id = path.into_inner();
@@ -121,13 +124,17 @@ pub async fn leave_org(
       (status = 200, description = "JSON object representing the requested organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
+  ),
   security(
       ("ApiKey" = ["readonly"]),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_org(
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<OrgPrefix>>,
     org_member: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -154,6 +161,10 @@ pub struct UpdateOrgReqPayload {
       (status = 200, description = "Object representing the renamed organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
+  ),
   security(
       ("ApiKey" = ["readonly"]),
   )
@@ -161,7 +172,7 @@ pub struct UpdateOrgReqPayload {
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_org(
     req_payload: web::Json<UpdateOrgReqPayload>,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<OrgPrefix>>,
     authed_user: AuthedUser,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {

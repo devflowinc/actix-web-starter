@@ -32,6 +32,7 @@ pub mod errors;
 pub mod handlers;
 pub mod middleware;
 pub mod operators;
+pub mod prefixes;
 
 pub const SECONDS_IN_MINUTE: u64 = 60;
 pub const SECONDS_IN_HOUR: u64 = 60 * SECONDS_IN_MINUTE;
@@ -143,6 +144,9 @@ impl Modify for SecurityAddon {
             models::Invitation,
             models::Org,
             errors::ErrorRespPayload,
+            prefixes::PrefixedUuid<prefixes::OrgPrefix>,
+            prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
+            prefixes::PrefixedUuid<prefixes::UserPrefix>,
         )
     ),
     tags(

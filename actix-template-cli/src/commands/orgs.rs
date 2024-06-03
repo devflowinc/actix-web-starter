@@ -70,7 +70,7 @@ enum OrgSelectError {
 
 struct OrgSelectOption {
     name: String,
-    id: uuid::Uuid,
+    id: String,
 }
 
 impl Display for OrgSelectOption {
@@ -109,7 +109,7 @@ async fn select_from_my_orgs(
     let options: Vec<OrgSelectOption> = org_list
         .iter()
         .map(|org_result| OrgSelectOption {
-            id: org_result.id,
+            id: org_result.id.clone(),
             name: org_result.name.clone(),
         })
         .collect();
@@ -157,7 +157,7 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
     match actix_web_starter_client::apis::orgs_api::delete_org(
         &config,
         actix_web_starter_client::apis::orgs_api::DeleteOrgParams {
-            org_id: selected.id.to_string(),
+            org_id: selected.id.clone(),
             organization: selected.id.to_string(),
         },
     )
@@ -214,7 +214,8 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
     let renamed = actix_web_starter_client::apis::orgs_api::update_org(
         &config,
         actix_web_starter_client::apis::orgs_api::UpdateOrgParams {
-            org_id: selected.id.to_string(),
+            organization: selected.id.clone(),
+            org_id: selected.id,
             update_org_req_payload: rename_payload,
         },
     )
@@ -243,7 +244,7 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
 }
 
 pub async fn invite_user(
-    org_id: Option<uuid::Uuid>,
+    org_id: Option<String>,
     email: Option<String>,
     settings: ActixTemplateConfiguration,
 ) {
@@ -319,7 +320,7 @@ pub async fn invite_user(
     }
 }
 
-pub async fn leave_org(org_id: Option<uuid::Uuid>, settings: ActixTemplateConfiguration) {
+pub async fn leave_org(org_id: Option<String>, settings: ActixTemplateConfiguration) {
     let org_id = if org_id.is_none() {
         let config = Configuration {
             base_path: settings.api_url.clone(),
@@ -357,7 +358,7 @@ pub async fn leave_org(org_id: Option<uuid::Uuid>, settings: ActixTemplateConfig
     let left = actix_web_starter_client::apis::orgs_api::leave_org(
         &config,
         actix_web_starter_client::apis::orgs_api::LeaveOrgParams {
-            org_id: org_id.to_string(),
+            org_id: org_id.clone(),
             organization: org_id.to_string(),
         },
     )

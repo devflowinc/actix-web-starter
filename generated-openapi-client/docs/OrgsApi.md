@@ -51,7 +51,7 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **organization** | **String** | The organization id to use for the request | [required] |
-**org_id** | **uuid::Uuid** |  | [required] |
+**org_id** | **String** | The id of the organization you want to fetch. | [required] |
 
 ### Return type
 
@@ -109,7 +109,7 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **organization** | **String** | The organization id to use for the request | [required] |
-**org_id** | **uuid::Uuid** |  | [required] |
+**org_id** | **String** | The id of the organization you want to fetch. | [required] |
 
 ### Return type
 
@@ -129,7 +129,7 @@ Name | Type | Description  | Required | Notes
 
 ## update_org
 
-> models::Org update_org(org_id, update_org_req_payload)
+> models::Org update_org(organization, org_id, update_org_req_payload)
 
 
 ### Parameters
@@ -137,7 +137,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**org_id** | **uuid::Uuid** |  | [required] |
+**organization** | **String** | The organization id to use for the request | [required] |
+**org_id** | **String** | The id of the organization you want to fetch. | [required] |
 **update_org_req_payload** | [**UpdateOrgReqPayload**](UpdateOrgReqPayload.md) | JSON request payload to rename the organization | [required] |
 
 ### Return type

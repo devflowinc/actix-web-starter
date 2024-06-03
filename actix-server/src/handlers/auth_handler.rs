@@ -1,5 +1,6 @@
 use crate::data::models::{OrgUserLink, RedisPool, UserRole};
 use crate::operators::user_operator::create_user_query;
+use crate::prefixes::{OrgPrefix, PrefixedUuid, UserPrefix};
 use crate::{
     data::models::{PgPool, User},
     errors::ServiceError,
@@ -45,8 +46,8 @@ pub struct OpCallback {
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct AuthedMember {
-    pub org_id: uuid::Uuid,
-    pub user_id: uuid::Uuid,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+    pub user_id: PrefixedUuid<UserPrefix>,
     pub role: UserRole,
 }
 
@@ -69,7 +70,7 @@ impl FromRequest for AuthedMember {
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct AdminMember {
-    pub org_id: uuid::Uuid,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub role: UserRole,
 }
 
@@ -97,7 +98,7 @@ impl FromRequest for AdminMember {
 
 #[derive(Debug, Deserialize, IntoParams)]
 pub struct OwnerMember {
-    pub org_id: uuid::Uuid,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub role: UserRole,
 }
 
@@ -166,7 +167,7 @@ pub async fn build_oidc_client() -> CoreClient {
 pub async fn create_account(
     email: String,
     name: String,
-    user_id: uuid::Uuid,
+    user_id: PrefixedUuid<UserPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<User, ServiceError> {
     let user_org = create_user_query(user_id, email, Some(name), pg_pool).await?;
@@ -419,7 +420,7 @@ pub async fn callback(
     let user_id = claims
         .subject()
         .to_string()
-        .parse::<uuid::Uuid>()
+        .parse::<PrefixedUuid<UserPrefix>>()
         .map_err(|_| {
             ServiceError::InternalServerError("Failed to parse user ID from claims".into())
         })?;

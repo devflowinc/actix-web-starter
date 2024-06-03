@@ -1,6 +1,7 @@
 use crate::{
     data::models::{Deal, PgPool},
     errors::ServiceError,
+    prefixes::{OrgPrefix, PrefixedUuid},
 };
 use actix_web::web;
 use diesel::{ExpressionMethods, QueryDsl};
@@ -8,7 +9,7 @@ use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_deal_query(
-    org_id: uuid::Uuid,
+    org_id: PrefixedUuid<OrgPrefix>,
     name: Option<String>,
     size: Option<f32>,
     active: bool,

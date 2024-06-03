@@ -11,27 +11,21 @@
 use crate::models;
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct User {
-    #[serde(rename = "created_at")]
-    pub created_at: String,
-    #[serde(rename = "email")]
-    pub email: String,
-    #[serde(rename = "id")]
-    pub id: String,
+pub struct CreateDealReqPayload {
+    #[serde(rename = "active", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
+    pub active: Option<Option<bool>>,
     #[serde(rename = "name", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub name: Option<Option<String>>,
-    #[serde(rename = "updated_at")]
-    pub updated_at: String,
+    #[serde(rename = "size", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
+    pub size: Option<Option<f32>>,
 }
 
-impl User {
-    pub fn new(created_at: String, email: String, id: String, updated_at: String) -> User {
-        User {
-            created_at,
-            email,
-            id,
+impl CreateDealReqPayload {
+    pub fn new() -> CreateDealReqPayload {
+        CreateDealReqPayload {
+            active: None,
             name: None,
-            updated_at,
+            size: None,
         }
     }
 }

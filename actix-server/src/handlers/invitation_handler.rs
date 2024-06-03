@@ -10,6 +10,7 @@ use crate::{
         org_operator::add_user_to_org_query,
         user_operator::get_user_by_email_query,
     },
+    prefixes::{OrgPrefix, PrefixedUuid},
 };
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
@@ -29,7 +30,7 @@ pub struct InvitationResponse {
 #[derive(Deserialize, ToSchema, Serialize, Clone, Debug)]
 pub struct InvitationData {
     /// The id of the organization to invite the user to.
-    pub organization_id: uuid::Uuid,
+    pub organization_id: PrefixedUuid<OrgPrefix>,
     /// The role the user will have in the organization. 0 = User, 1 = Admin, 2 = Owner.
     pub user_role: i32,
     /// The email of the user to invite. Must be a valid email as they will be sent an email to register.
@@ -121,7 +122,7 @@ pub struct InvitationWithUrl {
 pub async fn create_invitation(
     app_url: String,
     email: String,
-    organization_id: uuid::Uuid,
+    organization_id: PrefixedUuid<OrgPrefix>,
     redirect_uri: String,
     user_role: i32,
     pool: web::Data<PgPool>,

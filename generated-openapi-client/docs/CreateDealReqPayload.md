@@ -1,16 +1,12 @@
-# Invitation
+# CreateDealReqPayload
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**created_at** | **String** |  | 
-**email** | **String** |  | 
-**id** | [**uuid::Uuid**](uuid::Uuid.md) |  | 
-**organization_id** | **String** |  | 
-**role** | **i32** |  | 
-**updated_at** | **String** |  | 
-**used** | **bool** |  | 
+**active** | Option<**bool**> |  | [optional]
+**name** | Option<**String**> |  | [optional]
+**size** | Option<**f32**> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

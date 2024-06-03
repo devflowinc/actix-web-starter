@@ -1,6 +1,7 @@
 use super::email_operator::send_email;
 use crate::data::models::{Invitation, PgPool};
 use crate::errors::ServiceError;
+use crate::prefixes::{OrgPrefix, PrefixedUuid};
 use actix_web::web;
 use diesel::prelude::*;
 use diesel_async::RunQueryDsl;
@@ -9,7 +10,7 @@ use diesel_async::RunQueryDsl;
 #[tracing::instrument(skip(pool))]
 pub async fn create_invitation_query(
     email: String,
-    organization_id: uuid::Uuid,
+    organization_id: PrefixedUuid<OrgPrefix>,
     user_role: i32,
     pool: web::Data<PgPool>,
 ) -> Result<Invitation, ServiceError> {
@@ -85,7 +86,7 @@ pub async fn set_invitation_used(
 pub async fn check_inv_valid(
     inv_code: uuid::Uuid,
     email: String,
-    organization_id: Option<uuid::Uuid>,
+    organization_id: Option<PrefixedUuid<OrgPrefix>>,
     pool: web::Data<PgPool>,
 ) -> Result<Invitation, ServiceError> {
     let invitation = get_invitation_by_id_query(inv_code, pool.clone())

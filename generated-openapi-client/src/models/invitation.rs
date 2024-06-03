@@ -19,7 +19,7 @@ pub struct Invitation {
     #[serde(rename = "id")]
     pub id: uuid::Uuid,
     #[serde(rename = "organization_id")]
-    pub organization_id: uuid::Uuid,
+    pub organization_id: String,
     #[serde(rename = "role")]
     pub role: i32,
     #[serde(rename = "updated_at")]
@@ -29,7 +29,7 @@ pub struct Invitation {
 }
 
 impl Invitation {
-    pub fn new(created_at: String, email: String, id: uuid::Uuid, organization_id: uuid::Uuid, role: i32, updated_at: String, used: bool) -> Invitation {
+    pub fn new(created_at: String, email: String, id: uuid::Uuid, organization_id: String, role: i32, updated_at: String, used: bool) -> Invitation {
         Invitation {
             created_at,
             email,
