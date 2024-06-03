@@ -132,6 +132,7 @@ impl Modify for SecurityAddon {
         handlers::contact_handler::delete_contact,
         handlers::contact_handler::update_contact,
         handlers::contact_handler::get_contact,
+        handlers::note_handler::create_note,
     ),
     components(
         schemas(
@@ -146,6 +147,7 @@ impl Modify for SecurityAddon {
             handlers::contact_handler::UpdateContactReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
+            handlers::note_handler::CreateNoteReqPayload,
             models::User,
             models::Invitation,
             models::Org,
@@ -161,6 +163,7 @@ impl Modify for SecurityAddon {
         (name = "invitation", description = "Invitation endpoint. Exists to invite users to an organization."),
         (name = "orgs", description = "Organization endpoints. Used to manage organizations"),
         (name = "deals", description = "Deal endpoints. Used to manage deals"),
+        (name = "notes", description = "Note endpoints. Used to manage notes"),
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
     ),
@@ -345,6 +348,12 @@ pub fn main() -> std::io::Result<()> {
                                 .service(web::resource("/{organization_id}").route(
                                     web::get().to(handlers::invitation_handler::get_invitations),
                                 )),
+                        )
+                        .service(
+                            web::scope("/notes").service(
+                                web::resource("")
+                                    .route(web::post().to(handlers::note_handler::create_note)),
+                            ),
                         )
                         .service(
                             web::scope("/auth")

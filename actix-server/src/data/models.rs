@@ -328,3 +328,16 @@ pub struct Note {
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }
+
+impl Note {
+    pub fn from_title(title: String, org_id: PrefixedUuid<OrgPrefix>) -> Self {
+        Note {
+            id: PrefixedUuid::create(NotePrefix),
+            title,
+            body: String::new(),
+            org_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
