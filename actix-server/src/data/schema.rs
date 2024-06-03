@@ -31,6 +31,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    emails (id) {
+        id -> Uuid,
+        email -> Text,
+        org_id -> Uuid,
+    }
+}
+
+diesel::table! {
     invitations (id) {
         id -> Uuid,
         #[max_length = 100]
@@ -118,6 +126,7 @@ diesel::table! {
 diesel::joinable!(api_keys -> users (user_id));
 diesel::joinable!(contacts -> orgs (org_id));
 diesel::joinable!(deals -> orgs (org_id));
+diesel::joinable!(emails -> orgs (org_id));
 diesel::joinable!(invitations -> orgs (organization_id));
 diesel::joinable!(notes -> orgs (org_id));
 diesel::joinable!(links -> orgs (org_id));
@@ -129,6 +138,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     api_keys,
     contacts,
     deals,
+    emails,
     invitations,
     notes,
     links,
