@@ -42,8 +42,8 @@ pub async fn delete_contact_query(
 
 pub async fn update_contact_query(
     contact_id: uuid::Uuid,
-    first_name: String,
-    last_name: String,
+    first_name: Option<String>,
+    last_name: Option<String>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<Contact, ServiceError> {
     use crate::data::schema::contacts::dsl as contacts_columns;
@@ -51,8 +51,8 @@ pub async fn update_contact_query(
     let target = contacts_columns::contacts.filter(contacts_columns::id.eq(contact_id));
     let updated_contact = diesel::update(target)
         .set((
-            contacts_columns::first_name.eq(first_name),
-            contacts_columns::last_name.eq(last_name),
+            first_name.map(|first_name| contacts_columns::first_name.eq(first_name)),
+            last_name.map(|last_name| contacts_columns::last_name.eq(last_name)),
         ))
         .get_result::<Contact>(&mut conn)
         .await

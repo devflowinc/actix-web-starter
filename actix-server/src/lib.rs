@@ -127,6 +127,10 @@ impl Modify for SecurityAddon {
         handlers::deal_handler::delete_deal,
         handlers::deal_handler::update_deal,
         handlers::deal_handler::get_deal,
+        handlers::contact_handler::create_contact,
+        handlers::contact_handler::delete_contact,
+        handlers::contact_handler::update_contact,
+        handlers::contact_handler::get_contact,
     ),
     components(
         schemas(
@@ -137,6 +141,8 @@ impl Modify for SecurityAddon {
             handlers::org_handler::UpdateOrgReqPayload,
             handlers::deal_handler::CreateDealReqPayload,
             handlers::deal_handler::UpdateDealReqPayload,
+            handlers::contact_handler::CreateContactReqPayload,
+            handlers::contact_handler::UpdateContactReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             models::User,
@@ -371,6 +377,26 @@ pub fn main() -> std::io::Result<()> {
                                         )
                                         .route(web::get().to(handlers::deal_handler::get_deal))
                                         .route(web::put().to(handlers::deal_handler::update_deal)),
+                                ),
+                        )
+                        .service(
+                            web::scope("/contacts")
+                                .service(web::resource("").route(
+                                    web::post().to(handlers::contact_handler::create_contact),
+                                ))
+                                .service(
+                                    web::resource("/{contact_id}")
+                                        .route(
+                                            web::delete()
+                                                .to(handlers::contact_handler::delete_contact),
+                                        )
+                                        .route(
+                                            web::get().to(handlers::contact_handler::get_contact),
+                                        )
+                                        .route(
+                                            web::put()
+                                                .to(handlers::contact_handler::update_contact),
+                                        ),
                                 ),
                         )
                         .service(
