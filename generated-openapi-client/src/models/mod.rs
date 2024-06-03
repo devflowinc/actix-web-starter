@@ -22,6 +22,8 @@ pub mod org;
 pub use self::org::Org;
 pub mod update_deal_req_payload;
 pub use self::update_deal_req_payload::UpdateDealReqPayload;
+pub mod update_note_req_payload;
+pub use self::update_note_req_payload::UpdateNoteReqPayload;
 pub mod update_org_req_payload;
 pub use self::update_org_req_payload::UpdateOrgReqPayload;
 pub mod user;

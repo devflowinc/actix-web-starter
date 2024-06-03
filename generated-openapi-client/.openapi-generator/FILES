@@ -21,6 +21,7 @@ docs/NotesApi.md
 docs/Org.md
 docs/OrgsApi.md
 docs/UpdateDealReqPayload.md
+docs/UpdateNoteReqPayload.md
 docs/UpdateOrgReqPayload.md
 docs/User.md
 git_push.sh
@@ -47,5 +48,6 @@ src/models/mod.rs
 src/models/note.rs
 src/models/org.rs
 src/models/update_deal_req_payload.rs
+src/models/update_note_req_payload.rs
 src/models/update_org_req_payload.rs
 src/models/user.rs
