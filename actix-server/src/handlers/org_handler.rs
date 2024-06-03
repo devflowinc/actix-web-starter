@@ -53,6 +53,7 @@ pub async fn create_org(
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -91,6 +92,7 @@ pub async fn delete_org(
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -121,6 +123,10 @@ pub async fn leave_org(
   responses(
       (status = 200, description = "JSON object representing the requested organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -154,6 +160,10 @@ pub struct UpdateOrgReqPayload {
   responses(
       (status = 200, description = "Object representing the renamed organization", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The organization id to use for the request"),
+    ("org_id" = String, Path, description = "The id of the organization you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),

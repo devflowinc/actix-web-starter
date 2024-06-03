@@ -546,6 +546,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "org_id",
+            "in": "path",
+            "description": "The id of the organization you want to fetch.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -588,6 +597,26 @@
           "orgs"
         ],
         "operationId": "update_org",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "path",
+            "description": "The id of the organization you want to fetch.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to rename the organization",
           "content": {
@@ -639,6 +668,15 @@
             "name": "Organization",
             "in": "header",
             "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "org_id",
+            "in": "path",
+            "description": "The id of the organization you want to fetch.",
             "required": true,
             "schema": {
               "type": "string"

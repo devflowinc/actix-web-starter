@@ -70,14 +70,15 @@ impl<P: Prefix> FromStr for PrefixedUuid<P> {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = s.split('-').collect();
-        if parts.len() != 2 {
-            return Err(());
-        }
+        // Combine all parts except the first
+        let rest = parts[1..].join("-");
 
-        let prefix = parts[0].parse().map_err(|_| ())?;
-        let id = parts[1].parse().map_err(|_| ())?;
+        let parsed_uuid = rest.parse().map_err(|_| ())?;
 
-        Ok(PrefixedUuid { prefix, id })
+        Ok(PrefixedUuid {
+            prefix: P::default(),
+            id: parsed_uuid,
+        })
     }
 }
 

@@ -52,8 +52,11 @@ where
 
                 // Try to grab the organization from the header and verify membership
                 if let Some(org_header) = req.headers().get("Organization") {
+                    println!("Organization header beginning: {:?}", org_header);
                     if let Ok(org_header) = org_header.to_str() {
+                        println!("Organization header: {}", org_header);
                         if let Ok(org_uuid) = PrefixedUuid::<OrgPrefix>::from_str(org_header) {
+                            println!("Organization UUID: {:?}", org_uuid);
                             let org_user_link = get_org_user_link_query(
                                 user.id,
                                 org_uuid,
@@ -67,6 +70,8 @@ where
                             if let Some(org_user_link) = org_user_link {
                                 req.extensions_mut().insert(org_user_link);
                             }
+                        } else {
+                            println!("Failed to parse organization UUID");
                         }
                     }
                 }
