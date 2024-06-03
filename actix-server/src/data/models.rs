@@ -1,6 +1,5 @@
-use crate::prefixes::{NotePrefix, OrgPrefix, OrgUserPrefix, PrefixedUuid, UserPrefix};
-
 use super::schema::*;
+use crate::prefixes::*;
 use bb8_redis::{bb8, RedisConnectionManager};
 use diesel::expression::ValidGrouping;
 use serde::{Deserialize, Serialize};
@@ -293,16 +292,20 @@ impl ApiKey {
 }))]
 #[diesel(table_name = contacts)]
 pub struct Contact {
-    pub id: uuid::Uuid,
-    pub org_id: uuid::Uuid,
+    pub id: PrefixedUuid<ContactPrefix>,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub first_name: String,
     pub last_name: String,
 }
 
 impl Contact {
-    pub fn from_details(org_id: uuid::Uuid, first_name: String, last_name: String) -> Self {
+    pub fn from_details(
+        org_id: PrefixedUuid<OrgPrefix>,
+        first_name: String,
+        last_name: String,
+    ) -> Self {
         Contact {
-            id: uuid::Uuid::new_v4(),
+            id: PrefixedUuid::create(ContactPrefix),
             org_id,
             first_name,
             last_name,

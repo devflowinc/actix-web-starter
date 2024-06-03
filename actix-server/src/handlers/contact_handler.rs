@@ -4,6 +4,7 @@ use crate::{
     operators::contact_operator::{
         create_contact_query, delete_contact_query, get_contact_by_id, update_contact_query,
     },
+    prefixes::{ContactPrefix, PrefixedUuid},
 };
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
@@ -64,7 +65,7 @@ pub async fn create_contact(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn delete_contact(
     org_user: OwnerMember,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<ContactPrefix>>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let contact_id = path.into_inner();
@@ -88,7 +89,7 @@ pub async fn delete_contact(
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_contact(
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<ContactPrefix>>,
     org_user: OwnerMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -122,7 +123,7 @@ pub struct UpdateContactReqPayload {
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_contact(
     req_payload: web::Json<UpdateContactReqPayload>,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<ContactPrefix>>,
     org_user: OwnerMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
