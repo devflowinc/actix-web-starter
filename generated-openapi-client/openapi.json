@@ -622,6 +622,298 @@
         ]
       }
     },
+    "/api/notes": {
+      "get": {
+        "tags": [
+          "notes"
+        ],
+        "operationId": "get_notes_for_org",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit the number of results. Default is 10",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "nullable": true
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset the results. Default is 0",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of organizations the user belongs to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Org"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "notes"
+        ],
+        "operationId": "create_note",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON request payload to create a new note",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNoteReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "JSON body representing the note that was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/notes/{note_id}": {
+      "get": {
+        "tags": [
+          "notes"
+        ],
+        "operationId": "get_note_by_id",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "note_id",
+            "in": "path",
+            "description": "The id of the organization you want to fetch.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON object representing the requested note",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "notes"
+        ],
+        "operationId": "update_note",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "note_id",
+            "in": "path",
+            "description": "The id of the note you want to update.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON request payload to rename the organization",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNoteReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Object representing the renamed note",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "notes"
+        ],
+        "operationId": "delete_note",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "note_id",
+            "in": "path",
+            "description": "The id of the note you want to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the note was successfully deleted"
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
     "/api/orgs": {
       "get": {
         "tags": [
@@ -953,6 +1245,17 @@
           }
         }
       },
+      "CreateNoteReqPayload": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          }
+        }
+      },
       "CreateOrgReqPayload": {
         "type": "object",
         "required": [
@@ -1060,6 +1363,47 @@
           }
         }
       },
+      "Note": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "body",
+          "org_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "body": "Note contents...",
+          "created_at": "2021-01-01T00:00:00",
+          "id": "note-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "title": "My Note Title",
+          "updated_at": "2021-01-01T00:00:00"
+        }
+      },
       "Org": {
         "type": "object",
         "required": [
@@ -1109,6 +1453,17 @@
             "type": "number",
             "format": "float",
             "nullable": true
+          }
+        }
+      },
+      "UpdateNoteReqPayload": {
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
           }
         }
       },
@@ -1184,6 +1539,10 @@
     {
       "name": "deals",
       "description": "Deal endpoints. Used to manage deals"
+    },
+    {
+      "name": "notes",
+      "description": "Note endpoints. Used to manage notes"
     },
     {
       "name": "api_key",
