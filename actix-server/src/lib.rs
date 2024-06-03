@@ -145,6 +145,10 @@ impl Modify for SecurityAddon {
         handlers::email_handler::delete_email,
         handlers::email_handler::update_email,
         handlers::email_handler::get_email,
+        handlers::phone_handler::create_phone,
+        handlers::phone_handler::delete_phone,
+        handlers::phone_handler::update_phone,
+        handlers::phone_handler::get_phone,
     ),
     components(
         schemas(
@@ -161,6 +165,8 @@ impl Modify for SecurityAddon {
             handlers::link_handler::UpdateLinkReqPayload,
             handlers::email_handler::CreateEmailReqPayload,
             handlers::email_handler::UpdateEmailReqPayload,
+            handlers::phone_handler::CreatePhoneReqPayload,
+            handlers::phone_handler::UpdatePhoneReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             handlers::note_handler::CreateNoteReqPayload,
@@ -185,6 +191,7 @@ impl Modify for SecurityAddon {
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
         (name = "links", description = "Link endpoints. Used to manage links"),
         (name = "emails", description = "Email endpoints. Used to manage emails"),
+        (name = "phones", description = "Phone endpoints. Used to manage phones"),
     ),
 )]
 pub struct ApiDoc;
@@ -477,6 +484,24 @@ pub fn main() -> std::io::Result<()> {
                                         .route(web::get().to(handlers::email_handler::get_email))
                                         .route(
                                             web::put().to(handlers::email_handler::update_email),
+                                        ),
+                                ),
+                        )
+                        .service(
+                            web::scope("/phones")
+                                .service(
+                                    web::resource("").route(
+                                        web::post().to(handlers::phone_handler::create_phone),
+                                    ),
+                                )
+                                .service(
+                                    web::resource("/{phone_id}")
+                                        .route(
+                                            web::delete().to(handlers::phone_handler::delete_phone),
+                                        )
+                                        .route(web::get().to(handlers::phone_handler::get_phone))
+                                        .route(
+                                            web::put().to(handlers::phone_handler::update_phone),
                                         ),
                                 ),
                         )

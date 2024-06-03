@@ -7,3 +7,4 @@ pub mod invitation_handler;
 pub mod link_handler;
 pub mod note_handler;
 pub mod org_handler;
+pub mod phone_handler;
