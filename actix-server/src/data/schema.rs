@@ -89,6 +89,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    phones (id) {
+        id -> Uuid,
+        number -> Text,
+        org_id -> Uuid,
+    }
+}
+
+diesel::table! {
     plans (id) {
         id -> Uuid,
         stripe_id -> Text,
@@ -132,6 +140,7 @@ diesel::joinable!(notes -> orgs (org_id));
 diesel::joinable!(links -> orgs (org_id));
 diesel::joinable!(org_users -> orgs (org_id));
 diesel::joinable!(org_users -> users (user_id));
+diesel::joinable!(phones -> orgs (org_id));
 diesel::joinable!(subscriptions -> orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
@@ -144,6 +153,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     links,
     org_users,
     orgs,
+    phones,
     plans,
     subscriptions,
     users,
