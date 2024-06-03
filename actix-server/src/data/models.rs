@@ -100,14 +100,14 @@ impl Org {
 pub struct Deal {
     pub id: uuid::Uuid,
     pub name: Option<String>,
-    pub org_id: uuid::Uuid,
+    pub org_id: PrefixedUuid<OrgPrefix>,
     pub size: Option<f32>,
     pub active: bool,
 }
 
 impl Deal {
     pub fn from_details(
-        org_id: uuid::Uuid,
+        org_id: PrefixedUuid<OrgPrefix>,
         name: Option<String>,
         size: Option<f32>,
         active: bool,

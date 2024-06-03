@@ -246,6 +246,207 @@
         ]
       }
     },
+    "/api/deals": {
+      "post": {
+        "tags": [
+          "deals"
+        ],
+        "operationId": "create_deal",
+        "requestBody": {
+          "description": "JSON request payload to create a new deal",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDealReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "JSON body representing the deal that was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/deals/{deal_id}": {
+      "get": {
+        "tags": [
+          "deals"
+        ],
+        "operationId": "get_deal",
+        "parameters": [
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON object representing the requested deal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "deals"
+        ],
+        "operationId": "update_deal",
+        "parameters": [
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON request payload to update the deal",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDealReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Object representing the renamed deal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "deals"
+        ],
+        "operationId": "delete_deal",
+        "parameters": [
+          {
+            "name": "Deal",
+            "in": "header",
+            "description": "The deal id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the deal was successfully deleted"
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -734,6 +935,24 @@
           }
         }
       },
+      "CreateDealReqPayload": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          }
+        }
+      },
       "CreateOrgReqPayload": {
         "type": "object",
         "required": [
@@ -875,6 +1094,24 @@
       "PrefixedUuid": {
         "type": "string"
       },
+      "UpdateDealReqPayload": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          }
+        }
+      },
       "UpdateOrgReqPayload": {
         "type": "object",
         "required": [
@@ -943,6 +1180,10 @@
     {
       "name": "orgs",
       "description": "Organization endpoints. Used to manage organizations"
+    },
+    {
+      "name": "deals",
+      "description": "Deal endpoints. Used to manage deals"
     },
     {
       "name": "api_key",

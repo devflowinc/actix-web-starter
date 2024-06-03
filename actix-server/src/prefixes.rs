@@ -5,7 +5,7 @@ use std::{
 
 use diesel::{deserialize::FromSql, pg::PgValue, serialize::ToSql};
 use serde::{Deserialize, Deserializer, Serialize};
-use utoipa::{openapi::ObjectBuilder, schema, ToSchema};
+use utoipa::{openapi::ObjectBuilder, ToSchema};
 
 pub trait Prefix:
     Clone

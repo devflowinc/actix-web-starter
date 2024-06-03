@@ -10,7 +10,6 @@ use actix_web::{
     dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform},
     web, Error, FromRequest, HttpMessage, HttpRequest,
 };
-use chrono::format::parse;
 use futures_util::future::LocalBoxFuture;
 use sentry::Transaction;
 use std::{
