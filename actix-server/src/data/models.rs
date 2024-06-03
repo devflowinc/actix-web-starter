@@ -1,4 +1,4 @@
-use crate::prefixes::{OrgPrefix, OrgUserPrefix, PrefixedUuid, UserPrefix};
+use crate::prefixes::{NotePrefix, OrgPrefix, OrgUserPrefix, PrefixedUuid, UserPrefix};
 
 use super::schema::*;
 use bb8_redis::{bb8, RedisConnectionManager};
@@ -308,4 +308,23 @@ impl Contact {
             last_name,
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "note-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "title": "My Note Title",
+    "body": "Note contents...",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(table_name=notes)]
+pub struct Note {
+    pub id: PrefixedUuid<NotePrefix>,
+    pub title: String,
+    pub body: String,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
