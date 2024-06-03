@@ -389,3 +389,25 @@ impl Email {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "phone": "+1234567890",
+}))]
+#[diesel(table_name = phones)]
+pub struct Phone {
+    pub id: PrefixedUuid<PhonePrefix>,
+    pub number: String,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+}
+
+impl Phone {
+    pub fn from_details(org_id: PrefixedUuid<OrgPrefix>, number: String) -> Self {
+        Self {
+            id: PrefixedUuid::create(PhonePrefix),
+            number,
+            org_id,
+        }
+    }
+}

@@ -300,3 +300,26 @@ impl FromStr for EmailPrefix {
 }
 
 impl Prefix for EmailPrefix {}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
+pub struct PhonePrefix;
+
+impl Display for PhonePrefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "phone")
+    }
+}
+
+impl FromStr for PhonePrefix {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "phone" {
+            Ok(PhonePrefix)
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl Prefix for PhonePrefix {}
