@@ -168,7 +168,7 @@ pub struct OrgUserPrefix;
 
 impl Display for OrgUserPrefix {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "user")
+        write!(f, "orguser")
     }
 }
 
@@ -176,7 +176,7 @@ impl FromStr for OrgUserPrefix {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "org" {
+        if s == "orguser" {
             Ok(OrgUserPrefix)
         } else {
             Err(())
@@ -199,7 +199,7 @@ impl FromStr for UserPrefix {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "org" {
+        if s == "user" {
             Ok(UserPrefix)
         } else {
             Err(())
