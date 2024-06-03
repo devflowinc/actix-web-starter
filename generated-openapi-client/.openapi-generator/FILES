@@ -7,6 +7,7 @@ docs/AuthApi.md
 docs/CreateApiKeyReqPayload.md
 docs/CreateApiKeyRespPayload.md
 docs/CreateDealReqPayload.md
+docs/CreateNoteReqPayload.md
 docs/CreateOrgReqPayload.md
 docs/DealsApi.md
 docs/ErrorRespPayload.md
@@ -15,6 +16,8 @@ docs/Invitation.md
 docs/InvitationApi.md
 docs/InvitationData.md
 docs/InvitationResponse.md
+docs/Note.md
+docs/NotesApi.md
 docs/Org.md
 docs/OrgsApi.md
 docs/UpdateDealReqPayload.md
@@ -28,17 +31,20 @@ src/apis/deals_api.rs
 src/apis/health_api.rs
 src/apis/invitation_api.rs
 src/apis/mod.rs
+src/apis/notes_api.rs
 src/apis/orgs_api.rs
 src/lib.rs
 src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
 src/models/create_deal_req_payload.rs
+src/models/create_note_req_payload.rs
 src/models/create_org_req_payload.rs
 src/models/error_resp_payload.rs
 src/models/invitation.rs
 src/models/invitation_data.rs
 src/models/invitation_response.rs
 src/models/mod.rs
+src/models/note.rs
 src/models/org.rs
 src/models/update_deal_req_payload.rs
 src/models/update_org_req_payload.rs

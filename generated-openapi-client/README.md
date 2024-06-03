@@ -40,6 +40,7 @@ Class | Method | HTTP request | Description
 *InvitationApi* | [**delete_invitation**](docs/InvitationApi.md#delete_invitation) | **DELETE** /api/invitation/{invitation_id} | Delete Invitation
 *InvitationApi* | [**get_invitations**](docs/InvitationApi.md#get_invitations) | **GET** /api/invitation/{organization_id} | Get Invitations
 *InvitationApi* | [**post_invitation**](docs/InvitationApi.md#post_invitation) | **POST** /api/invitation | Send Invitation
+*NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /api/notes | 
 *OrgsApi* | [**create_org**](docs/OrgsApi.md#create_org) | **POST** /api/orgs | 
 *OrgsApi* | [**delete_org**](docs/OrgsApi.md#delete_org) | **DELETE** /api/orgs/{org_id} | 
 *OrgsApi* | [**get_orgs_for_authed_user**](docs/OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
@@ -52,11 +53,13 @@ Class | Method | HTTP request | Description
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
+ - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
  - [InvitationResponse](docs/InvitationResponse.md)
+ - [Note](docs/Note.md)
  - [Org](docs/Org.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
