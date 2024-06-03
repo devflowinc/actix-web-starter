@@ -1,6 +1,7 @@
 use crate::{
     data::models::{Contact, PgPool},
     errors::ServiceError,
+    prefixes::{ContactPrefix, OrgPrefix, PrefixedUuid},
 };
 use actix_web::web;
 use diesel::{ExpressionMethods, QueryDsl};
@@ -8,7 +9,7 @@ use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
 pub async fn create_contact_query(
-    org_id: uuid::Uuid,
+    org_id: PrefixedUuid<OrgPrefix>,
     first_name: String,
     last_name: String,
     pg_pool: web::Data<PgPool>,
@@ -25,7 +26,7 @@ pub async fn create_contact_query(
 }
 
 pub async fn delete_contact_query(
-    contact_id: uuid::Uuid,
+    contact_id: PrefixedUuid<ContactPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<(), ServiceError> {
     use crate::data::schema::contacts::dsl as contacts_columns;
@@ -41,7 +42,7 @@ pub async fn delete_contact_query(
 }
 
 pub async fn update_contact_query(
-    contact_id: uuid::Uuid,
+    contact_id: PrefixedUuid<ContactPrefix>,
     first_name: Option<String>,
     last_name: Option<String>,
     pg_pool: web::Data<PgPool>,
@@ -61,7 +62,7 @@ pub async fn update_contact_query(
 }
 
 pub async fn get_contact_by_id(
-    contact_id: uuid::Uuid,
+    contact_id: PrefixedUuid<ContactPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<Contact, ServiceError> {
     use crate::data::schema::contacts::dsl as contacts_columns;

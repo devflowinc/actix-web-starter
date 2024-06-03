@@ -231,3 +231,26 @@ impl FromStr for NotePrefix {
 }
 
 impl Prefix for NotePrefix {}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
+pub struct ContactPrefix;
+
+impl Display for ContactPrefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "contact")
+    }
+}
+
+impl FromStr for ContactPrefix {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "contact" {
+            Ok(ContactPrefix)
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl Prefix for ContactPrefix {}
