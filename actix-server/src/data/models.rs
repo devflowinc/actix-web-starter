@@ -283,3 +283,29 @@ impl ApiKey {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+    "first_name": "John",
+    "last_name": "Doe",
+}))]
+#[diesel(table_name = contacts)]
+pub struct Contact {
+    pub id: uuid::Uuid,
+    pub org_id: uuid::Uuid,
+    pub first_name: String,
+    pub last_name: String,
+}
+
+impl Contact {
+    pub fn from_details(org_id: uuid::Uuid, first_name: String, last_name: String) -> Self {
+        Contact {
+            id: uuid::Uuid::new_v4(),
+            org_id,
+            first_name,
+            last_name,
+        }
+    }
+}
