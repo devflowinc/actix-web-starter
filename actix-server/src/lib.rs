@@ -133,6 +133,10 @@ impl Modify for SecurityAddon {
         handlers::contact_handler::update_contact,
         handlers::contact_handler::get_contact,
         handlers::note_handler::create_note,
+        handlers::note_handler::delete_note,
+        handlers::note_handler::update_note,
+        handlers::note_handler::get_notes_for_org,
+        handlers::note_handler::get_note_by_id,
     ),
     components(
         schemas(
@@ -148,6 +152,7 @@ impl Modify for SecurityAddon {
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             handlers::note_handler::CreateNoteReqPayload,
+            handlers::note_handler::UpdateNoteReqPayload,
             models::User,
             models::Invitation,
             models::Org,
@@ -350,10 +355,25 @@ pub fn main() -> std::io::Result<()> {
                                 )),
                         )
                         .service(
-                            web::scope("/notes").service(
-                                web::resource("")
-                                    .route(web::post().to(handlers::note_handler::create_note)),
-                            ),
+                            web::scope("/notes")
+                                .service(
+                                    web::resource("")
+                                        .route(web::post().to(handlers::note_handler::create_note))
+                                        .route(
+                                            web::get()
+                                                .to(handlers::note_handler::get_notes_for_org),
+                                        ),
+                                )
+                                .service(
+                                    web::resource("/{note_id}")
+                                        .route(
+                                            web::get().to(handlers::note_handler::get_note_by_id),
+                                        )
+                                        .route(web::put().to(handlers::note_handler::update_note))
+                                        .route(
+                                            web::delete().to(handlers::note_handler::delete_note),
+                                        ),
+                                ),
                         )
                         .service(
                             web::scope("/auth")
