@@ -8,9 +8,12 @@ use serde::{Deserialize, Serialize};
 use std::ops::{Deref, DerefMut};
 use tokio::sync::mpsc;
 
+use super::orgs::{create_org, select_from_my_orgs, OrgSelectError};
+
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ActixTemplateConfiguration {
     pub api_key: String,
+    pub org_id: String,
     pub api_url: String,
 }
 
@@ -62,6 +65,7 @@ impl Default for ActixTemplateConfiguration {
     fn default() -> Self {
         ActixTemplateConfiguration {
             api_key: "".to_string(),
+            org_id: "".to_string(),
             api_url: "http://localhost:8090".to_string(),
         }
     }
@@ -126,11 +130,49 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
 
     let result = get_user(api_url.clone(), api_key.clone().unwrap()).await;
 
+    let temporary_config = Configuration {
+        base_path: api_url.clone(),
+        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
+            prefix: None,
+            key: api_key.clone().expect("Able to get api key"),
+        }),
+        ..Default::default()
+    };
+
     match result {
         WhoamiSuccess::Status200(_) => {
+            let potential_org = select_from_my_orgs(&temporary_config, "Testing").await;
+
+            let org_id = match potential_org {
+                Ok(selection) => selection.id,
+                Err(OrgSelectError::NoOrgs) => {
+                    // Create the org
+                    let created = create_org(
+                        ActixTemplateConfiguration {
+                            api_key: api_key.clone().unwrap(),
+                            org_id: "".to_string(),
+                            api_url: api_url.clone(),
+                        },
+                        None,
+                    )
+                    .await
+                    .unwrap_or_else(|e| {
+                        eprintln!("Error creating org: {:?}", e);
+                        std::process::exit(1);
+                    });
+                    created.id
+                }
+                _ => {
+                    eprintln!("Error selecting org: {:?}", potential_org);
+                    std::process::exit(1);
+                }
+            };
+
             ActixTemplateConfiguration {
+                // Prompt user to select an org or create one
                 api_key: api_key.unwrap(),
                 api_url: api_url.clone(),
+                org_id: org_id,
             }
         }
         _ => {

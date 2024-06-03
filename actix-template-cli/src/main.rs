@@ -180,7 +180,9 @@ async fn main() {
             }
         },
         Some(Commands::Orgs(org)) => match org {
-            OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
+            OrgCommands::Create(org) => {
+                _ = orgs::create_org(settings, org.name).await;
+            }
             OrgCommands::Delete => orgs::delete_org(settings).await,
             OrgCommands::Rename => orgs::rename_org(settings).await,
             OrgCommands::Invite(invite) => {

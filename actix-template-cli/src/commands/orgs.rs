@@ -5,17 +5,20 @@ use actix_web_starter_client::{
         configuration::Configuration,
         invitation_api,
         orgs_api::{
-            CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
+            CreateOrgError, CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
             GetOrgsForAuthedUserSuccess,
         },
     },
-    models::{CreateOrgReqPayload, InvitationData},
+    models::{CreateOrgReqPayload, InvitationData, Org},
 };
 use inquire::{Confirm, Select};
 
 use super::configure::ActixTemplateConfiguration;
 
-pub async fn create_org(settings: ActixTemplateConfiguration, name: Option<String>) {
+pub async fn create_org(
+    settings: ActixTemplateConfiguration,
+    name: Option<String>,
+) -> Result<Org, CreateOrgError> {
     let name = if name.is_none() {
         inquire::Text::new("Enter a name for the organization:")
             .prompt()
@@ -54,6 +57,7 @@ pub async fn create_org(settings: ActixTemplateConfiguration, name: Option<Strin
         CreateOrgSuccess::Status201(org) => {
             println!("\nOrganization created successfully!\n");
             println!("Name: {}", org.name);
+            return Ok(org);
         }
         CreateOrgSuccess::UnknownValue(_) => {
             eprintln!("Error creating organization.");
@@ -63,14 +67,16 @@ pub async fn create_org(settings: ActixTemplateConfiguration, name: Option<Strin
 }
 
 // TODO: better error type
-enum OrgSelectError {
+#[derive(Debug)]
+pub enum OrgSelectError {
     NoOrgs,
     OrgFetchFailure,
 }
 
-struct OrgSelectOption {
-    name: String,
-    id: String,
+#[derive(Debug)]
+pub struct OrgSelectOption {
+    pub name: String,
+    pub id: String,
 }
 
 impl Display for OrgSelectOption {
@@ -79,7 +85,7 @@ impl Display for OrgSelectOption {
     }
 }
 
-async fn select_from_my_orgs(
+pub async fn select_from_my_orgs(
     config: &Configuration,
     prompt: &str,
 ) -> Result<OrgSelectOption, OrgSelectError> {

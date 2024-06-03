@@ -44,12 +44,16 @@ pub fn switch_profile(
         })
         .collect::<Vec<ActixTemplateProfileInner>>();
 
-    confy::store("actix_template", "profiles", ActixTemplateProfile { inner: profiles })
-        .map_err(|e| {
-            eprintln!("Error saving configuration: {:?}", e);
-            std::process::exit(1);
-        })
-        .unwrap();
+    confy::store(
+        "actix_template",
+        "profiles",
+        ActixTemplateProfile { inner: profiles },
+    )
+    .map_err(|e| {
+        eprintln!("Error saving configuration: {:?}", e);
+        std::process::exit(1);
+    })
+    .unwrap();
 
     println!("Switched to profile '{}'.", profile_name);
 
@@ -94,12 +98,16 @@ pub fn delete_profile(
         profiles[0].selected = true;
     }
 
-    confy::store("actix_template", "profiles", ActixTemplateProfile { inner: profiles })
-        .map_err(|e| {
-            eprintln!("Error saving configuration: {:?}", e);
-            std::process::exit(1);
-        })
-        .unwrap();
+    confy::store(
+        "actix_template",
+        "profiles",
+        ActixTemplateProfile { inner: profiles },
+    )
+    .map_err(|e| {
+        eprintln!("Error saving configuration: {:?}", e);
+        std::process::exit(1);
+    })
+    .unwrap();
 
     println!("Deleted profile '{}'.", profile_name);
 
