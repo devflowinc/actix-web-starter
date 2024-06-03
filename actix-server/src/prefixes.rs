@@ -277,3 +277,26 @@ impl FromStr for LinkPrefix {
 }
 
 impl Prefix for LinkPrefix {}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
+pub struct EmailPrefix;
+
+impl Display for EmailPrefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "email")
+    }
+}
+
+impl FromStr for EmailPrefix {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "email" {
+            Ok(EmailPrefix)
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl Prefix for EmailPrefix {}

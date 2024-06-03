@@ -367,3 +367,25 @@ impl Link {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "email": "example@example.com",
+}))]
+#[diesel(table_name = emails)]
+pub struct Email {
+    pub id: PrefixedUuid<EmailPrefix>,
+    pub email: String,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+}
+
+impl Email {
+    pub fn from_details(email: String, org_id: PrefixedUuid<OrgPrefix>) -> Self {
+        Email {
+            id: PrefixedUuid::create(EmailPrefix),
+            email,
+            org_id,
+        }
+    }
+}
