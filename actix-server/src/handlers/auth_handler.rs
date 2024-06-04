@@ -417,13 +417,12 @@ pub async fn callback(
         }
     }?;
 
-    let user_id = claims
-        .subject()
-        .to_string()
-        .parse::<PrefixedUuid<UserPrefix>>()
-        .map_err(|_| {
-            ServiceError::InternalServerError("Failed to parse user ID from claims".into())
-        })?;
+    let user_id = claims.subject().to_string();
+    let user_id = format!("user-{}", user_id);
+
+    let parsed_user_id = user_id.parse::<PrefixedUuid<UserPrefix>>().map_err(|_| {
+        ServiceError::InternalServerError("Failed to parse user ID from claims".into())
+    })?;
 
     let email = claims.email().ok_or_else(|| {
         ServiceError::InternalServerError("Failed to parse email from claims".into())
@@ -445,13 +444,13 @@ pub async fn callback(
         None => Err(ServiceError::Unauthorized)?,
     };
 
-    let user = match get_user_by_id_query(&user_id, pg_pool.clone()).await {
+    let user = match get_user_by_id_query(&parsed_user_id, pg_pool.clone()).await {
         Ok(user) => user,
         Err(_) => {
             create_account(
                 email.to_string(),
                 name.iter().next().unwrap().1.to_string(),
-                user_id,
+                parsed_user_id,
                 pg_pool.clone(),
             )
             .await?
