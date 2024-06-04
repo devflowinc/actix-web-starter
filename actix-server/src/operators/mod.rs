@@ -9,4 +9,5 @@ pub mod note_operator;
 pub mod org_operator;
 pub mod phone_operator;
 pub mod plan_operator;
+pub mod task_operator;
 pub mod user_operator;

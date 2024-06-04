@@ -411,3 +411,37 @@ impl Phone {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "deadline": "2021-01-01T00:00:00",
+    "description": "Task description...",
+    "contact_id": "contact-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+}))]
+#[diesel(table_name = tasks)]
+pub struct Task {
+    pub id: PrefixedUuid<TaskPrefix>,
+    pub deadline: Option<chrono::NaiveDateTime>,
+    pub description: Option<String>,
+    pub contact_id: Option<PrefixedUuid<ContactPrefix>>,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+}
+
+impl Task {
+    pub fn from_details(
+        org_id: PrefixedUuid<OrgPrefix>,
+        deadline: Option<chrono::NaiveDateTime>,
+        description: Option<String>,
+        contact_id: Option<PrefixedUuid<ContactPrefix>>,
+    ) -> Self {
+        Self {
+            id: PrefixedUuid::create(TaskPrefix),
+            deadline,
+            description,
+            contact_id,
+            org_id,
+        }
+    }
+}
