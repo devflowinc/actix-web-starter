@@ -252,6 +252,17 @@
           "contacts"
         ],
         "operationId": "create_contact",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to create a new contact",
           "content": {
@@ -269,7 +280,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Contact"
                 }
               }
             }
@@ -300,13 +311,33 @@
           "contacts"
         ],
         "operationId": "get_contact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "The contacts id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "JSON object representing the requested contact",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Contact"
                 }
               }
             }
@@ -335,6 +366,26 @@
           "contacts"
         ],
         "operationId": "update_contact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "The contact id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to update the contact",
           "content": {
@@ -352,7 +403,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Contact"
                 }
               }
             }
@@ -383,9 +434,18 @@
         "operationId": "delete_contact",
         "parameters": [
           {
-            "name": "Contact",
-            "in": "header",
+            "name": "contact_id",
+            "in": "path",
             "description": "The contacts id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
             "required": true,
             "schema": {
               "type": "string"
@@ -422,6 +482,17 @@
           "deals"
         ],
         "operationId": "create_deal",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to create a new deal",
           "content": {
@@ -439,7 +510,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Deal"
                 }
               }
             }
@@ -474,10 +545,20 @@
           {
             "name": "deal_id",
             "in": "path",
+            "description": "The deal id to use for the request",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -487,7 +568,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Deal"
                 }
               }
             }
@@ -520,10 +601,20 @@
           {
             "name": "deal_id",
             "in": "path",
+            "description": "The deal id to use for the request",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -544,7 +635,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Deal"
                 }
               }
             }
@@ -575,21 +666,22 @@
         "operationId": "delete_deal",
         "parameters": [
           {
-            "name": "Deal",
-            "in": "header",
-            "description": "The deal id to use for the request",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "deal_id",
             "in": "path",
+            "description": "The deal id to use for the request",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -623,6 +715,17 @@
           "emails"
         ],
         "operationId": "create_email",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to create a new email",
           "content": {
@@ -640,7 +743,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Email"
                 }
               }
             }
@@ -671,13 +774,33 @@
           "emails"
         ],
         "operationId": "get_email",
+        "parameters": [
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "The email id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "JSON object representing the requested email",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Email"
                 }
               }
             }
@@ -706,6 +829,26 @@
           "emails"
         ],
         "operationId": "update_email",
+        "parameters": [
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "The email id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to update the email",
           "content": {
@@ -723,7 +866,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Email"
                 }
               }
             }
@@ -754,9 +897,18 @@
         "operationId": "delete_email",
         "parameters": [
           {
-            "name": "Email",
-            "in": "header",
+            "name": "email_id",
+            "in": "path",
             "description": "The email id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
             "required": true,
             "schema": {
               "type": "string"
@@ -968,6 +1120,17 @@
           "links"
         ],
         "operationId": "create_link",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to create a new link",
           "content": {
@@ -985,7 +1148,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Link"
                 }
               }
             }
@@ -1016,13 +1179,33 @@
           "links"
         ],
         "operationId": "get_link",
+        "parameters": [
+          {
+            "name": "link_id",
+            "in": "path",
+            "description": "The link id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "JSON object representing the requested link",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Link"
                 }
               }
             }
@@ -1051,6 +1234,26 @@
           "links"
         ],
         "operationId": "update_link",
+        "parameters": [
+          {
+            "name": "link_id",
+            "in": "path",
+            "description": "The link id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to update the link",
           "content": {
@@ -1068,7 +1271,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Link"
                 }
               }
             }
@@ -1099,9 +1302,18 @@
         "operationId": "delete_link",
         "parameters": [
           {
-            "name": "Link",
-            "in": "header",
+            "name": "link_id",
+            "in": "path",
             "description": "The link id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
             "required": true,
             "schema": {
               "type": "string"
@@ -1716,6 +1928,17 @@
           "phones"
         ],
         "operationId": "create_phone",
+        "parameters": [
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to create a new phone",
           "content": {
@@ -1733,7 +1956,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Phone"
                 }
               }
             }
@@ -1764,13 +1987,33 @@
           "phones"
         ],
         "operationId": "get_phone",
+        "parameters": [
+          {
+            "name": "phone_id",
+            "in": "path",
+            "description": "The phone id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "JSON object representing the requested phone",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Phone"
                 }
               }
             }
@@ -1799,6 +2042,26 @@
           "phones"
         ],
         "operationId": "update_phone",
+        "parameters": [
+          {
+            "name": "phone_id",
+            "in": "path",
+            "description": "The phone id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "JSON request payload to update the phone",
           "content": {
@@ -1816,7 +2079,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Phone"
                 }
               }
             }
@@ -1847,9 +2110,18 @@
         "operationId": "delete_phone",
         "parameters": [
           {
-            "name": "Phone",
-            "in": "header",
+            "name": "phone_id",
+            "in": "path",
             "description": "The phone id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The org id to use for the request",
             "required": true,
             "schema": {
               "type": "string"
@@ -2133,6 +2405,35 @@
   },
   "components": {
     "schemas": {
+      "Contact": {
+        "type": "object",
+        "required": [
+          "id",
+          "org_id",
+          "first_name",
+          "last_name"
+        ],
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          }
+        },
+        "example": {
+          "first_name": "John",
+          "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "last_name": "Doe",
+          "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3"
+        }
+      },
       "CreateApiKeyReqPayload": {
         "type": "object",
         "required": [
@@ -2268,6 +2569,64 @@
           }
         }
       },
+      "Deal": {
+        "type": "object",
+        "required": [
+          "id",
+          "org_id",
+          "active"
+        ],
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "size": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          }
+        },
+        "example": {
+          "active": true,
+          "id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+          "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
+          "size": 4.0
+        }
+      },
+      "Email": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "org_id"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          }
+        },
+        "example": {
+          "email": "example@example.com",
+          "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7"
+        }
+      },
       "ErrorRespPayload": {
         "type": "object",
         "required": [
@@ -2364,6 +2723,30 @@
           }
         }
       },
+      "Link": {
+        "type": "object",
+        "required": [
+          "id",
+          "link",
+          "org_id"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "link": {
+            "type": "string"
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          }
+        },
+        "example": {
+          "id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "link": "https://trieve.ai",
+          "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8"
+        }
+      },
       "Note": {
         "type": "object",
         "required": [
@@ -2434,6 +2817,29 @@
           "id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
           "name": "Trieve Team",
           "updated_at": "2021-01-01T00:00:00"
+        }
+      },
+      "Phone": {
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "org_id"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "number": {
+            "type": "string"
+          },
+          "org_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          }
+        },
+        "example": {
+          "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "phone": "+1234567890"
         }
       },
       "PrefixedUuid": {

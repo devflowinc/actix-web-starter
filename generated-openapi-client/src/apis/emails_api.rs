@@ -17,6 +17,8 @@ use super::{Error, configuration};
 /// struct for passing parameters to the method [`create_email`]
 #[derive(Clone, Debug)]
 pub struct CreateEmailParams {
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to create a new email
     pub create_email_req_payload: models::CreateEmailReqPayload
 }
@@ -25,12 +27,27 @@ pub struct CreateEmailParams {
 #[derive(Clone, Debug)]
 pub struct DeleteEmailParams {
     /// The email id to use for the request
-    pub email: String
+    pub email_id: String,
+    /// The org id to use for the request
+    pub organization: String
+}
+
+/// struct for passing parameters to the method [`get_email`]
+#[derive(Clone, Debug)]
+pub struct GetEmailParams {
+    /// The email id to use for the request
+    pub email_id: String,
+    /// The org id to use for the request
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`update_email`]
 #[derive(Clone, Debug)]
 pub struct UpdateEmailParams {
+    /// The email id to use for the request
+    pub email_id: String,
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to update the email
     pub update_email_req_payload: models::UpdateEmailReqPayload
 }
@@ -40,7 +57,7 @@ pub struct UpdateEmailParams {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateEmailSuccess {
-    Status201(models::Org),
+    Status201(models::Email),
     UnknownValue(serde_json::Value),
 }
 
@@ -56,7 +73,7 @@ pub enum DeleteEmailSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetEmailSuccess {
-    Status200(models::Org),
+    Status200(models::Email),
     UnknownValue(serde_json::Value),
 }
 
@@ -64,7 +81,7 @@ pub enum GetEmailSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateEmailSuccess {
-    Status200(models::Org),
+    Status200(models::Email),
     UnknownValue(serde_json::Value),
 }
 
@@ -105,6 +122,7 @@ pub async fn create_email(configuration: &configuration::Configuration, params: 
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let organization = params.organization;
     let create_email_req_payload = params.create_email_req_payload;
 
 
@@ -116,6 +134,7 @@ pub async fn create_email(configuration: &configuration::Configuration, params: 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -147,18 +166,19 @@ pub async fn delete_email(configuration: &configuration::Configuration, params: 
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let email = params.email;
+    let email_id = params.email_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path, email_id=crate::apis::urlencode(email_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("Email", email.to_string());
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -185,20 +205,23 @@ pub async fn delete_email(configuration: &configuration::Configuration, params: 
     }
 }
 
-pub async fn get_email(configuration: &configuration::Configuration) -> Result<ResponseContent<GetEmailSuccess>, Error<GetEmailError>> {
+pub async fn get_email(configuration: &configuration::Configuration, params: GetEmailParams) -> Result<ResponseContent<GetEmailSuccess>, Error<GetEmailError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let email_id = params.email_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path, email_id=crate::apis::urlencode(email_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -229,17 +252,20 @@ pub async fn update_email(configuration: &configuration::Configuration, params: 
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let email_id = params.email_id;
+    let organization = params.organization;
     let update_email_req_payload = params.update_email_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/emails/{email_id}", local_var_configuration.base_path, email_id=crate::apis::urlencode(email_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {

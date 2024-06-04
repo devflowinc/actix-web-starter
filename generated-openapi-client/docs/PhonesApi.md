@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_phone
 
-> models::Org create_phone(create_phone_req_payload)
+> models::Phone create_phone(organization, create_phone_req_payload)
 
 
 ### Parameters
@@ -21,11 +21,12 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The org id to use for the request | [required] |
 **create_phone_req_payload** | [**CreatePhoneReqPayload**](CreatePhoneReqPayload.md) | JSON request payload to create a new phone | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Phone**](Phone.md)
 
 ### Authorization
 
@@ -41,7 +42,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_phone
 
-> delete_phone(phone)
+> delete_phone(phone_id, organization)
 
 
 ### Parameters
@@ -49,7 +50,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**phone** | **String** | The phone id to use for the request | [required] |
+**phone_id** | **String** | The phone id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
@@ -69,16 +71,20 @@ Name | Type | Description  | Required | Notes
 
 ## get_phone
 
-> models::Org get_phone()
+> models::Phone get_phone(phone_id, organization)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**phone_id** | **String** | The phone id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Phone**](Phone.md)
 
 ### Authorization
 
@@ -94,7 +100,7 @@ This endpoint does not need any parameter.
 
 ## update_phone
 
-> models::Org update_phone(update_phone_req_payload)
+> models::Phone update_phone(phone_id, organization, update_phone_req_payload)
 
 
 ### Parameters
@@ -102,11 +108,13 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**phone_id** | **String** | The phone id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 **update_phone_req_payload** | [**UpdatePhoneReqPayload**](UpdatePhoneReqPayload.md) | JSON request payload to update the phone | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Phone**](Phone.md)
 
 ### Authorization
 

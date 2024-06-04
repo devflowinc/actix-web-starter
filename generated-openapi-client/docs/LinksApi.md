@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_link
 
-> models::Org create_link(create_link_req_payload)
+> models::Link create_link(organization, create_link_req_payload)
 
 
 ### Parameters
@@ -21,11 +21,12 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The org id to use for the request | [required] |
 **create_link_req_payload** | [**CreateLinkReqPayload**](CreateLinkReqPayload.md) | JSON request payload to create a new link | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Link**](Link.md)
 
 ### Authorization
 
@@ -41,7 +42,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_link
 
-> delete_link(link)
+> delete_link(link_id, organization)
 
 
 ### Parameters
@@ -49,7 +50,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**link** | **String** | The link id to use for the request | [required] |
+**link_id** | **String** | The link id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
@@ -69,16 +71,20 @@ Name | Type | Description  | Required | Notes
 
 ## get_link
 
-> models::Org get_link()
+> models::Link get_link(link_id, organization)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**link_id** | **String** | The link id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Link**](Link.md)
 
 ### Authorization
 
@@ -94,7 +100,7 @@ This endpoint does not need any parameter.
 
 ## update_link
 
-> models::Org update_link(update_link_req_payload)
+> models::Link update_link(link_id, organization, update_link_req_payload)
 
 
 ### Parameters
@@ -102,11 +108,13 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**link_id** | **String** | The link id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 **update_link_req_payload** | [**UpdateLinkReqPayload**](UpdateLinkReqPayload.md) | JSON request payload to update the link | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Link**](Link.md)
 
 ### Authorization
 
