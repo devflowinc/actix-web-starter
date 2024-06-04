@@ -1709,6 +1709,176 @@
           }
         ]
       }
+    },
+    "/api/phones": {
+      "post": {
+        "tags": [
+          "phones"
+        ],
+        "operationId": "create_phone",
+        "requestBody": {
+          "description": "JSON request payload to create a new phone",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhoneReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "JSON body representing the phone that was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/phones/{phone_id}": {
+      "get": {
+        "tags": [
+          "phones"
+        ],
+        "operationId": "get_phone",
+        "responses": {
+          "200": {
+            "description": "JSON object representing the requested phone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "phones"
+        ],
+        "operationId": "update_phone",
+        "requestBody": {
+          "description": "JSON request payload to update the phone",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePhoneReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Object representing the altered phone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "phones"
+        ],
+        "operationId": "delete_phone",
+        "parameters": [
+          {
+            "name": "Phone",
+            "in": "header",
+            "description": "The phone id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the phone was successfully deleted"
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1810,6 +1980,17 @@
         ],
         "properties": {
           "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreatePhoneReqPayload": {
+        "type": "object",
+        "required": [
+          "number"
+        ],
+        "properties": {
+          "number": {
             "type": "string"
           }
         }
@@ -2056,6 +2237,15 @@
           }
         }
       },
+      "UpdatePhoneReqPayload": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "User": {
         "type": "object",
         "required": [
@@ -2137,6 +2327,10 @@
     {
       "name": "emails",
       "description": "Email endpoints. Used to manage emails"
+    },
+    {
+      "name": "phones",
+      "description": "Phone endpoints. Used to manage phones"
     }
   ]
 }

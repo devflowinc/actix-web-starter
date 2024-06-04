@@ -62,6 +62,10 @@ Class | Method | HTTP request | Description
 *OrgsApi* | [**get_orgs_for_authed_user**](docs/OrgsApi.md#get_orgs_for_authed_user) | **GET** /api/orgs | 
 *OrgsApi* | [**leave_org**](docs/OrgsApi.md#leave_org) | **DELETE** /api/orgs/leave/{org_id} | 
 *OrgsApi* | [**update_org**](docs/OrgsApi.md#update_org) | **PUT** /api/orgs/{org_id} | 
+*PhonesApi* | [**create_phone**](docs/PhonesApi.md#create_phone) | **POST** /api/phones | 
+*PhonesApi* | [**delete_phone**](docs/PhonesApi.md#delete_phone) | **DELETE** /api/phones/{phone_id} | 
+*PhonesApi* | [**get_phone**](docs/PhonesApi.md#get_phone) | **GET** /api/phones/{phone_id} | 
+*PhonesApi* | [**update_phone**](docs/PhonesApi.md#update_phone) | **PUT** /api/phones/{phone_id} | 
 
 
 ## Documentation For Models
@@ -74,6 +78,7 @@ Class | Method | HTTP request | Description
  - [CreateLinkReqPayload](docs/CreateLinkReqPayload.md)
  - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
+ - [CreatePhoneReqPayload](docs/CreatePhoneReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
@@ -86,6 +91,7 @@ Class | Method | HTTP request | Description
  - [UpdateLinkReqPayload](docs/UpdateLinkReqPayload.md)
  - [UpdateNoteReqPayload](docs/UpdateNoteReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
+ - [UpdatePhoneReqPayload](docs/UpdatePhoneReqPayload.md)
  - [User](docs/User.md)
 
 

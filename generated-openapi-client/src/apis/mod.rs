@@ -100,5 +100,6 @@ pub mod invitation_api;
 pub mod links_api;
 pub mod notes_api;
 pub mod orgs_api;
+pub mod phones_api;
 
 pub mod configuration;
