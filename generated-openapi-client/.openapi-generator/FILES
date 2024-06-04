@@ -9,6 +9,7 @@ docs/CreateApiKeyReqPayload.md
 docs/CreateApiKeyRespPayload.md
 docs/CreateContactReqPayload.md
 docs/CreateDealReqPayload.md
+docs/CreateLinkReqPayload.md
 docs/CreateNoteReqPayload.md
 docs/CreateOrgReqPayload.md
 docs/DealsApi.md
@@ -18,12 +19,14 @@ docs/Invitation.md
 docs/InvitationApi.md
 docs/InvitationData.md
 docs/InvitationResponse.md
+docs/LinksApi.md
 docs/Note.md
 docs/NotesApi.md
 docs/Org.md
 docs/OrgsApi.md
 docs/UpdateContactReqPayload.md
 docs/UpdateDealReqPayload.md
+docs/UpdateLinkReqPayload.md
 docs/UpdateNoteReqPayload.md
 docs/UpdateOrgReqPayload.md
 docs/User.md
@@ -35,6 +38,7 @@ src/apis/contacts_api.rs
 src/apis/deals_api.rs
 src/apis/health_api.rs
 src/apis/invitation_api.rs
+src/apis/links_api.rs
 src/apis/mod.rs
 src/apis/notes_api.rs
 src/apis/orgs_api.rs
@@ -43,6 +47,7 @@ src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
 src/models/create_contact_req_payload.rs
 src/models/create_deal_req_payload.rs
+src/models/create_link_req_payload.rs
 src/models/create_note_req_payload.rs
 src/models/create_org_req_payload.rs
 src/models/error_resp_payload.rs
@@ -54,6 +59,7 @@ src/models/note.rs
 src/models/org.rs
 src/models/update_contact_req_payload.rs
 src/models/update_deal_req_payload.rs
+src/models/update_link_req_payload.rs
 src/models/update_note_req_payload.rs
 src/models/update_org_req_payload.rs
 src/models/user.rs

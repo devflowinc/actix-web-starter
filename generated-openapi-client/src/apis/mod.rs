@@ -96,6 +96,7 @@ pub mod contacts_api;
 pub mod deals_api;
 pub mod health_api;
 pub mod invitation_api;
+pub mod links_api;
 pub mod notes_api;
 pub mod orgs_api;
 

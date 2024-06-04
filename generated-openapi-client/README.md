@@ -44,6 +44,10 @@ Class | Method | HTTP request | Description
 *InvitationApi* | [**delete_invitation**](docs/InvitationApi.md#delete_invitation) | **DELETE** /api/invitation/{invitation_id} | Delete Invitation
 *InvitationApi* | [**get_invitations**](docs/InvitationApi.md#get_invitations) | **GET** /api/invitation/{organization_id} | Get Invitations
 *InvitationApi* | [**post_invitation**](docs/InvitationApi.md#post_invitation) | **POST** /api/invitation | Send Invitation
+*LinksApi* | [**create_link**](docs/LinksApi.md#create_link) | **POST** /api/links | 
+*LinksApi* | [**delete_link**](docs/LinksApi.md#delete_link) | **DELETE** /api/links/{link_id} | 
+*LinksApi* | [**get_link**](docs/LinksApi.md#get_link) | **GET** /api/links/{link_id} | 
+*LinksApi* | [**update_link**](docs/LinksApi.md#update_link) | **PUT** /api/links/{link_id} | 
 *NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /api/notes | 
 *NotesApi* | [**delete_note**](docs/NotesApi.md#delete_note) | **DELETE** /api/notes/{note_id} | 
 *NotesApi* | [**get_note_by_id**](docs/NotesApi.md#get_note_by_id) | **GET** /api/notes/{note_id} | 
@@ -62,6 +66,7 @@ Class | Method | HTTP request | Description
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [CreateContactReqPayload](docs/CreateContactReqPayload.md)
  - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
+ - [CreateLinkReqPayload](docs/CreateLinkReqPayload.md)
  - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
@@ -72,6 +77,7 @@ Class | Method | HTTP request | Description
  - [Org](docs/Org.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
+ - [UpdateLinkReqPayload](docs/UpdateLinkReqPayload.md)
  - [UpdateNoteReqPayload](docs/UpdateNoteReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
  - [User](docs/User.md)
