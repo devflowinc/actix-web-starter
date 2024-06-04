@@ -17,6 +17,8 @@ use super::{Error, configuration};
 /// struct for passing parameters to the method [`create_deal`]
 #[derive(Clone, Debug)]
 pub struct CreateDealParams {
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to create a new deal
     pub create_deal_req_payload: models::CreateDealReqPayload
 }
@@ -25,20 +27,27 @@ pub struct CreateDealParams {
 #[derive(Clone, Debug)]
 pub struct DeleteDealParams {
     /// The deal id to use for the request
-    pub deal: String,
-    pub deal_id: String
+    pub deal_id: String,
+    /// The org id to use for the request
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`get_deal`]
 #[derive(Clone, Debug)]
 pub struct GetDealParams {
-    pub deal_id: String
+    /// The deal id to use for the request
+    pub deal_id: String,
+    /// The org id to use for the request
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`update_deal`]
 #[derive(Clone, Debug)]
 pub struct UpdateDealParams {
+    /// The deal id to use for the request
     pub deal_id: String,
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to update the deal
     pub update_deal_req_payload: models::UpdateDealReqPayload
 }
@@ -48,7 +57,7 @@ pub struct UpdateDealParams {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateDealSuccess {
-    Status201(models::Org),
+    Status201(models::Deal),
     UnknownValue(serde_json::Value),
 }
 
@@ -64,7 +73,7 @@ pub enum DeleteDealSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetDealSuccess {
-    Status200(models::Org),
+    Status200(models::Deal),
     UnknownValue(serde_json::Value),
 }
 
@@ -72,7 +81,7 @@ pub enum GetDealSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateDealSuccess {
-    Status200(models::Org),
+    Status200(models::Deal),
     UnknownValue(serde_json::Value),
 }
 
@@ -113,6 +122,7 @@ pub async fn create_deal(configuration: &configuration::Configuration, params: C
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let organization = params.organization;
     let create_deal_req_payload = params.create_deal_req_payload;
 
 
@@ -124,6 +134,7 @@ pub async fn create_deal(configuration: &configuration::Configuration, params: C
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -155,8 +166,8 @@ pub async fn delete_deal(configuration: &configuration::Configuration, params: D
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let deal = params.deal;
     let deal_id = params.deal_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -167,7 +178,7 @@ pub async fn delete_deal(configuration: &configuration::Configuration, params: D
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("Deal", deal.to_string());
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -199,6 +210,7 @@ pub async fn get_deal(configuration: &configuration::Configuration, params: GetD
 
     // unbox the parameters
     let deal_id = params.deal_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
@@ -209,6 +221,7 @@ pub async fn get_deal(configuration: &configuration::Configuration, params: GetD
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -240,6 +253,7 @@ pub async fn update_deal(configuration: &configuration::Configuration, params: U
 
     // unbox the parameters
     let deal_id = params.deal_id;
+    let organization = params.organization;
     let update_deal_req_payload = params.update_deal_req_payload;
 
 
@@ -251,6 +265,7 @@ pub async fn update_deal(configuration: &configuration::Configuration, params: U
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {

@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_email
 
-> models::Org create_email(create_email_req_payload)
+> models::Email create_email(organization, create_email_req_payload)
 
 
 ### Parameters
@@ -21,11 +21,12 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The org id to use for the request | [required] |
 **create_email_req_payload** | [**CreateEmailReqPayload**](CreateEmailReqPayload.md) | JSON request payload to create a new email | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Email**](Email.md)
 
 ### Authorization
 
@@ -41,7 +42,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_email
 
-> delete_email(email)
+> delete_email(email_id, organization)
 
 
 ### Parameters
@@ -49,7 +50,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**email** | **String** | The email id to use for the request | [required] |
+**email_id** | **String** | The email id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
@@ -69,16 +71,20 @@ Name | Type | Description  | Required | Notes
 
 ## get_email
 
-> models::Org get_email()
+> models::Email get_email(email_id, organization)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**email_id** | **String** | The email id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Email**](Email.md)
 
 ### Authorization
 
@@ -94,7 +100,7 @@ This endpoint does not need any parameter.
 
 ## update_email
 
-> models::Org update_email(update_email_req_payload)
+> models::Email update_email(email_id, organization, update_email_req_payload)
 
 
 ### Parameters
@@ -102,11 +108,13 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**email_id** | **String** | The email id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 **update_email_req_payload** | [**UpdateEmailReqPayload**](UpdateEmailReqPayload.md) | JSON request payload to update the email | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Email**](Email.md)
 
 ### Authorization
 

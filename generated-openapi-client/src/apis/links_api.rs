@@ -17,6 +17,8 @@ use super::{Error, configuration};
 /// struct for passing parameters to the method [`create_link`]
 #[derive(Clone, Debug)]
 pub struct CreateLinkParams {
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to create a new link
     pub create_link_req_payload: models::CreateLinkReqPayload
 }
@@ -25,12 +27,27 @@ pub struct CreateLinkParams {
 #[derive(Clone, Debug)]
 pub struct DeleteLinkParams {
     /// The link id to use for the request
-    pub link: String
+    pub link_id: String,
+    /// The org id to use for the request
+    pub organization: String
+}
+
+/// struct for passing parameters to the method [`get_link`]
+#[derive(Clone, Debug)]
+pub struct GetLinkParams {
+    /// The link id to use for the request
+    pub link_id: String,
+    /// The org id to use for the request
+    pub organization: String
 }
 
 /// struct for passing parameters to the method [`update_link`]
 #[derive(Clone, Debug)]
 pub struct UpdateLinkParams {
+    /// The link id to use for the request
+    pub link_id: String,
+    /// The org id to use for the request
+    pub organization: String,
     /// JSON request payload to update the link
     pub update_link_req_payload: models::UpdateLinkReqPayload
 }
@@ -40,7 +57,7 @@ pub struct UpdateLinkParams {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateLinkSuccess {
-    Status201(models::Org),
+    Status201(models::Link),
     UnknownValue(serde_json::Value),
 }
 
@@ -56,7 +73,7 @@ pub enum DeleteLinkSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetLinkSuccess {
-    Status200(models::Org),
+    Status200(models::Link),
     UnknownValue(serde_json::Value),
 }
 
@@ -64,7 +81,7 @@ pub enum GetLinkSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateLinkSuccess {
-    Status200(models::Org),
+    Status200(models::Link),
     UnknownValue(serde_json::Value),
 }
 
@@ -105,6 +122,7 @@ pub async fn create_link(configuration: &configuration::Configuration, params: C
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let organization = params.organization;
     let create_link_req_payload = params.create_link_req_payload;
 
 
@@ -116,6 +134,7 @@ pub async fn create_link(configuration: &configuration::Configuration, params: C
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -147,18 +166,19 @@ pub async fn delete_link(configuration: &configuration::Configuration, params: D
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let link = params.link;
+    let link_id = params.link_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path, link_id=crate::apis::urlencode(link_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("Link", link.to_string());
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -185,20 +205,23 @@ pub async fn delete_link(configuration: &configuration::Configuration, params: D
     }
 }
 
-pub async fn get_link(configuration: &configuration::Configuration) -> Result<ResponseContent<GetLinkSuccess>, Error<GetLinkError>> {
+pub async fn get_link(configuration: &configuration::Configuration, params: GetLinkParams) -> Result<ResponseContent<GetLinkSuccess>, Error<GetLinkError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let link_id = params.link_id;
+    let organization = params.organization;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path, link_id=crate::apis::urlencode(link_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -229,17 +252,20 @@ pub async fn update_link(configuration: &configuration::Configuration, params: U
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let link_id = params.link_id;
+    let organization = params.organization;
     let update_link_req_payload = params.update_link_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/links/{link_id}", local_var_configuration.base_path, link_id=crate::apis::urlencode(link_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {

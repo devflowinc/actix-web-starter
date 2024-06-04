@@ -22,11 +22,14 @@ pub struct CreatePhoneReqPayload {
   tag = "phones",
   request_body(content = CreatePhoneReqPayload, description = "JSON request payload to create a new phone", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the phone that was created", body = Org),
+      (status = 201, description = "JSON body representing the phone that was created", body = Phone),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -49,7 +52,8 @@ pub async fn create_phone(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Phone" = String, Header, description = "The phone id to use for the request"),
+    ("phone_id" = String, description = "The phone id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -73,11 +77,15 @@ pub async fn delete_phone(
   context_path = "/api",
   tag = "phones",
   responses(
-      (status = 200, description = "JSON object representing the requested phone", body = Org),
+      (status = 200, description = "JSON object representing the requested phone", body = Phone),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params (
+    ("phone_id" = String, description = "The phone id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -105,11 +113,15 @@ pub struct UpdatePhoneReqPayload {
   tag = "phones",
   request_body(content = UpdatePhoneReqPayload, description = "JSON request payload to update the phone", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the altered phone", body = Org),
+      (status = 200, description = "Object representing the altered phone", body = Phone),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params (
+    ("phone_id" = String, description = "The phone id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]

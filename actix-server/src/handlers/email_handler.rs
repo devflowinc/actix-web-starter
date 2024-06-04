@@ -22,8 +22,11 @@ pub struct CreateEmailReqPayload {
   tag = "emails",
   request_body(content = CreateEmailReqPayload, description = "JSON request payload to create a new email", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the email that was created", body = Org),
+      (status = 201, description = "JSON body representing the email that was created", body = Email),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -49,7 +52,8 @@ pub async fn create_email(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Email" = String, Header, description = "The email id to use for the request"),
+    ("email_id" = String, description = "The email id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -73,12 +77,16 @@ pub async fn delete_email(
   context_path = "/api",
   tag = "emails",
   responses(
-      (status = 200, description = "JSON object representing the requested email", body = Org),
+      (status = 200, description = "JSON object representing the requested email", body = Email),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
-  )
+  ),
+  params(
+    ("email_id" = String, description = "The email id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
+  ),
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_email(
@@ -105,12 +113,16 @@ pub struct UpdateEmailReqPayload {
   tag = "emails",
   request_body(content = UpdateEmailReqPayload, description = "JSON request payload to update the email", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed email", body = Org),
+      (status = 200, description = "Object representing the renamed email", body = Email),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
-  )
+  ),
+  params(
+    ("email_id" = String, description = "The email id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
+  ),
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_email(

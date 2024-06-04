@@ -74,6 +74,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Contact](docs/Contact.md)
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [CreateContactReqPayload](docs/CreateContactReqPayload.md)
@@ -84,12 +85,16 @@ Class | Method | HTTP request | Description
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [CreatePhoneReqPayload](docs/CreatePhoneReqPayload.md)
  - [CreateTaskReqPayload](docs/CreateTaskReqPayload.md)
+ - [Deal](docs/Deal.md)
+ - [Email](docs/Email.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
  - [InvitationResponse](docs/InvitationResponse.md)
+ - [Link](docs/Link.md)
  - [Note](docs/Note.md)
  - [Org](docs/Org.md)
+ - [Phone](docs/Phone.md)
  - [Task](docs/Task.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)

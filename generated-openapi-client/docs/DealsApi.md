@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_deal
 
-> models::Org create_deal(create_deal_req_payload)
+> models::Deal create_deal(organization, create_deal_req_payload)
 
 
 ### Parameters
@@ -21,11 +21,12 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The org id to use for the request | [required] |
 **create_deal_req_payload** | [**CreateDealReqPayload**](CreateDealReqPayload.md) | JSON request payload to create a new deal | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Deal**](Deal.md)
 
 ### Authorization
 
@@ -41,7 +42,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_deal
 
-> delete_deal(deal, deal_id)
+> delete_deal(deal_id, organization)
 
 
 ### Parameters
@@ -49,8 +50,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal** | **String** | The deal id to use for the request | [required] |
-**deal_id** | **uuid::Uuid** |  | [required] |
+**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
@@ -70,7 +71,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_deal
 
-> models::Org get_deal(deal_id)
+> models::Deal get_deal(deal_id, organization)
 
 
 ### Parameters
@@ -78,11 +79,12 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal_id** | **uuid::Uuid** |  | [required] |
+**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Deal**](Deal.md)
 
 ### Authorization
 
@@ -98,7 +100,7 @@ Name | Type | Description  | Required | Notes
 
 ## update_deal
 
-> models::Org update_deal(deal_id, update_deal_req_payload)
+> models::Deal update_deal(deal_id, organization, update_deal_req_payload)
 
 
 ### Parameters
@@ -106,12 +108,13 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal_id** | **uuid::Uuid** |  | [required] |
+**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 **update_deal_req_payload** | [**UpdateDealReqPayload**](UpdateDealReqPayload.md) | JSON request payload to update the deal | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Deal**](Deal.md)
 
 ### Authorization
 

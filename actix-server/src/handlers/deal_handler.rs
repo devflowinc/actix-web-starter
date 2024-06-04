@@ -23,11 +23,14 @@ pub struct CreateDealReqPayload {
   tag = "deals",
   request_body(content = CreateDealReqPayload, description = "JSON request payload to create a new deal", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the deal that was created", body = Org),
+      (status = 201, description = "JSON body representing the deal that was created", body = Deal),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -57,7 +60,8 @@ pub async fn create_deal(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Deal" = String, Header, description = "The deal id to use for the request"),
+    ("deal_id" = String, description = "The deal id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request")
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -81,11 +85,15 @@ pub async fn delete_deal(
   context_path = "/api",
   tag = "deals",
   responses(
-      (status = 200, description = "JSON object representing the requested deal", body = Org),
+      (status = 200, description = "JSON object representing the requested deal", body = Deal),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("deal_id" = String, description = "The deal id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request")
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -115,11 +123,15 @@ pub struct UpdateDealReqPayload {
   tag = "deals",
   request_body(content = UpdateDealReqPayload, description = "JSON request payload to update the deal", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed deal", body = Org),
+      (status = 200, description = "Object representing the renamed deal", body = Deal),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("deal_id" = String, description = "The deal id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request")
   )
 )]
 #[tracing::instrument(skip(pg_pool))]

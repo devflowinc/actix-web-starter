@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_contact
 
-> models::Org create_contact(create_contact_req_payload)
+> models::Contact create_contact(organization, create_contact_req_payload)
 
 
 ### Parameters
@@ -21,11 +21,12 @@ Method | HTTP request | Description
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The org id to use for the request | [required] |
 **create_contact_req_payload** | [**CreateContactReqPayload**](CreateContactReqPayload.md) | JSON request payload to create a new contact | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Contact**](Contact.md)
 
 ### Authorization
 
@@ -41,7 +42,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_contact
 
-> delete_contact(contact)
+> delete_contact(contact_id, organization)
 
 
 ### Parameters
@@ -49,7 +50,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**contact** | **String** | The contacts id to use for the request | [required] |
+**contact_id** | **String** | The contacts id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
@@ -69,16 +71,20 @@ Name | Type | Description  | Required | Notes
 
 ## get_contact
 
-> models::Org get_contact()
+> models::Contact get_contact(contact_id, organization)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**contact_id** | **String** | The contacts id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Contact**](Contact.md)
 
 ### Authorization
 
@@ -94,7 +100,7 @@ This endpoint does not need any parameter.
 
 ## update_contact
 
-> models::Org update_contact(update_contact_req_payload)
+> models::Contact update_contact(contact_id, organization, update_contact_req_payload)
 
 
 ### Parameters
@@ -102,11 +108,13 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**contact_id** | **String** | The contact id to use for the request | [required] |
+**organization** | **String** | The org id to use for the request | [required] |
 **update_contact_req_payload** | [**UpdateContactReqPayload**](UpdateContactReqPayload.md) | JSON request payload to update the contact | [required] |
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Contact**](Contact.md)
 
 ### Authorization
 
