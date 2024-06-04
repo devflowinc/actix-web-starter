@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_link
 
-> delete_link(link)
+> delete_link(link_id)
 
 
 ### Parameters
@@ -49,7 +49,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**link** | **String** | The link id to use for the request | [required] |
+**link_id** | **String** | The link id to use for the request | [required] |
 
 ### Return type
 
@@ -69,12 +69,15 @@ Name | Type | Description  | Required | Notes
 
 ## get_link
 
-> models::Org get_link()
+> models::Org get_link(link_id)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**link_id** | **String** | The link id to use for the request | [required] |
 
 ### Return type
 
@@ -94,7 +97,7 @@ This endpoint does not need any parameter.
 
 ## update_link
 
-> models::Org update_link(update_link_req_payload)
+> models::Org update_link(link_id, update_link_req_payload)
 
 
 ### Parameters
@@ -102,6 +105,7 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**link_id** | **String** | The link id to use for the request | [required] |
 **update_link_req_payload** | [**UpdateLinkReqPayload**](UpdateLinkReqPayload.md) | JSON request payload to update the link | [required] |
 
 ### Return type

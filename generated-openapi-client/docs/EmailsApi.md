@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_email
 
-> delete_email(email)
+> delete_email(email_id)
 
 
 ### Parameters
@@ -49,7 +49,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**email** | **String** | The email id to use for the request | [required] |
+**email_id** | **String** | The email id to use for the request | [required] |
 
 ### Return type
 
@@ -69,12 +69,15 @@ Name | Type | Description  | Required | Notes
 
 ## get_email
 
-> models::Org get_email()
+> models::Org get_email(email_id)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**email_id** | **String** | The email id to use for the request | [required] |
 
 ### Return type
 
@@ -94,7 +97,7 @@ This endpoint does not need any parameter.
 
 ## update_email
 
-> models::Org update_email(update_email_req_payload)
+> models::Org update_email(email_id, update_email_req_payload)
 
 
 ### Parameters
@@ -102,6 +105,7 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**email_id** | **String** | The email id to use for the request | [required] |
 **update_email_req_payload** | [**UpdateEmailReqPayload**](UpdateEmailReqPayload.md) | JSON request payload to update the email | [required] |
 
 ### Return type

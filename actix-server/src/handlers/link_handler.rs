@@ -49,7 +49,7 @@ pub async fn create_link(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Link" = String, Header, description = "The link id to use for the request"),
+    ("link_id" = String, Path, description = "The link id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -75,6 +75,9 @@ pub async fn delete_link(
   responses(
       (status = 200, description = "JSON object representing the requested link", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("link_id" = String, Path, description = "The link id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -107,6 +110,9 @@ pub struct UpdateLinkReqPayload {
   responses(
       (status = 200, description = "Object representing the renamed link", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("link_id" = String, Path, description = "The link id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),

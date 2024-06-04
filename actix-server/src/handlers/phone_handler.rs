@@ -49,7 +49,7 @@ pub async fn create_phone(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Phone" = String, Header, description = "The phone id to use for the request"),
+    ("phone_id" = String, Path, description = "The phone id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -75,6 +75,9 @@ pub async fn delete_phone(
   responses(
       (status = 200, description = "JSON object representing the requested phone", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("phone_id" = String, Path, description = "The phone id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -107,6 +110,9 @@ pub struct UpdatePhoneReqPayload {
   responses(
       (status = 200, description = "Object representing the altered phone", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("phone_id" = String, Path, description = "The phone id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),

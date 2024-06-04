@@ -25,12 +25,21 @@ pub struct CreateContactParams {
 #[derive(Clone, Debug)]
 pub struct DeleteContactParams {
     /// The contacts id to use for the request
-    pub contact: String
+    pub contact_id: String
+}
+
+/// struct for passing parameters to the method [`get_contact`]
+#[derive(Clone, Debug)]
+pub struct GetContactParams {
+    /// The contacts id to use for the request
+    pub contact_id: String
 }
 
 /// struct for passing parameters to the method [`update_contact`]
 #[derive(Clone, Debug)]
 pub struct UpdateContactParams {
+    /// The contacts id to use for the request
+    pub contact_id: String,
     /// JSON request payload to update the contact
     pub update_contact_req_payload: models::UpdateContactReqPayload
 }
@@ -147,18 +156,17 @@ pub async fn delete_contact(configuration: &configuration::Configuration, params
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let contact = params.contact;
+    let contact_id = params.contact_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path, contact_id=crate::apis::urlencode(contact_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("Contact", contact.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -185,15 +193,16 @@ pub async fn delete_contact(configuration: &configuration::Configuration, params
     }
 }
 
-pub async fn get_contact(configuration: &configuration::Configuration) -> Result<ResponseContent<GetContactSuccess>, Error<GetContactError>> {
+pub async fn get_contact(configuration: &configuration::Configuration, params: GetContactParams) -> Result<ResponseContent<GetContactSuccess>, Error<GetContactError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let contact_id = params.contact_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path, contact_id=crate::apis::urlencode(contact_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
@@ -229,12 +238,13 @@ pub async fn update_contact(configuration: &configuration::Configuration, params
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let contact_id = params.contact_id;
     let update_contact_req_payload = params.update_contact_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/contacts/{contact_id}", local_var_configuration.base_path, contact_id=crate::apis::urlencode(contact_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {

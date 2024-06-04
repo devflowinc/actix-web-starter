@@ -49,7 +49,7 @@ pub async fn create_email(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Email" = String, Header, description = "The email id to use for the request"),
+    ("email_id" = String, Path, description = "The email id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -75,6 +75,9 @@ pub async fn delete_email(
   responses(
       (status = 200, description = "JSON object representing the requested email", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("email_id" = String, Path, description = "The email id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -107,6 +110,9 @@ pub struct UpdateEmailReqPayload {
   responses(
       (status = 200, description = "Object representing the renamed email", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("email_id" = String, Path, description = "The email id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),

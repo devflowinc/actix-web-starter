@@ -25,12 +25,21 @@ pub struct CreatePhoneParams {
 #[derive(Clone, Debug)]
 pub struct DeletePhoneParams {
     /// The phone id to use for the request
-    pub phone: String
+    pub phone_id: String
+}
+
+/// struct for passing parameters to the method [`get_phone`]
+#[derive(Clone, Debug)]
+pub struct GetPhoneParams {
+    /// The phone id to use for the request
+    pub phone_id: String
 }
 
 /// struct for passing parameters to the method [`update_phone`]
 #[derive(Clone, Debug)]
 pub struct UpdatePhoneParams {
+    /// The phone id to use for the request
+    pub phone_id: String,
     /// JSON request payload to update the phone
     pub update_phone_req_payload: models::UpdatePhoneReqPayload
 }
@@ -147,18 +156,17 @@ pub async fn delete_phone(configuration: &configuration::Configuration, params: 
     let local_var_configuration = configuration;
 
     // unbox the parameters
-    let phone = params.phone;
+    let phone_id = params.phone_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path, phone_id=crate::apis::urlencode(phone_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    local_var_req_builder = local_var_req_builder.header("Phone", phone.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {
@@ -185,15 +193,16 @@ pub async fn delete_phone(configuration: &configuration::Configuration, params: 
     }
 }
 
-pub async fn get_phone(configuration: &configuration::Configuration) -> Result<ResponseContent<GetPhoneSuccess>, Error<GetPhoneError>> {
+pub async fn get_phone(configuration: &configuration::Configuration, params: GetPhoneParams) -> Result<ResponseContent<GetPhoneSuccess>, Error<GetPhoneError>> {
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let phone_id = params.phone_id;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path, phone_id=crate::apis::urlencode(phone_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
@@ -229,12 +238,13 @@ pub async fn update_phone(configuration: &configuration::Configuration, params: 
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let phone_id = params.phone_id;
     let update_phone_req_payload = params.update_phone_req_payload;
 
 
     let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path);
+    let local_var_uri_str = format!("{}/api/phones/{phone_id}", local_var_configuration.base_path, phone_id=crate::apis::urlencode(phone_id));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {

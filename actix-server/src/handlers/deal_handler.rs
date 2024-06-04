@@ -57,7 +57,7 @@ pub async fn create_deal(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Deal" = String, Header, description = "The deal id to use for the request"),
+    ("deal_id" = String, Path, description = "The deal id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -83,6 +83,9 @@ pub async fn delete_deal(
   responses(
       (status = 200, description = "JSON object representing the requested deal", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("deal_id" = String, Path, description = "The deal id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -117,6 +120,9 @@ pub struct UpdateDealReqPayload {
   responses(
       (status = 200, description = "Object representing the renamed deal", body = Org),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+    ("deal_id" = String, Path, description = "The deal id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
