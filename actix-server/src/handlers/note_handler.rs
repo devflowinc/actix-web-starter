@@ -127,9 +127,10 @@ pub struct GetNotesForOrgReqQuery {
   params(
       ("limit" = Option<i64>, Query, description = "Limit the number of results. Default is 10"),
       ("offset" = Option<i64>, Query, description = "Offset the results. Default is 0"),
+      ("Organization" = String, Header, description = "The organization id to use for the request"),
   ),
   responses(
-      (status = 200, description = "List of organizations the user belongs to", body = [Org]),
+      (status = 200, description = "List of notes for the organization", body = [Note]),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(

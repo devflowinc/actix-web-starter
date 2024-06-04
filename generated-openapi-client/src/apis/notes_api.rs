@@ -44,6 +44,8 @@ pub struct GetNoteByIdParams {
 /// struct for passing parameters to the method [`get_notes_for_org`]
 #[derive(Clone, Debug)]
 pub struct GetNotesForOrgParams {
+    /// The organization id to use for the request
+    pub organization: String,
     /// Limit the number of results. Default is 10
     pub limit: Option<i64>,
     /// Offset the results. Default is 0
@@ -90,7 +92,7 @@ pub enum GetNoteByIdSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetNotesForOrgSuccess {
-    Status200(Vec<models::Org>),
+    Status200(Vec<models::Note>),
     UnknownValue(serde_json::Value),
 }
 
@@ -277,6 +279,7 @@ pub async fn get_notes_for_org(configuration: &configuration::Configuration, par
     let local_var_configuration = configuration;
 
     // unbox the parameters
+    let organization = params.organization;
     let limit = params.limit;
     let offset = params.offset;
 
@@ -295,6 +298,7 @@ pub async fn get_notes_for_org(configuration: &configuration::Configuration, par
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = local_var_apikey.key.clone();
         let local_var_value = match local_var_apikey.prefix {

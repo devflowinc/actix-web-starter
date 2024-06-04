@@ -227,6 +227,7 @@ async fn main() {
             NoteCommands::Create(create_note) => {
                 notes::create_note(settings, create_note.title).await
             }
+            NoteCommands::List => notes::list_notes(settings).await,
 
             _ => unimplemented!("Notes command not implemented yet"),
         },

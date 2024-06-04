@@ -1372,17 +1372,26 @@
               "format": "int64",
               "nullable": true
             }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of organizations the user belongs to",
+            "description": "List of notes for the organization",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Org"
+                    "$ref": "#/components/schemas/Note"
                   }
                 }
               }

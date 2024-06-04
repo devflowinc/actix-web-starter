@@ -101,7 +101,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_notes_for_org
 
-> Vec<models::Org> get_notes_for_org(limit, offset)
+> Vec<models::Note> get_notes_for_org(organization, limit, offset)
 
 
 ### Parameters
@@ -109,12 +109,13 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**organization** | **String** | The organization id to use for the request | [required] |
 **limit** | Option<**i64**> | Limit the number of results. Default is 10 |  |
 **offset** | Option<**i64**> | Offset the results. Default is 0 |  |
 
 ### Return type
 
-[**Vec<models::Org>**](Org.md)
+[**Vec<models::Note>**](Note.md)
 
 ### Authorization
 
