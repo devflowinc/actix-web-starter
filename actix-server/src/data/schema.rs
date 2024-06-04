@@ -52,6 +52,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    links (id) {
+        id -> Uuid,
+        link -> Text,
+        org_id -> Uuid,
+    }
+}
+
+diesel::table! {
     notes (id) {
         id -> Uuid,
         title -> Text,
@@ -59,14 +67,6 @@ diesel::table! {
         org_id -> Uuid,
         created_at -> Timestamp,
         updated_at -> Timestamp,
-    }
-}
-
-diesel::table! {
-    links (id) {
-        id -> Uuid,
-        link -> Text,
-        org_id -> Uuid,
     }
 }
 
@@ -122,6 +122,16 @@ diesel::table! {
 }
 
 diesel::table! {
+    tasks (id) {
+        id -> Uuid,
+        deadline -> Nullable<Timestamp>,
+        description -> Nullable<Text>,
+        contact_id -> Nullable<Uuid>,
+        org_id -> Uuid,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Uuid,
         email -> Text,
@@ -136,12 +146,14 @@ diesel::joinable!(contacts -> orgs (org_id));
 diesel::joinable!(deals -> orgs (org_id));
 diesel::joinable!(emails -> orgs (org_id));
 diesel::joinable!(invitations -> orgs (organization_id));
-diesel::joinable!(notes -> orgs (org_id));
 diesel::joinable!(links -> orgs (org_id));
+diesel::joinable!(notes -> orgs (org_id));
 diesel::joinable!(org_users -> orgs (org_id));
 diesel::joinable!(org_users -> users (user_id));
 diesel::joinable!(phones -> orgs (org_id));
 diesel::joinable!(subscriptions -> orgs (org_id));
+diesel::joinable!(tasks -> contacts (contact_id));
+diesel::joinable!(tasks -> orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     api_keys,
@@ -149,12 +161,13 @@ diesel::allow_tables_to_appear_in_same_query!(
     deals,
     emails,
     invitations,
-    notes,
     links,
+    notes,
     org_users,
     orgs,
     phones,
     plans,
     subscriptions,
+    tasks,
     users,
 );
