@@ -1,5 +1,6 @@
+use actix_web_starter_client::apis::configuration::Configuration;
 use clap::{Args, Parser, Subcommand};
-use commands::{configure::ActixTemplateProfile, orgs};
+use commands::{configure::ActixTemplateProfile, notes, orgs};
 
 mod commands;
 
@@ -33,6 +34,35 @@ enum Commands {
     /// Command to manage organizations
     #[command(subcommand)]
     Orgs(OrgCommands),
+
+    #[command(subcommand)]
+    Notes(NoteCommands),
+}
+
+#[derive(Subcommand)]
+enum NoteCommands {
+    Create(CreateNote),
+    Delete(DeleteNote),
+    Edit(EditNote),
+    List,
+}
+
+#[derive(Args)]
+struct CreateNote {
+    /// The title of the note you want to create
+    title: Option<String>,
+}
+
+#[derive(Args)]
+struct DeleteNote {
+    /// The id of the note you want to delete
+    id: Option<String>,
+}
+
+#[derive(Args)]
+struct EditNote {
+    /// The id of the note you want to edit
+    id: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -191,6 +221,14 @@ async fn main() {
             OrgCommands::Leave(leave_org) => {
                 orgs::leave_org(leave_org.id, settings).await;
             }
+        },
+
+        Some(Commands::Notes(note_option)) => match note_option {
+            NoteCommands::Create(create_note) => {
+                notes::create_note(settings, create_note.title).await
+            }
+
+            _ => unimplemented!("Notes command not implemented yet"),
         },
         _ => {
             println!("Command not implemented yet");

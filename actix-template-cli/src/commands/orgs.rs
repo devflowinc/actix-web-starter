@@ -27,19 +27,10 @@ pub async fn create_org(
         name.unwrap()
     };
 
-    let config = Configuration {
-        base_path: settings.api_url.clone(),
-        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-            prefix: None,
-            key: settings.api_key.clone(),
-        }),
-        ..Default::default()
-    };
-
     let payload = CreateOrgReqPayload { name };
 
     let created = actix_web_starter_client::apis::orgs_api::create_org(
-        &config,
+        &settings.into(),
         CreateOrgParams {
             create_org_req_payload: payload,
         },
@@ -129,16 +120,13 @@ pub async fn select_from_my_orgs(
 
 pub async fn delete_org(settings: ActixTemplateConfiguration) {
     // Fetch the list of orgs
-    let config = Configuration {
-        base_path: settings.api_url.clone(),
-        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-            prefix: None,
-            key: settings.api_key.clone(),
-        }),
-        ..Default::default()
-    };
 
-    let selected = match select_from_my_orgs(&config, "Select an organization to delete:").await {
+    let selected = match select_from_my_orgs(
+        &settings.clone().into(),
+        "Select an organization to delete:",
+    )
+    .await
+    {
         Ok(ans) => ans,
         Err(OrgSelectError::NoOrgs) => {
             println!("No organizations found.");
@@ -161,7 +149,7 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
     }
 
     match actix_web_starter_client::apis::orgs_api::delete_org(
-        &config,
+        &settings.into(),
         actix_web_starter_client::apis::orgs_api::DeleteOrgParams {
             org_id: selected.id.clone(),
             organization: selected.id.to_string(),
@@ -187,17 +175,12 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
 }
 
 pub async fn rename_org(settings: ActixTemplateConfiguration) {
-    // Fetch the list of orgs
-    let config = Configuration {
-        base_path: settings.api_url.clone(),
-        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-            prefix: None,
-            key: settings.api_key.clone(),
-        }),
-        ..Default::default()
-    };
-
-    let selected = match select_from_my_orgs(&config, "Select an organization to rename:").await {
+    let selected = match select_from_my_orgs(
+        &settings.clone().into(),
+        "Select an organization to rename:",
+    )
+    .await
+    {
         Ok(ans) => ans,
         Err(OrgSelectError::NoOrgs) => {
             println!("No organizations found.");
@@ -218,7 +201,7 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
     let rename_payload = actix_web_starter_client::models::UpdateOrgReqPayload { name: new_name };
 
     let renamed = actix_web_starter_client::apis::orgs_api::update_org(
-        &config,
+        &settings.into(),
         actix_web_starter_client::apis::orgs_api::UpdateOrgParams {
             organization: selected.id.clone(),
             org_id: selected.id,
@@ -255,16 +238,12 @@ pub async fn invite_user(
     settings: ActixTemplateConfiguration,
 ) {
     let org_id = if org_id.is_none() {
-        let config = Configuration {
-            base_path: settings.api_url.clone(),
-            api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-                prefix: None,
-                key: settings.api_key.clone(),
-            }),
-            ..Default::default()
-        };
-
-        match select_from_my_orgs(&config, "Select an organization to invite the user to:").await {
+        match select_from_my_orgs(
+            &settings.clone().into(),
+            "Select an organization to invite the user to:",
+        )
+        .await
+        {
             Ok(ans) => ans.id,
             Err(OrgSelectError::NoOrgs) => {
                 println!("No organizations found.");
@@ -286,17 +265,8 @@ pub async fn invite_user(
         email.unwrap()
     };
 
-    let config = Configuration {
-        base_path: settings.api_url.clone(),
-        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-            prefix: None,
-            key: settings.api_key.clone(),
-        }),
-        ..Default::default()
-    };
-
     let invitation = invitation_api::post_invitation(
-        &config,
+        &settings.into(),
         invitation_api::PostInvitationParams {
             organization: org_id.to_string(),
             invitation_data: InvitationData {
@@ -328,16 +298,9 @@ pub async fn invite_user(
 
 pub async fn leave_org(org_id: Option<String>, settings: ActixTemplateConfiguration) {
     let org_id = if org_id.is_none() {
-        let config = Configuration {
-            base_path: settings.api_url.clone(),
-            api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-                prefix: None,
-                key: settings.api_key.clone(),
-            }),
-            ..Default::default()
-        };
-
-        match select_from_my_orgs(&config, "Select an organization to leave:").await {
+        match select_from_my_orgs(&settings.clone().into(), "Select an organization to leave:")
+            .await
+        {
             Ok(ans) => ans.id,
             Err(OrgSelectError::NoOrgs) => {
                 println!("No organizations found.");
@@ -352,17 +315,8 @@ pub async fn leave_org(org_id: Option<String>, settings: ActixTemplateConfigurat
         org_id.unwrap()
     };
 
-    let config = Configuration {
-        base_path: settings.api_url.clone(),
-        api_key: Some(actix_web_starter_client::apis::configuration::ApiKey {
-            prefix: None,
-            key: settings.api_key.clone(),
-        }),
-        ..Default::default()
-    };
-
     let left = actix_web_starter_client::apis::orgs_api::leave_org(
-        &config,
+        &settings.into(),
         actix_web_starter_client::apis::orgs_api::LeaveOrgParams {
             org_id: org_id.clone(),
             organization: org_id.to_string(),

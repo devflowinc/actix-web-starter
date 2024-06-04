@@ -17,6 +17,19 @@ pub struct ActixTemplateConfiguration {
     pub api_url: String,
 }
 
+impl From<ActixTemplateConfiguration> for Configuration {
+    fn from(config: ActixTemplateConfiguration) -> Self {
+        Configuration {
+            base_path: config.api_url.clone(),
+            api_key: Some(ApiKey {
+                prefix: None,
+                key: config.api_key.clone(),
+            }),
+            ..Default::default()
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ActixTemplateProfileInner {
     pub name: String,
