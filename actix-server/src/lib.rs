@@ -149,6 +149,10 @@ impl Modify for SecurityAddon {
         handlers::phone_handler::delete_phone,
         handlers::phone_handler::update_phone,
         handlers::phone_handler::get_phone,
+        handlers::task_handler::create_task,
+        handlers::task_handler::delete_task,
+        handlers::task_handler::update_task,
+        handlers::task_handler::get_task,
     ),
     components(
         schemas(
@@ -171,10 +175,13 @@ impl Modify for SecurityAddon {
             handlers::invitation_handler::InvitationData,
             handlers::note_handler::CreateNoteReqPayload,
             handlers::note_handler::UpdateNoteReqPayload,
+            handlers::task_handler::CreateTaskReqPayload,
+            handlers::task_handler::UpdateTaskReqPayload,
             models::User,
             models::Invitation,
             models::Org,
             models::Note,
+            models::Task,
             errors::ErrorRespPayload,
             prefixes::PrefixedUuid<prefixes::OrgPrefix>,
             prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
@@ -192,6 +199,7 @@ impl Modify for SecurityAddon {
         (name = "links", description = "Link endpoints. Used to manage links"),
         (name = "emails", description = "Email endpoints. Used to manage emails"),
         (name = "phones", description = "Phone endpoints. Used to manage phones"),
+        (name = "tasks", description = "Task endpoints. Used to manage tasks"),
     ),
 )]
 pub struct ApiDoc;
@@ -503,6 +511,21 @@ pub fn main() -> std::io::Result<()> {
                                         .route(
                                             web::put().to(handlers::phone_handler::update_phone),
                                         ),
+                                ),
+                        )
+                        .service(
+                            web::scope("/tasks")
+                                .service(
+                                    web::resource("")
+                                        .route(web::post().to(handlers::task_handler::create_task)),
+                                )
+                                .service(
+                                    web::resource("/{task_id}")
+                                        .route(
+                                            web::delete().to(handlers::task_handler::delete_task),
+                                        )
+                                        .route(web::get().to(handlers::task_handler::get_task))
+                                        .route(web::put().to(handlers::task_handler::update_task)),
                                 ),
                         )
                         .service(
