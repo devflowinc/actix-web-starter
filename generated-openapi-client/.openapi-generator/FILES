@@ -4,8 +4,10 @@ Cargo.toml
 README.md
 docs/ApiKeyApi.md
 docs/AuthApi.md
+docs/ContactsApi.md
 docs/CreateApiKeyReqPayload.md
 docs/CreateApiKeyRespPayload.md
+docs/CreateContactReqPayload.md
 docs/CreateDealReqPayload.md
 docs/CreateNoteReqPayload.md
 docs/CreateOrgReqPayload.md
@@ -20,6 +22,7 @@ docs/Note.md
 docs/NotesApi.md
 docs/Org.md
 docs/OrgsApi.md
+docs/UpdateContactReqPayload.md
 docs/UpdateDealReqPayload.md
 docs/UpdateNoteReqPayload.md
 docs/UpdateOrgReqPayload.md
@@ -28,6 +31,7 @@ git_push.sh
 src/apis/api_key_api.rs
 src/apis/auth_api.rs
 src/apis/configuration.rs
+src/apis/contacts_api.rs
 src/apis/deals_api.rs
 src/apis/health_api.rs
 src/apis/invitation_api.rs
@@ -37,6 +41,7 @@ src/apis/orgs_api.rs
 src/lib.rs
 src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
+src/models/create_contact_req_payload.rs
 src/models/create_deal_req_payload.rs
 src/models/create_note_req_payload.rs
 src/models/create_org_req_payload.rs
@@ -47,6 +52,7 @@ src/models/invitation_response.rs
 src/models/mod.rs
 src/models/note.rs
 src/models/org.rs
+src/models/update_contact_req_payload.rs
 src/models/update_deal_req_payload.rs
 src/models/update_note_req_payload.rs
 src/models/update_org_req_payload.rs
