@@ -14,6 +14,7 @@ docs/CreateLinkReqPayload.md
 docs/CreateNoteReqPayload.md
 docs/CreateOrgReqPayload.md
 docs/CreatePhoneReqPayload.md
+docs/CreateTaskReqPayload.md
 docs/DealsApi.md
 docs/EmailsApi.md
 docs/ErrorRespPayload.md
@@ -28,6 +29,8 @@ docs/NotesApi.md
 docs/Org.md
 docs/OrgsApi.md
 docs/PhonesApi.md
+docs/Task.md
+docs/TasksApi.md
 docs/UpdateContactReqPayload.md
 docs/UpdateDealReqPayload.md
 docs/UpdateEmailReqPayload.md
@@ -35,6 +38,7 @@ docs/UpdateLinkReqPayload.md
 docs/UpdateNoteReqPayload.md
 docs/UpdateOrgReqPayload.md
 docs/UpdatePhoneReqPayload.md
+docs/UpdateTaskReqPayload.md
 docs/User.md
 git_push.sh
 src/apis/api_key_api.rs
@@ -50,6 +54,7 @@ src/apis/mod.rs
 src/apis/notes_api.rs
 src/apis/orgs_api.rs
 src/apis/phones_api.rs
+src/apis/tasks_api.rs
 src/lib.rs
 src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
@@ -60,6 +65,7 @@ src/models/create_link_req_payload.rs
 src/models/create_note_req_payload.rs
 src/models/create_org_req_payload.rs
 src/models/create_phone_req_payload.rs
+src/models/create_task_req_payload.rs
 src/models/error_resp_payload.rs
 src/models/invitation.rs
 src/models/invitation_data.rs
@@ -67,6 +73,7 @@ src/models/invitation_response.rs
 src/models/mod.rs
 src/models/note.rs
 src/models/org.rs
+src/models/task.rs
 src/models/update_contact_req_payload.rs
 src/models/update_deal_req_payload.rs
 src/models/update_email_req_payload.rs
@@ -74,4 +81,5 @@ src/models/update_link_req_payload.rs
 src/models/update_note_req_payload.rs
 src/models/update_org_req_payload.rs
 src/models/update_phone_req_payload.rs
+src/models/update_task_req_payload.rs
 src/models/user.rs

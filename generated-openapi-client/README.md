@@ -66,6 +66,10 @@ Class | Method | HTTP request | Description
 *PhonesApi* | [**delete_phone**](docs/PhonesApi.md#delete_phone) | **DELETE** /api/phones/{phone_id} | 
 *PhonesApi* | [**get_phone**](docs/PhonesApi.md#get_phone) | **GET** /api/phones/{phone_id} | 
 *PhonesApi* | [**update_phone**](docs/PhonesApi.md#update_phone) | **PUT** /api/phones/{phone_id} | 
+*TasksApi* | [**create_task**](docs/TasksApi.md#create_task) | **POST** /api/tasks | 
+*TasksApi* | [**delete_task**](docs/TasksApi.md#delete_task) | **DELETE** /api/tasks/{task_id} | 
+*TasksApi* | [**get_task**](docs/TasksApi.md#get_task) | **GET** /api/tasks/{task_id} | 
+*TasksApi* | [**update_task**](docs/TasksApi.md#update_task) | **PUT** /api/tasks/{task_id} | 
 
 
 ## Documentation For Models
@@ -79,12 +83,14 @@ Class | Method | HTTP request | Description
  - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
  - [CreatePhoneReqPayload](docs/CreatePhoneReqPayload.md)
+ - [CreateTaskReqPayload](docs/CreateTaskReqPayload.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
  - [InvitationResponse](docs/InvitationResponse.md)
  - [Note](docs/Note.md)
  - [Org](docs/Org.md)
+ - [Task](docs/Task.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
  - [UpdateEmailReqPayload](docs/UpdateEmailReqPayload.md)
@@ -92,6 +98,7 @@ Class | Method | HTTP request | Description
  - [UpdateNoteReqPayload](docs/UpdateNoteReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
  - [UpdatePhoneReqPayload](docs/UpdatePhoneReqPayload.md)
+ - [UpdateTaskReqPayload](docs/UpdateTaskReqPayload.md)
  - [User](docs/User.md)
 
 
