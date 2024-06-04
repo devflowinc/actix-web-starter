@@ -24,13 +24,13 @@ jobs:
           java-version: '21'
 
       - name: Create check folder
-        run: mkdir -p ./ci-check
+        run: cp -r generated-openapi-client ci-check
 
       - name: Generate OpenAPI Manifest
         run: cargo run --features runtime-env --manifest-path actix-server/Cargo.toml --bin redoc_ci > ./ci-check/openapi.json
 
       - name: Generate client
-        run: npx @openapitools/openapi-generator-cli generate -i ./ci-check/openapi.json -g rust -c ./generated-openapi-client/openapi-generator.yaml -o ./ci-check/generated-openapi-client --skip-validate-spec
+        run: npx @openapitools/openapi-generator-cli generate -i ./ci-check/openapi.json -g rust -c ./generated-openapi-client/openapi-generator.yaml -o ./ci-check --skip-validate-spec
 
       - name: Compare the generated clients
-        run : diff -br ./ci-check/generated-openapi-client/src ./generated-openapi-client/src
+        run : diff -br ./ci-check/src ./generated-openapi-client/src
