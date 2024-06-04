@@ -323,3 +323,26 @@ impl FromStr for PhonePrefix {
 }
 
 impl Prefix for PhonePrefix {}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
+pub struct TaskPrefix;
+
+impl Display for TaskPrefix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "task")
+    }
+}
+
+impl FromStr for TaskPrefix {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s == "task" {
+            Ok(TaskPrefix)
+        } else {
+            Err(())
+        }
+    }
+}
+
+impl Prefix for TaskPrefix {}
