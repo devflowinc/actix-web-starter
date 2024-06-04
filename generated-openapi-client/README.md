@@ -40,6 +40,10 @@ Class | Method | HTTP request | Description
 *DealsApi* | [**delete_deal**](docs/DealsApi.md#delete_deal) | **DELETE** /api/deals/{deal_id} | 
 *DealsApi* | [**get_deal**](docs/DealsApi.md#get_deal) | **GET** /api/deals/{deal_id} | 
 *DealsApi* | [**update_deal**](docs/DealsApi.md#update_deal) | **PUT** /api/deals/{deal_id} | 
+*EmailsApi* | [**create_email**](docs/EmailsApi.md#create_email) | **POST** /api/emails | 
+*EmailsApi* | [**delete_email**](docs/EmailsApi.md#delete_email) | **DELETE** /api/emails/{email_id} | 
+*EmailsApi* | [**get_email**](docs/EmailsApi.md#get_email) | **GET** /api/emails/{email_id} | 
+*EmailsApi* | [**update_email**](docs/EmailsApi.md#update_email) | **PUT** /api/emails/{email_id} | 
 *HealthApi* | [**health_check**](docs/HealthApi.md#health_check) | **GET** /api/health | Health Check
 *InvitationApi* | [**delete_invitation**](docs/InvitationApi.md#delete_invitation) | **DELETE** /api/invitation/{invitation_id} | Delete Invitation
 *InvitationApi* | [**get_invitations**](docs/InvitationApi.md#get_invitations) | **GET** /api/invitation/{organization_id} | Get Invitations
@@ -66,6 +70,7 @@ Class | Method | HTTP request | Description
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
  - [CreateContactReqPayload](docs/CreateContactReqPayload.md)
  - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
+ - [CreateEmailReqPayload](docs/CreateEmailReqPayload.md)
  - [CreateLinkReqPayload](docs/CreateLinkReqPayload.md)
  - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
@@ -77,6 +82,7 @@ Class | Method | HTTP request | Description
  - [Org](docs/Org.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
+ - [UpdateEmailReqPayload](docs/UpdateEmailReqPayload.md)
  - [UpdateLinkReqPayload](docs/UpdateLinkReqPayload.md)
  - [UpdateNoteReqPayload](docs/UpdateNoteReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)

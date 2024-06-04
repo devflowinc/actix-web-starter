@@ -94,6 +94,7 @@ pub mod api_key_api;
 pub mod auth_api;
 pub mod contacts_api;
 pub mod deals_api;
+pub mod emails_api;
 pub mod health_api;
 pub mod invitation_api;
 pub mod links_api;
