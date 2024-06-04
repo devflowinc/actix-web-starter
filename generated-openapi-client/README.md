@@ -32,6 +32,10 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**login**](docs/AuthApi.md#login) | **GET** /api/auth | Login
 *AuthApi* | [**logout**](docs/AuthApi.md#logout) | **DELETE** /api/auth | Logout
 *AuthApi* | [**whoami**](docs/AuthApi.md#whoami) | **GET** /api/auth/whoami | Get Currently Auth'ed User
+*ContactsApi* | [**create_contact**](docs/ContactsApi.md#create_contact) | **POST** /api/contacts | 
+*ContactsApi* | [**delete_contact**](docs/ContactsApi.md#delete_contact) | **DELETE** /api/contacts/{contact_id} | 
+*ContactsApi* | [**get_contact**](docs/ContactsApi.md#get_contact) | **GET** /api/contacts/{contact_id} | 
+*ContactsApi* | [**update_contact**](docs/ContactsApi.md#update_contact) | **PUT** /api/contacts/{contact_id} | 
 *DealsApi* | [**create_deal**](docs/DealsApi.md#create_deal) | **POST** /api/deals | 
 *DealsApi* | [**delete_deal**](docs/DealsApi.md#delete_deal) | **DELETE** /api/deals/{deal_id} | 
 *DealsApi* | [**get_deal**](docs/DealsApi.md#get_deal) | **GET** /api/deals/{deal_id} | 
@@ -56,6 +60,7 @@ Class | Method | HTTP request | Description
 
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
+ - [CreateContactReqPayload](docs/CreateContactReqPayload.md)
  - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
  - [CreateNoteReqPayload](docs/CreateNoteReqPayload.md)
  - [CreateOrgReqPayload](docs/CreateOrgReqPayload.md)
@@ -65,6 +70,7 @@ Class | Method | HTTP request | Description
  - [InvitationResponse](docs/InvitationResponse.md)
  - [Note](docs/Note.md)
  - [Org](docs/Org.md)
+ - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
  - [UpdateNoteReqPayload](docs/UpdateNoteReqPayload.md)
  - [UpdateOrgReqPayload](docs/UpdateOrgReqPayload.md)
