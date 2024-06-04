@@ -137,6 +137,10 @@ impl Modify for SecurityAddon {
         handlers::note_handler::update_note,
         handlers::note_handler::get_notes_for_org,
         handlers::note_handler::get_note_by_id,
+        handlers::link_handler::create_link,
+        handlers::link_handler::delete_link,
+        handlers::link_handler::update_link,
+        handlers::link_handler::get_link,
     ),
     components(
         schemas(
@@ -149,6 +153,8 @@ impl Modify for SecurityAddon {
             handlers::deal_handler::UpdateDealReqPayload,
             handlers::contact_handler::CreateContactReqPayload,
             handlers::contact_handler::UpdateContactReqPayload,
+            handlers::link_handler::CreateLinkReqPayload,
+            handlers::link_handler::UpdateLinkReqPayload,
             handlers::invitation_handler::InvitationResponse,
             handlers::invitation_handler::InvitationData,
             handlers::note_handler::CreateNoteReqPayload,
@@ -171,6 +177,7 @@ impl Modify for SecurityAddon {
         (name = "notes", description = "Note endpoints. Used to manage notes"),
         (name = "api_key", description = "API Key endpoints. Used to manage user API keys."),
         (name = "health", description = "Health check endpoint. Used to check if the server is up and running."),
+        (name = "links", description = "Link endpoints. Used to manage links"),
     ),
 )]
 pub struct ApiDoc;
@@ -431,6 +438,21 @@ pub fn main() -> std::io::Result<()> {
                                             web::put()
                                                 .to(handlers::contact_handler::update_contact),
                                         ),
+                                ),
+                        )
+                        .service(
+                            web::scope("/links")
+                                .service(
+                                    web::resource("")
+                                        .route(web::post().to(handlers::link_handler::create_link)),
+                                )
+                                .service(
+                                    web::resource("/{link_id}")
+                                        .route(
+                                            web::delete().to(handlers::link_handler::delete_link),
+                                        )
+                                        .route(web::get().to(handlers::link_handler::get_link))
+                                        .route(web::put().to(handlers::link_handler::update_link)),
                                 ),
                         )
                         .service(

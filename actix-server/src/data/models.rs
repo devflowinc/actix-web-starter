@@ -344,3 +344,26 @@ impl Note {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "link": "https://trieve.ai",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+}))]
+#[diesel(table_name = links)]
+pub struct Link {
+    pub id: PrefixedUuid<LinkPrefix>,
+    pub link: String,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+}
+
+impl Link {
+    pub fn from_details(link: String, org_id: PrefixedUuid<OrgPrefix>) -> Self {
+        Link {
+            id: PrefixedUuid::create(LinkPrefix),
+            org_id,
+            link,
+        }
+    }
+}

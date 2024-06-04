@@ -55,6 +55,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    links (id) {
+        id -> Uuid,
+        link -> Text,
+        org_id -> Uuid,
+    }
+}
+
+diesel::table! {
     org_users (id) {
         id -> Uuid,
         user_id -> Uuid,
@@ -112,6 +120,7 @@ diesel::joinable!(contacts -> orgs (org_id));
 diesel::joinable!(deals -> orgs (org_id));
 diesel::joinable!(invitations -> orgs (organization_id));
 diesel::joinable!(notes -> orgs (org_id));
+diesel::joinable!(links -> orgs (org_id));
 diesel::joinable!(org_users -> orgs (org_id));
 diesel::joinable!(org_users -> users (user_id));
 diesel::joinable!(subscriptions -> orgs (org_id));
@@ -122,6 +131,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     deals,
     invitations,
     notes,
+    links,
     org_users,
     orgs,
     plans,

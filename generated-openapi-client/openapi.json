@@ -792,6 +792,176 @@
         ]
       }
     },
+    "/api/links": {
+      "post": {
+        "tags": [
+          "links"
+        ],
+        "operationId": "create_link",
+        "requestBody": {
+          "description": "JSON request payload to create a new link",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLinkReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "JSON body representing the link that was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/links/{link_id}": {
+      "get": {
+        "tags": [
+          "links"
+        ],
+        "operationId": "get_link",
+        "responses": {
+          "200": {
+            "description": "JSON object representing the requested link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "links"
+        ],
+        "operationId": "update_link",
+        "requestBody": {
+          "description": "JSON request payload to update the link",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLinkReqPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Object representing the renamed link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "links"
+        ],
+        "operationId": "delete_link",
+        "parameters": [
+          {
+            "name": "Link",
+            "in": "header",
+            "description": "The link id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the link was successfully deleted"
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
     "/api/notes": {
       "get": {
         "tags": [
@@ -1430,6 +1600,17 @@
           }
         }
       },
+      "CreateLinkReqPayload": {
+        "type": "object",
+        "required": [
+          "link"
+        ],
+        "properties": {
+          "link": {
+            "type": "string"
+          }
+        }
+      },
       "CreateNoteReqPayload": {
         "type": "object",
         "required": [
@@ -1654,6 +1835,15 @@
           }
         }
       },
+      "UpdateLinkReqPayload": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "UpdateNoteReqPayload": {
         "type": "object",
         "required": [
@@ -1749,6 +1939,10 @@
     {
       "name": "health",
       "description": "Health check endpoint. Used to check if the server is up and running."
+    },
+    {
+      "name": "links",
+      "description": "Link endpoints. Used to manage links"
     }
   ]
 }
