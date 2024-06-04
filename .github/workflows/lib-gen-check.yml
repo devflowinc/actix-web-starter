@@ -30,7 +30,8 @@ jobs:
         run: cargo run --features runtime-env --manifest-path actix-server/Cargo.toml --bin redoc_ci > ./ci-check/openapi.json
 
       - name: Generate client
-        run: npx @openapitools/openapi-generator-cli generate -i ./ci-check/openapi.json -g rust -c ./generated-openapi-client/openapi-generator.yaml -o ./ci-check --skip-validate-spec
+        working-directory: ci-check
+        run: npx @openapitools/openapi-generator-cli generate -i openapi.json -g rust -c ../generated-openapi-client/openapi-generator.yaml -o ./ --skip-validate-spec
 
       - name: Compare the generated clients
         run : diff -br ./ci-check/src ./generated-openapi-client/src
