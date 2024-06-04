@@ -35,3 +35,7 @@ jobs:
 
       - name: Compare the generated clients
         run : diff -br ./ci-check/src ./generated-openapi-client/src
+
+      - name: Attempt to build generated client
+        working-directory: generated-openapi-client
+        run: cargo build
