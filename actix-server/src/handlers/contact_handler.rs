@@ -23,11 +23,14 @@ pub struct CreateContactReqPayload {
   tag = "contacts",
   request_body(content = CreateContactReqPayload, description = "JSON request payload to create a new contact", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the contact that was created", body = Org),
+      (status = 201, description = "JSON body representing the contact that was created", body = Contact),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -56,7 +59,8 @@ pub async fn create_contact(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Contact" = String, Header, description = "The contacts id to use for the request"),
+    ("contact_id" = String, description = "The contacts id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -80,11 +84,15 @@ pub async fn delete_contact(
   context_path = "/api",
   tag = "contacts",
   responses(
-      (status = 200, description = "JSON object representing the requested contact", body = Org),
+      (status = 200, description = "JSON object representing the requested contact", body = Contact),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("contact_id" = String, description = "The contacts id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
@@ -113,11 +121,15 @@ pub struct UpdateContactReqPayload {
   tag = "contacts",
   request_body(content = UpdateContactReqPayload, description = "JSON request payload to update the contact", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed contact", body = Org),
+      (status = 200, description = "Object representing the renamed contact", body = Contact),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
+  ),
+  params(
+    ("contact_id" = String, description = "The contact id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]

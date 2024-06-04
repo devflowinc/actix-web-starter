@@ -22,8 +22,11 @@ pub struct CreateLinkReqPayload {
   tag = "links",
   request_body(content = CreateLinkReqPayload, description = "JSON request payload to create a new link", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the link that was created", body = Org),
+      (status = 201, description = "JSON body representing the link that was created", body = Link),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
+  ),
+  params(
+      ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -49,7 +52,8 @@ pub async fn create_link(
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
-    ("Link" = String, Header, description = "The link id to use for the request"),
+    ("link_id" = String, description = "The link id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
   ),
   security(
       ("ApiKey" = ["readonly"]),
@@ -73,12 +77,16 @@ pub async fn delete_link(
   context_path = "/api",
   tag = "links",
   responses(
-      (status = 200, description = "JSON object representing the requested link", body = Org),
+      (status = 200, description = "JSON object representing the requested link", body = Link),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
-  )
+  ),
+  params(
+    ("link_id" = String, description = "The link id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
+  ),
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_link(
@@ -105,12 +113,16 @@ pub struct UpdateLinkReqPayload {
   tag = "links",
   request_body(content = UpdateLinkReqPayload, description = "JSON request payload to update the link", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed link", body = Org),
+      (status = 200, description = "Object representing the renamed link", body = Link),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
       ("ApiKey" = ["readonly"]),
-  )
+  ),
+  params(
+    ("link_id" = String, description = "The link id to use for the request"),
+    ("Organization" = String, Header, description = "The org id to use for the request"),
+  ),
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_link(
