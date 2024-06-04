@@ -141,7 +141,9 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
 
     match result {
         WhoamiSuccess::Status200(_) => {
-            let potential_org = select_from_my_orgs(&temporary_config, "Testing").await;
+            let potential_org =
+                select_from_my_orgs(&temporary_config, "Select an org to use for this profile")
+                    .await;
 
             let org_id = match potential_org {
                 Ok(selection) => selection.id,
