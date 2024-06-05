@@ -3,6 +3,7 @@ use clap::{Args, Parser, Subcommand};
 use commands::{configure::ActixTemplateProfile, notes, orgs};
 
 mod commands;
+mod errors;
 
 #[derive(Parser)]
 #[command(author, version)]
