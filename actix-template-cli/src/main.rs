@@ -230,7 +230,9 @@ async fn main() {
             }
             NoteCommands::List => notes::list_notes_cmd(settings).await,
             NoteCommands::Edit(edit_args) => notes::edit_note_cmd(settings, edit_args.id).await,
-            _ => unimplemented!("Notes command not implemented yet"),
+            NoteCommands::Delete(delete_args) => {
+                notes::delete_note_cmd(settings, delete_args.id).await
+            }
         },
         _ => {
             println!("Command not implemented yet");

@@ -160,6 +160,44 @@ async fn select_note(
     Ok(note.note)
 }
 
+pub async fn delete_note_cmd(config: ActixTemplateConfiguration, note_id: Option<String>) {
+    let note = if note_id.is_none() {
+        select_note(config.clone(), "Select a note to delete:")
+            .await
+            .unwrap()
+    } else {
+        get_note_by_id(config.clone(), note_id.unwrap())
+            .await
+            .unwrap()
+    };
+
+    match actix_web_starter_client::apis::notes_api::delete_note(
+        &config.clone().into(),
+        notes_api::DeleteNoteParams {
+            organization: config.clone().org_id,
+            note_id: note.id,
+        },
+    )
+    .await
+    .map_err(|e| {
+        eprintln!("Error deleting note: {:?}", e);
+        std::process::exit(1);
+    })
+    .unwrap()
+    .status
+    .is_success()
+    {
+        true => {
+            println!("Note deleted successfully.");
+            std::process::exit(0);
+        }
+        false => {
+            eprintln!("Error deleting note.");
+            std::process::exit(1);
+        }
+    };
+}
+
 pub async fn create_note_cmd(config: ActixTemplateConfiguration, title: Option<String>) {
     let title = if title.is_none() {
         inquire::Text::new("Enter a title for the note:")
