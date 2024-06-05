@@ -192,10 +192,10 @@ pub async fn create_note_cmd(config: ActixTemplateConfiguration, title: Option<S
         std::process::exit(1);
     };
 
-    let Ok(_) = edit_note(config, note, "Edit note").await else {
+    let Ok(note) = edit_note(config, note, "Edit note").await else {
         eprintln!("Error editing note");
         std::process::exit(1);
     };
 
-    println!("\nNote created successfully!\n");
+    println!("\nNote created successfully with id: {}\n", note.id);
 }
