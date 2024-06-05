@@ -38,3 +38,11 @@ impl<T> From<actix_web_starter_client::apis::Error<T>> for DefaultError {
         }
     }
 }
+
+impl From<inquire::InquireError> for DefaultError {
+    fn from(error: inquire::InquireError) -> Self {
+        DefaultError {
+            message: error.to_string(),
+        }
+    }
+}

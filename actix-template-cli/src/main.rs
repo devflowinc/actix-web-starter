@@ -226,10 +226,10 @@ async fn main() {
 
         Some(Commands::Notes(note_option)) => match note_option {
             NoteCommands::Create(create_note) => {
-                notes::create_note(settings, create_note.title).await
+                notes::create_note_cmd(settings, create_note.title).await
             }
-            NoteCommands::List => notes::list_notes(settings).await,
-
+            NoteCommands::List => notes::list_notes_cmd(settings).await,
+            NoteCommands::Edit(edit_args) => notes::edit_note_cmd(settings, edit_args.id).await,
             _ => unimplemented!("Notes command not implemented yet"),
         },
         _ => {
