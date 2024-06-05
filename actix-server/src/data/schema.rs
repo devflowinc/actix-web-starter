@@ -12,6 +12,16 @@ diesel::table! {
 }
 
 diesel::table! {
+    companies (id) {
+        id -> Uuid,
+        name -> Text,
+        org_id -> Uuid,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     contacts (id) {
         id -> Uuid,
         org_id -> Uuid,
@@ -142,6 +152,7 @@ diesel::table! {
 }
 
 diesel::joinable!(api_keys -> users (user_id));
+diesel::joinable!(companies -> orgs (org_id));
 diesel::joinable!(contacts -> orgs (org_id));
 diesel::joinable!(deals -> orgs (org_id));
 diesel::joinable!(emails -> orgs (org_id));
@@ -157,6 +168,7 @@ diesel::joinable!(tasks -> orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     api_keys,
+    companies,
     contacts,
     deals,
     emails,

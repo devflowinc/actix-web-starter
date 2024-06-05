@@ -445,3 +445,32 @@ impl Task {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[schema(example = json!({
+    "id": "company-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "name": "Company Name",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(table_name=companies)]
+pub struct Company {
+    pub id: PrefixedUuid<CompanyPrefix>,
+    pub name: String,
+    pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl Company {
+    pub fn from_name(name: String, org_id: PrefixedUuid<OrgPrefix>) -> Self {
+        Company {
+            id: PrefixedUuid::create(CompanyPrefix),
+            name,
+            org_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}

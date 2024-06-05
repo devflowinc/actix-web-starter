@@ -176,3 +176,4 @@ impl_prefix!(LinkPrefix, "link");
 impl_prefix!(EmailPrefix, "email");
 impl_prefix!(PhonePrefix, "phone");
 impl_prefix!(TaskPrefix, "task");
+impl_prefix!(CompanyPrefix, "company");
