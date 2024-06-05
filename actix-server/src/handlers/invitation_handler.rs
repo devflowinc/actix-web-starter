@@ -86,17 +86,13 @@ pub async fn post_invitation(
 
     let db_user = get_user_by_email_query(email.as_str(), pool.clone()).await?;
 
-    let added_user_to_org = add_user_to_org_query(
+    add_user_to_org_query(
         db_user.id,
         existing_user_org_id,
         existing_user_role.into(),
         pool.clone(),
     )
     .await?;
-
-    // if added_user_to_org {
-    //     return Ok(HttpResponse::NoContent().finish());
-    // }
 
     let invitation = create_invitation(
         invitation_data.app_url,
@@ -191,6 +187,11 @@ pub async fn delete_invitation(
 ) -> Result<HttpResponse, ServiceError> {
     let invite_id = invitation_id.into_inner();
     let invite = get_invitation_by_id_query(invite_id.clone(), pool.clone()).await?;
+    if invite.organization_id != user.org_id {
+        return Err(ServiceError::BadRequest(
+            "Can not delete invitation for another organization".to_string(),
+        ));
+    }
 
     delete_invitation_by_id_query(invite_id, pool).await?;
     Ok(HttpResponse::NoContent().finish())
