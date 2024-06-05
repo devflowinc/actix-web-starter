@@ -111,6 +111,21 @@ pub async fn edit_note_cmd(config: ActixTemplateConfiguration, note_id: Option<S
     .unwrap();
 }
 
+pub async fn view_note_cmd(config: ActixTemplateConfiguration, note_id: Option<String>) {
+    let note = if note_id.is_none() {
+        select_note(config.clone(), "Select a note to view:")
+            .await
+            .unwrap()
+    } else {
+        get_note_by_id(config.clone(), note_id.unwrap())
+            .await
+            .unwrap()
+    };
+
+    println!("\nNote: {}\n{}\n", note.title, note.id);
+    println!("{}", note.body);
+}
+
 pub async fn list_notes_cmd(config: ActixTemplateConfiguration) {
     let Ok(notes) = get_org_notes(config.clone()).await else {
         eprintln!("Error fetching notes");

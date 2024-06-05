@@ -46,6 +46,7 @@ enum NoteCommands {
     Delete(DeleteNote),
     Edit(EditNote),
     List,
+    View(ViewNote),
 }
 
 #[derive(Args)]
@@ -63,6 +64,12 @@ struct DeleteNote {
 #[derive(Args)]
 struct EditNote {
     /// The id of the note you want to edit
+    id: Option<String>,
+}
+
+#[derive(Args)]
+struct ViewNote {
+    /// The title of the note you want to view
     id: Option<String>,
 }
 
@@ -233,6 +240,7 @@ async fn main() {
             NoteCommands::Delete(delete_args) => {
                 notes::delete_note_cmd(settings, delete_args.id).await
             }
+            NoteCommands::View(view_args) => notes::view_note_cmd(settings, view_args.id).await,
         },
         _ => {
             println!("Command not implemented yet");
