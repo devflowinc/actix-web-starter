@@ -14,7 +14,6 @@ use crate::errors::DefaultError;
 use super::configure::ActixTemplateConfiguration;
 
 async fn get_org_notes(config: ActixTemplateConfiguration) -> Result<Vec<Note>, DefaultError> {
-    println!("Fetching notes for organization... {:?}", config);
     let notes = actix_web_starter_client::apis::notes_api::get_notes_for_org(
         &config.clone().into(),
         GetNotesForOrgParams {
