@@ -13,16 +13,16 @@ use actix_web_starter_client::{
 };
 use inquire::{Confirm, Select};
 
+use crate::errors::DefaultError;
+
 use super::configure::ActixTemplateConfiguration;
 
 pub async fn create_org(
     settings: ActixTemplateConfiguration,
     name: Option<String>,
-) -> Result<Org, CreateOrgError> {
+) -> Result<Org, DefaultError> {
     let name = if name.is_none() {
-        inquire::Text::new("Enter a name for the organization:")
-            .prompt()
-            .expect("Prompt configured correctly")
+        inquire::Text::new("Enter a name for the organization:").prompt()?
     } else {
         name.unwrap()
     };
@@ -35,12 +35,7 @@ pub async fn create_org(
             create_org_req_payload: payload,
         },
     )
-    .await
-    .map_err(|e| {
-        eprintln!("Error creating organization: {:?}", e);
-        std::process::exit(1);
-    })
-    .unwrap()
+    .await?
     .entity
     .unwrap();
 
@@ -51,8 +46,9 @@ pub async fn create_org(
             return Ok(org);
         }
         CreateOrgSuccess::UnknownValue(_) => {
-            eprintln!("Error creating organization.");
-            std::process::exit(1);
+            return Err(DefaultError::new(
+                "Could not parse response body creating org",
+            ));
         }
     };
 }
@@ -66,20 +62,19 @@ pub enum OrgSelectError {
 
 #[derive(Debug)]
 pub struct OrgSelectOption {
-    pub name: String,
-    pub id: String,
+    org: Org,
 }
 
 impl Display for OrgSelectOption {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name)
+        write!(f, "{}", self.org.name)
     }
 }
 
 pub async fn select_from_my_orgs(
     config: &Configuration,
     prompt: &str,
-) -> Result<OrgSelectOption, OrgSelectError> {
+) -> Result<Org, OrgSelectError> {
     let orgs = actix_web_starter_client::apis::orgs_api::get_orgs_for_authed_user(
         &config,
         GetOrgsForAuthedUserParams {
@@ -106,8 +101,7 @@ pub async fn select_from_my_orgs(
     let options: Vec<OrgSelectOption> = org_list
         .iter()
         .map(|org_result| OrgSelectOption {
-            id: org_result.id.clone(),
-            name: org_result.name.clone(),
+            org: org_result.to_owned(),
         })
         .collect();
 
@@ -115,12 +109,11 @@ pub async fn select_from_my_orgs(
         .prompt()
         .expect("Prompt is configured correctly");
 
-    Ok(ans)
+    Ok(ans.org)
 }
 
 pub async fn delete_org(settings: ActixTemplateConfiguration) {
     // Fetch the list of orgs
-
     let selected = match select_from_my_orgs(
         &settings.clone().into(),
         "Select an organization to delete:",
@@ -232,31 +225,7 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
     };
 }
 
-pub async fn invite_user(
-    org_id: Option<String>,
-    email: Option<String>,
-    settings: ActixTemplateConfiguration,
-) {
-    let org_id = if org_id.is_none() {
-        match select_from_my_orgs(
-            &settings.clone().into(),
-            "Select an organization to invite the user to:",
-        )
-        .await
-        {
-            Ok(ans) => ans.id,
-            Err(OrgSelectError::NoOrgs) => {
-                println!("No organizations found.");
-                std::process::exit(0);
-            }
-            _ => {
-                eprintln!("Error fetching organizations.");
-                std::process::exit(1);
-            }
-        }
-    } else {
-        org_id.unwrap()
-    };
+pub async fn invite_user(email: Option<String>, settings: ActixTemplateConfiguration) {
     let email = if email.is_none() {
         inquire::Text::new("Enter the email address of the user to invite:")
             .prompt()
@@ -266,12 +235,12 @@ pub async fn invite_user(
     };
 
     let invitation = invitation_api::post_invitation(
-        &settings.into(),
+        &settings.clone().into(),
         invitation_api::PostInvitationParams {
-            organization: org_id.to_string(),
+            organization: settings.clone().org_id.to_string(),
             invitation_data: InvitationData {
                 user_role: 0,
-                organization_id: org_id,
+                organization_id: settings.clone().org_id,
                 email: email,
                 app_url: "http://localhost:8090/api".to_owned(),
                 redirect_uri: "http://localhost:8090/api/auth/whoami".to_owned(),

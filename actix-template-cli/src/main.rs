@@ -1,4 +1,3 @@
-use actix_web_starter_client::apis::configuration::Configuration;
 use clap::{Args, Parser, Subcommand};
 use commands::{configure::ActixTemplateProfile, notes, orgs};
 
@@ -96,9 +95,6 @@ struct LeaveOrg {
 
 #[derive(Args)]
 struct InviteToOrg {
-    /// The id of the organization you want to invite the user to
-    #[arg(short, long)]
-    id: Option<String>,
     /// The user's email
     #[arg(short, long)]
     email: Option<String>,
@@ -223,9 +219,7 @@ async fn main() {
             }
             OrgCommands::Delete => orgs::delete_org(settings).await,
             OrgCommands::Rename => orgs::rename_org(settings).await,
-            OrgCommands::Invite(invite) => {
-                orgs::invite_user(invite.id, invite.email, settings).await
-            }
+            OrgCommands::Invite(invite) => orgs::invite_user(invite.email, settings).await,
             OrgCommands::Leave(leave_org) => {
                 orgs::leave_org(leave_org.id, settings).await;
             }
@@ -245,5 +239,5 @@ async fn main() {
         _ => {
             println!("Command not implemented yet");
         }
-    }
+    };
 }
