@@ -140,209 +140,39 @@ impl<P: Prefix + Default> FromSql<diesel::sql_types::Uuid, diesel::pg::Pg> for P
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct OrgPrefix;
+macro_rules! impl_prefix {
+    ($name:ident, $prefix:expr) => {
+        #[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
+        pub struct $name;
 
-impl Display for OrgPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "org")
-    }
-}
-
-impl FromStr for OrgPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "org" {
-            Ok(OrgPrefix)
-        } else {
-            Err(())
+        impl Display for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", $prefix)
+            }
         }
-    }
-}
 
-impl Prefix for OrgPrefix {}
+        impl FromStr for $name {
+            type Err = ();
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, ToSchema)]
-pub struct OrgUserPrefix;
-
-impl Display for OrgUserPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "orguser")
-    }
-}
-
-impl FromStr for OrgUserPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "orguser" {
-            Ok(OrgUserPrefix)
-        } else {
-            Err(())
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                if s == $prefix {
+                    Ok($name)
+                } else {
+                    Err(())
+                }
+            }
         }
-    }
+
+        impl Prefix for $name {}
+    };
 }
 
-impl Prefix for OrgUserPrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct UserPrefix;
-
-impl Display for UserPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "user")
-    }
-}
-
-impl FromStr for UserPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "user" {
-            Ok(UserPrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for UserPrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct NotePrefix;
-
-impl Display for NotePrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "note")
-    }
-}
-
-impl FromStr for NotePrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "note" {
-            Ok(NotePrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for NotePrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct ContactPrefix;
-
-impl Display for ContactPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "contact")
-    }
-}
-
-impl FromStr for ContactPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "contact" {
-            Ok(ContactPrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for ContactPrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct LinkPrefix;
-
-impl Display for LinkPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "link")
-    }
-}
-
-impl FromStr for LinkPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "link" {
-            Ok(LinkPrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for LinkPrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct EmailPrefix;
-
-impl Display for EmailPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "email")
-    }
-}
-
-impl FromStr for EmailPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "email" {
-            Ok(EmailPrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for EmailPrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct PhonePrefix;
-
-impl Display for PhonePrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "phone")
-    }
-}
-
-impl FromStr for PhonePrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "phone" {
-            Ok(PhonePrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for PhonePrefix {}
-
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
-pub struct TaskPrefix;
-
-impl Display for TaskPrefix {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "task")
-    }
-}
-
-impl FromStr for TaskPrefix {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s == "task" {
-            Ok(TaskPrefix)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Prefix for TaskPrefix {}
+impl_prefix!(OrgPrefix, "org");
+impl_prefix!(OrgUserPrefix, "orguser");
+impl_prefix!(UserPrefix, "user");
+impl_prefix!(NotePrefix, "note");
+impl_prefix!(ContactPrefix, "contact");
+impl_prefix!(LinkPrefix, "link");
+impl_prefix!(EmailPrefix, "email");
+impl_prefix!(PhonePrefix, "phone");
+impl_prefix!(TaskPrefix, "task");
