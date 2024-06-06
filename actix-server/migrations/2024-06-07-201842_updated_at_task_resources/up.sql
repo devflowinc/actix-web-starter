@@ -1,0 +1,28 @@
+-- Your SQL goes here
+
+ALTER TABLE "task_deals"
+ADD COLUMN "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+ADD COLUMN "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+
+ALTER TABLE "task_users"
+ADD COLUMN "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+ADD COLUMN "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+
+ALTER TABLE "task_links"
+ADD COLUMN "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+ADD COLUMN "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW();
+
+CREATE TRIGGER update_task_deals_updated_at
+  BEFORE UPDATE ON task_deals
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_modified_column();
+
+CREATE TRIGGER update_task_links_updated_at
+  BEFORE UPDATE ON task_links
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_modified_column();
+
+CREATE TRIGGER update_task_users_updated_at
+  BEFORE UPDATE ON task_users
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_modified_column();

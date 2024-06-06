@@ -142,6 +142,36 @@ diesel::table! {
 }
 
 diesel::table! {
+    task_deals (id) {
+        id -> Uuid,
+        task_id -> Uuid,
+        deal_id -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    task_links (id) {
+        id -> Uuid,
+        task_id -> Uuid,
+        link_id -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    task_users (id) {
+        id -> Uuid,
+        task_id -> Uuid,
+        user_id -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     tasks (id) {
         id -> Uuid,
         deadline -> Nullable<Timestamp>,
@@ -175,6 +205,12 @@ diesel::joinable!(org_users -> orgs (org_id));
 diesel::joinable!(org_users -> users (user_id));
 diesel::joinable!(phones -> orgs (org_id));
 diesel::joinable!(subscriptions -> orgs (org_id));
+diesel::joinable!(task_deals -> deals (deal_id));
+diesel::joinable!(task_deals -> tasks (task_id));
+diesel::joinable!(task_links -> links (link_id));
+diesel::joinable!(task_links -> tasks (task_id));
+diesel::joinable!(task_users -> tasks (task_id));
+diesel::joinable!(task_users -> users (user_id));
 diesel::joinable!(tasks -> contacts (contact_id));
 diesel::joinable!(tasks -> orgs (org_id));
 
@@ -192,6 +228,9 @@ diesel::allow_tables_to_appear_in_same_query!(
     phones,
     plans,
     subscriptions,
+    task_deals,
+    task_links,
+    task_users,
     tasks,
     users,
 );

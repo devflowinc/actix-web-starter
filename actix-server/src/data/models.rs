@@ -510,3 +510,139 @@ impl Company {
         }
     }
 }
+
+#[derive(
+    Debug,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    Associations,
+    Queryable,
+    Insertable,
+    Selectable,
+    Clone,
+    ToSchema,
+    Identifiable,
+)]
+#[schema(example = json!({
+    "id": "taskdeal-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "deal_id": "deal-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(belongs_to(Task))]
+#[diesel(belongs_to(Deal))]
+#[diesel(table_name=task_deals)]
+pub struct TaskDeal {
+    pub id: PrefixedUuid<TaskDealPrefix>,
+    pub task_id: PrefixedUuid<TaskPrefix>,
+    pub deal_id: PrefixedUuid<DealPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl TaskDeal {
+    pub fn from_details(
+        task_id: PrefixedUuid<TaskPrefix>,
+        deal_id: PrefixedUuid<DealPrefix>,
+    ) -> Self {
+        TaskDeal {
+            id: PrefixedUuid::create(TaskDealPrefix),
+            task_id,
+            deal_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
+
+#[derive(
+    Debug,
+    Serialize,
+    Deserialize,
+    Queryable,
+    Insertable,
+    Selectable,
+    Clone,
+    ToSchema,
+    Identifiable,
+    Associations,
+)]
+#[schema(example = json!({
+    "id": "tasklink-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "link_id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(table_name=task_links)]
+#[diesel(belongs_to(Task))]
+#[diesel(belongs_to(Link))]
+pub struct TaskLink {
+    pub id: PrefixedUuid<TaskLinkPrefix>,
+    pub task_id: PrefixedUuid<TaskPrefix>,
+    pub link_id: PrefixedUuid<LinkPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl TaskLink {
+    pub fn from_details(
+        task_id: PrefixedUuid<TaskPrefix>,
+        link_id: PrefixedUuid<LinkPrefix>,
+    ) -> Self {
+        TaskLink {
+            id: PrefixedUuid::create(TaskLinkPrefix),
+            task_id,
+            link_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
+
+#[derive(
+    Debug,
+    Serialize,
+    Deserialize,
+    Queryable,
+    Insertable,
+    Selectable,
+    Clone,
+    ToSchema,
+    Identifiable,
+    Associations,
+)]
+#[schema(example = json!({
+    "id": "taskuser-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+    "user_id": "user-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
+}))]
+#[diesel(table_name=task_users)]
+#[diesel(belongs_to(Task))]
+#[diesel(belongs_to(User))]
+pub struct TaskUser {
+    pub id: PrefixedUuid<TaskUserPrefix>,
+    pub task_id: PrefixedUuid<TaskPrefix>,
+    pub user_id: PrefixedUuid<UserPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+impl TaskUser {
+    pub fn from_details(
+        task_id: PrefixedUuid<TaskPrefix>,
+        user_id: PrefixedUuid<UserPrefix>,
+    ) -> Self {
+        TaskUser {
+            id: PrefixedUuid::create(TaskUserPrefix),
+            task_id,
+            user_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
+        }
+    }
+}
