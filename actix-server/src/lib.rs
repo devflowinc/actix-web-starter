@@ -153,6 +153,11 @@ impl Modify for SecurityAddon {
         handlers::task_handler::delete_task,
         handlers::task_handler::update_task,
         handlers::task_handler::get_task,
+        handlers::company_handler::delete_company,
+        handlers::company_handler::create_company,
+        handlers::company_handler::update_company,
+        handlers::company_handler::get_companies_for_org,
+        handlers::company_handler::get_company_by_id,
     ),
     components(
         schemas(
@@ -177,6 +182,8 @@ impl Modify for SecurityAddon {
             handlers::note_handler::UpdateNoteReqPayload,
             handlers::task_handler::CreateTaskReqPayload,
             handlers::task_handler::UpdateTaskReqPayload,
+            handlers::company_handler::UpdateCompanyReqPayload,
+            handlers::company_handler::CreateCompanyReqPayload,
             models::User,
             models::Invitation,
             models::Org,
@@ -187,6 +194,7 @@ impl Modify for SecurityAddon {
             models::Email,
             models::Phone,
             models::Contact,
+            models::Company,
             errors::ErrorRespPayload,
             prefixes::PrefixedUuid<prefixes::OrgPrefix>,
             prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
@@ -205,6 +213,7 @@ impl Modify for SecurityAddon {
         (name = "emails", description = "Email endpoints. Used to manage emails"),
         (name = "phones", description = "Phone endpoints. Used to manage phones"),
         (name = "tasks", description = "Task endpoints. Used to manage tasks"),
+        (name = "companies", description = "Company endpoints. Used to manage companies"),
     ),
 )]
 pub struct ApiDoc;
@@ -406,6 +415,36 @@ pub fn main() -> std::io::Result<()> {
                                         .route(web::put().to(handlers::note_handler::update_note))
                                         .route(
                                             web::delete().to(handlers::note_handler::delete_note),
+                                        ),
+                                ),
+                        )
+                        .service(
+                            web::scope("/companies")
+                                .service(
+                                    web::resource("")
+                                        .route(
+                                            web::post()
+                                                .to(handlers::company_handler::create_company),
+                                        )
+                                        .route(
+                                            web::get().to(
+                                                handlers::company_handler::get_companies_for_org,
+                                            ),
+                                        ),
+                                )
+                                .service(
+                                    web::resource("/{company_id}")
+                                        .route(
+                                            web::get()
+                                                .to(handlers::company_handler::get_company_by_id),
+                                        )
+                                        .route(
+                                            web::put()
+                                                .to(handlers::company_handler::update_company),
+                                        )
+                                        .route(
+                                            web::delete()
+                                                .to(handlers::company_handler::delete_company),
                                         ),
                                 ),
                         )
