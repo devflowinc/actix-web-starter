@@ -1,29 +1,29 @@
 use super::auth_handler::AuthedMember;
 use crate::{
     data::models::PgPool,
-    operators::note_operator::{
-        create_note_query, delete_note_query, get_note_by_id_query, get_notes_for_org_query,
-        update_note_body_query,
+    operators::company_operator::{
+        create_company_query, delete_company_query, get_company_query, list_companies_query,
+        rename_company_query,
     },
-    prefixes::{NotePrefix, PrefixedUuid},
+    prefixes::{CompanyPrefix, PrefixedUuid},
 };
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct CreateNoteReqPayload {
-    title: String,
+pub struct CreateCompanyReqPayload {
+    name: String,
 }
 
 #[utoipa::path(
   post,
-  path = "/notes",
+  path = "/companies",
   context_path = "/api",
-  tag = "notes",
-  request_body(content = CreateNoteReqPayload, description = "JSON request payload to create a new note", content_type = "application/json"),
+  tag = "companies",
+  request_body(content = CreateCompanyReqPayload, description = "JSON request payload to create a new company", content_type = "application/json"),
   responses(
-      (status = 201, description = "JSON body representing the note that was created", body = Note),
+      (status = 201, description = "JSON body representing the company that was created", body = Company),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
@@ -34,103 +34,103 @@ pub struct CreateNoteReqPayload {
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn create_note(
-    req_payload: web::Json<CreateNoteReqPayload>,
+pub async fn create_company(
+    req_payload: web::Json<CreateCompanyReqPayload>,
     org_member: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let title = req_payload.title.clone();
-    let note = create_note_query(title, org_member.org_id, pg_pool).await?;
-    Ok(HttpResponse::Created().json(note))
+    let name = req_payload.name.clone();
+    let company = create_company_query(name, org_member.org_id, pg_pool).await?;
+    Ok(HttpResponse::Created().json(company))
 }
 
 #[utoipa::path(
   delete,
-  path = "/notes/{note_id}",
+  path = "/companies/{company_id}",
   context_path = "/api",
-  tag = "notes",
+  tag = "companies",
   responses(
-      (status = 204, description = "No content response indicating that the note was successfully deleted"),
+      (status = 204, description = "No content response indicating that the company was successfully deleted"),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
-    ("note_id" = String, Path, description = "The id of the note you want to delete."),
+    ("company_id" = String, Path, description = "The id of the company you want to delete."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn delete_note(
+pub async fn delete_company(
     org_user: AuthedMember,
-    note_id: web::Path<PrefixedUuid<NotePrefix>>,
+    company_id: web::Path<PrefixedUuid<CompanyPrefix>>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let note_id = note_id.into_inner();
+    let company_id = company_id.into_inner();
 
-    delete_note_query(note_id, pg_pool).await?;
+    delete_company_query(company_id, pg_pool).await?;
 
     return Ok(HttpResponse::NoContent().finish());
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct UpdateNoteReqPayload {
-    body: String,
+pub struct UpdateCompanyReqPayload {
+    name: String,
 }
 
 #[utoipa::path(
   put,
-  path = "/notes/{note_id}",
+  path = "/companies/{company_id}",
   context_path = "/api",
-  tag = "notes",
-  request_body(content = UpdateNoteReqPayload, description = "JSON request payload to rename the note", content_type = "application/json"),
+  tag = "companies",
+  request_body(content = UpdateCompanyReqPayload, description = "JSON request payload to rename the company", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the renamed note", body = Note),
+      (status = 200, description = "Object representing the renamed note", body = Company),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
-    ("note_id" = String, Path, description = "The id of the note you want to update."),
+    ("company_id" = String, Path, description = "The id of the note you want to update."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn update_note(
-    req_payload: web::Json<UpdateNoteReqPayload>,
-    note_id: web::Path<PrefixedUuid<NotePrefix>>,
+pub async fn update_company(
+    req_payload: web::Json<UpdateCompanyReqPayload>,
+    company_id: web::Path<PrefixedUuid<CompanyPrefix>>,
     org_member: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let note_id = note_id.into_inner();
+    let company_id = company_id.into_inner();
 
-    let new_body = req_payload.body.clone();
+    let new_name = req_payload.name.clone();
 
-    let new_note = update_note_body_query(note_id, new_body, pg_pool).await?;
+    let new_company = rename_company_query(company_id, new_name, pg_pool).await?;
 
-    Ok(HttpResponse::Ok().json(new_note))
+    Ok(HttpResponse::Ok().json(new_company))
 }
 
 #[derive(Debug, Deserialize)]
-pub struct GetNotesForOrgReqQuery {
+pub struct GetCompaniesQuery {
     limit: Option<i64>,
     offset: Option<i64>,
 }
 
 #[utoipa::path(
   get,
-  path = "/notes",
+  path = "/companies",
   context_path = "/api",
-  tag = "notes",
+  tag = "companies",
   params(
       ("limit" = Option<i64>, Query, description = "Limit the number of results. Default is 10"),
       ("offset" = Option<i64>, Query, description = "Offset the results. Default is 0"),
       ("Organization" = String, Header, description = "The organization id to use for the request"),
   ),
   responses(
-      (status = 200, description = "List of notes for the organization", body = [Note]),
+      (status = 200, description = "List of companies for the organization", body = [Company]),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   security(
@@ -138,47 +138,47 @@ pub struct GetNotesForOrgReqQuery {
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn get_notes_for_org(
-    query: web::Query<GetNotesForOrgReqQuery>,
+pub async fn get_companies_for_org(
+    query: web::Query<GetCompaniesQuery>,
     authed_user: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let org_notes =
-        get_notes_for_org_query(authed_user.org_id, pg_pool, query.limit, query.offset).await?;
+    let companies =
+        list_companies_query(authed_user.org_id, pg_pool, query.limit, query.offset).await?;
 
-    Ok(HttpResponse::Ok().json(org_notes))
+    Ok(HttpResponse::Ok().json(companies))
 }
 
 #[utoipa::path(
   get,
-  path = "/notes/{note_id}",
+  path = "/companies/{company_id}",
   context_path = "/api",
-  tag = "notes",
+  tag = "companies",
   responses(
-      (status = 200, description = "JSON object representing the requested note", body = Note),
+      (status = 200, description = "JSON object representing the requested company", body = Company),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
   ),
   params(
     ("Organization" = String, Header, description = "The organization id to use for the request"),
-    ("note_id" = String, Path, description = "The id of the note you want to fetch."),
+    ("company_id" = String, Path, description = "The id of the company you want to fetch."),
   ),
   security(
       ("ApiKey" = ["readonly"]),
   )
 )]
 #[tracing::instrument(skip(pg_pool))]
-pub async fn get_note_by_id(
-    note_id: web::Path<PrefixedUuid<NotePrefix>>,
+pub async fn get_company_by_id(
+    company_id: web::Path<PrefixedUuid<CompanyPrefix>>,
     org_member: AuthedMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    let note_id = note_id.into_inner();
+    let company_id = company_id.into_inner();
 
-    let note = get_note_by_id_query(note_id, pg_pool).await?;
+    let company = get_company_query(company_id, pg_pool).await?;
 
-    if note.org_id != org_member.org_id {
+    if company.org_id != org_member.org_id {
         return Ok(HttpResponse::Unauthorized().finish());
     }
 
-    Ok(HttpResponse::Ok().json(note))
+    Ok(HttpResponse::Ok().json(company))
 }

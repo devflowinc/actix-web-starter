@@ -1,4 +1,5 @@
 pub mod api_key_operator;
+pub mod company_operator;
 pub mod contact_operator;
 pub mod deal_operator;
 pub mod email_db_operator;
