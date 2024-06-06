@@ -32,6 +32,11 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**login**](docs/AuthApi.md#login) | **GET** /api/auth | Login
 *AuthApi* | [**logout**](docs/AuthApi.md#logout) | **DELETE** /api/auth | Logout
 *AuthApi* | [**whoami**](docs/AuthApi.md#whoami) | **GET** /api/auth/whoami | Get Currently Auth'ed User
+*CompaniesApi* | [**create_company**](docs/CompaniesApi.md#create_company) | **POST** /api/companies | 
+*CompaniesApi* | [**delete_company**](docs/CompaniesApi.md#delete_company) | **DELETE** /api/companies/{company_id} | 
+*CompaniesApi* | [**get_companies_for_org**](docs/CompaniesApi.md#get_companies_for_org) | **GET** /api/companies | 
+*CompaniesApi* | [**get_company_by_id**](docs/CompaniesApi.md#get_company_by_id) | **GET** /api/companies/{company_id} | 
+*CompaniesApi* | [**update_company**](docs/CompaniesApi.md#update_company) | **PUT** /api/companies/{company_id} | 
 *ContactsApi* | [**create_contact**](docs/ContactsApi.md#create_contact) | **POST** /api/contacts | 
 *ContactsApi* | [**delete_contact**](docs/ContactsApi.md#delete_contact) | **DELETE** /api/contacts/{contact_id} | 
 *ContactsApi* | [**get_contact**](docs/ContactsApi.md#get_contact) | **GET** /api/contacts/{contact_id} | 
@@ -74,9 +79,11 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Company](docs/Company.md)
  - [Contact](docs/Contact.md)
  - [CreateApiKeyReqPayload](docs/CreateApiKeyReqPayload.md)
  - [CreateApiKeyRespPayload](docs/CreateApiKeyRespPayload.md)
+ - [CreateCompanyReqPayload](docs/CreateCompanyReqPayload.md)
  - [CreateContactReqPayload](docs/CreateContactReqPayload.md)
  - [CreateDealReqPayload](docs/CreateDealReqPayload.md)
  - [CreateEmailReqPayload](docs/CreateEmailReqPayload.md)
@@ -96,6 +103,7 @@ Class | Method | HTTP request | Description
  - [Org](docs/Org.md)
  - [Phone](docs/Phone.md)
  - [Task](docs/Task.md)
+ - [UpdateCompanyReqPayload](docs/UpdateCompanyReqPayload.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)
  - [UpdateEmailReqPayload](docs/UpdateEmailReqPayload.md)

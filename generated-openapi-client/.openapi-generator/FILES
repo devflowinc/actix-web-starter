@@ -4,10 +4,13 @@ Cargo.toml
 README.md
 docs/ApiKeyApi.md
 docs/AuthApi.md
+docs/CompaniesApi.md
+docs/Company.md
 docs/Contact.md
 docs/ContactsApi.md
 docs/CreateApiKeyReqPayload.md
 docs/CreateApiKeyRespPayload.md
+docs/CreateCompanyReqPayload.md
 docs/CreateContactReqPayload.md
 docs/CreateDealReqPayload.md
 docs/CreateEmailReqPayload.md
@@ -36,6 +39,7 @@ docs/Phone.md
 docs/PhonesApi.md
 docs/Task.md
 docs/TasksApi.md
+docs/UpdateCompanyReqPayload.md
 docs/UpdateContactReqPayload.md
 docs/UpdateDealReqPayload.md
 docs/UpdateEmailReqPayload.md
@@ -48,6 +52,7 @@ docs/User.md
 git_push.sh
 src/apis/api_key_api.rs
 src/apis/auth_api.rs
+src/apis/companies_api.rs
 src/apis/configuration.rs
 src/apis/contacts_api.rs
 src/apis/deals_api.rs
@@ -61,9 +66,11 @@ src/apis/orgs_api.rs
 src/apis/phones_api.rs
 src/apis/tasks_api.rs
 src/lib.rs
+src/models/company.rs
 src/models/contact.rs
 src/models/create_api_key_req_payload.rs
 src/models/create_api_key_resp_payload.rs
+src/models/create_company_req_payload.rs
 src/models/create_contact_req_payload.rs
 src/models/create_deal_req_payload.rs
 src/models/create_email_req_payload.rs
@@ -84,6 +91,7 @@ src/models/note.rs
 src/models/org.rs
 src/models/phone.rs
 src/models/task.rs
+src/models/update_company_req_payload.rs
 src/models/update_contact_req_payload.rs
 src/models/update_deal_req_payload.rs
 src/models/update_email_req_payload.rs

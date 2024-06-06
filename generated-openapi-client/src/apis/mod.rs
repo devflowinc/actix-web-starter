@@ -92,6 +92,7 @@ pub fn parse_deep_object(prefix: &str, value: &serde_json::Value) -> Vec<(String
 
 pub mod api_key_api;
 pub mod auth_api;
+pub mod companies_api;
 pub mod contacts_api;
 pub mod deals_api;
 pub mod emails_api;
