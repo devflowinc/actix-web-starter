@@ -172,6 +172,7 @@ impl_prefix!(OrgUserPrefix, "orguser");
 impl_prefix!(UserPrefix, "user");
 impl_prefix!(NotePrefix, "note");
 impl_prefix!(ContactPrefix, "contact");
+impl_prefix!(DealPrefix, "deal");
 impl_prefix!(LinkPrefix, "link");
 impl_prefix!(EmailPrefix, "email");
 impl_prefix!(PhonePrefix, "phone");
