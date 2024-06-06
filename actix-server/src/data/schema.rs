@@ -27,6 +27,8 @@ diesel::table! {
         org_id -> Uuid,
         first_name -> Text,
         last_name -> Text,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 
@@ -37,6 +39,8 @@ diesel::table! {
         org_id -> Uuid,
         size -> Nullable<Float4>,
         active -> Bool,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 
@@ -45,6 +49,8 @@ diesel::table! {
         id -> Uuid,
         email -> Text,
         org_id -> Uuid,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 
@@ -66,6 +72,8 @@ diesel::table! {
         id -> Uuid,
         link -> Text,
         org_id -> Uuid,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 
@@ -103,6 +111,8 @@ diesel::table! {
         id -> Uuid,
         number -> Text,
         org_id -> Uuid,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 
@@ -138,6 +148,8 @@ diesel::table! {
         description -> Nullable<Text>,
         contact_id -> Nullable<Uuid>,
         org_id -> Uuid,
+        updated_at -> Timestamptz,
+        created_at -> Timestamptz,
     }
 }
 

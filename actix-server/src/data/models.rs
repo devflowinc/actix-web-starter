@@ -94,6 +94,8 @@ impl Org {
     "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
     "size": 4.0,
     "active": true,
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
 }))]
 #[diesel(table_name = deals)]
 pub struct Deal {
@@ -102,6 +104,8 @@ pub struct Deal {
     pub org_id: PrefixedUuid<OrgPrefix>,
     pub size: Option<f32>,
     pub active: bool,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Deal {
@@ -117,6 +121,8 @@ impl Deal {
             org_id,
             size,
             active,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
@@ -289,6 +295,8 @@ impl ApiKey {
     "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
     "first_name": "John",
     "last_name": "Doe",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
 }))]
 #[diesel(table_name = contacts)]
 pub struct Contact {
@@ -296,6 +304,8 @@ pub struct Contact {
     pub org_id: PrefixedUuid<OrgPrefix>,
     pub first_name: String,
     pub last_name: String,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Contact {
@@ -309,6 +319,8 @@ impl Contact {
             org_id,
             first_name,
             last_name,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
@@ -350,12 +362,16 @@ impl Note {
     "id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
     "link": "https://trieve.ai",
     "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
 }))]
 #[diesel(table_name = links)]
 pub struct Link {
     pub id: PrefixedUuid<LinkPrefix>,
     pub link: String,
     pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Link {
@@ -364,6 +380,8 @@ impl Link {
             id: PrefixedUuid::create(LinkPrefix),
             org_id,
             link,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
@@ -379,6 +397,8 @@ pub struct Email {
     pub id: PrefixedUuid<EmailPrefix>,
     pub email: String,
     pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Email {
@@ -387,6 +407,8 @@ impl Email {
             id: PrefixedUuid::create(EmailPrefix),
             email,
             org_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
@@ -396,12 +418,16 @@ impl Email {
     "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
     "phone": "+1234567890",
     "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
 }))]
 #[diesel(table_name = phones)]
 pub struct Phone {
     pub id: PrefixedUuid<PhonePrefix>,
     pub number: String,
     pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Phone {
@@ -410,6 +436,8 @@ impl Phone {
             id: PrefixedUuid::create(PhonePrefix),
             number,
             org_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
@@ -421,6 +449,8 @@ impl Phone {
     "description": "Task description...",
     "contact_id": "contact-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
     "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+    "created_at": "2021-01-01T00:00:00",
+    "updated_at": "2021-01-01T00:00:00",
 }))]
 #[diesel(table_name = tasks)]
 pub struct Task {
@@ -429,6 +459,8 @@ pub struct Task {
     pub description: Option<String>,
     pub contact_id: Option<PrefixedUuid<ContactPrefix>>,
     pub org_id: PrefixedUuid<OrgPrefix>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 impl Task {
@@ -444,6 +476,8 @@ impl Task {
             description,
             contact_id,
             org_id,
+            created_at: chrono::Utc::now().naive_local(),
+            updated_at: chrono::Utc::now().naive_local(),
         }
     }
 }
