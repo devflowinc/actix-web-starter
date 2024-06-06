@@ -14,6 +14,8 @@ use crate::models;
 pub struct Deal {
     #[serde(rename = "active")]
     pub active: bool,
+    #[serde(rename = "created_at")]
+    pub created_at: String,
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "name", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
@@ -22,16 +24,20 @@ pub struct Deal {
     pub org_id: String,
     #[serde(rename = "size", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub size: Option<Option<f32>>,
+    #[serde(rename = "updated_at")]
+    pub updated_at: String,
 }
 
 impl Deal {
-    pub fn new(active: bool, id: String, org_id: String) -> Deal {
+    pub fn new(active: bool, created_at: String, id: String, org_id: String, updated_at: String) -> Deal {
         Deal {
             active,
+            created_at,
             id,
             name: None,
             org_id,
             size: None,
+            updated_at,
         }
     }
 }

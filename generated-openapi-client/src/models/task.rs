@@ -14,6 +14,8 @@ use crate::models;
 pub struct Task {
     #[serde(rename = "contact_id", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub contact_id: Option<Option<String>>,
+    #[serde(rename = "created_at")]
+    pub created_at: String,
     #[serde(rename = "deadline", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub deadline: Option<Option<String>>,
     #[serde(rename = "description", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
@@ -22,16 +24,20 @@ pub struct Task {
     pub id: String,
     #[serde(rename = "org_id")]
     pub org_id: String,
+    #[serde(rename = "updated_at")]
+    pub updated_at: String,
 }
 
 impl Task {
-    pub fn new(id: String, org_id: String) -> Task {
+    pub fn new(created_at: String, id: String, org_id: String, updated_at: String) -> Task {
         Task {
             contact_id: None,
+            created_at,
             deadline: None,
             description: None,
             id,
             org_id,
+            updated_at,
         }
     }
 }
