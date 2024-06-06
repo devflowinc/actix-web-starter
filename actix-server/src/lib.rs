@@ -199,6 +199,13 @@ impl Modify for SecurityAddon {
             prefixes::PrefixedUuid<prefixes::OrgPrefix>,
             prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
             prefixes::PrefixedUuid<prefixes::UserPrefix>,
+            prefixes::PrefixedUuid<prefixes::NotePrefix>,
+            prefixes::PrefixedUuid<prefixes::ContactPrefix>,
+            prefixes::PrefixedUuid<prefixes::LinkPrefix>,
+            prefixes::PrefixedUuid<prefixes::EmailPrefix>,
+            prefixes::PrefixedUuid<prefixes::PhonePrefix>,
+            prefixes::PrefixedUuid<prefixes::TaskPrefix>,
+            prefixes::PrefixedUuid<prefixes::CompanyPrefix>,
         )
     ),
     tags(

@@ -372,6 +372,7 @@ impl Link {
 #[schema(example = json!({
     "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
     "email": "example@example.com",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
 }))]
 #[diesel(table_name = emails)]
 pub struct Email {
@@ -394,6 +395,7 @@ impl Email {
 #[schema(example = json!({
     "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
     "phone": "+1234567890",
+    "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
 }))]
 #[diesel(table_name = phones)]
 pub struct Phone {
