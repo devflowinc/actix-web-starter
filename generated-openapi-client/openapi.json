@@ -2981,7 +2981,8 @@
         },
         "example": {
           "email": "example@example.com",
-          "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7"
+          "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8"
         }
       },
       "ErrorRespPayload": {
@@ -3196,6 +3197,7 @@
         },
         "example": {
           "id": "c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
           "phone": "+1234567890"
         }
       },
