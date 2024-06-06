@@ -97,7 +97,7 @@ impl Org {
 }))]
 #[diesel(table_name = deals)]
 pub struct Deal {
-    pub id: uuid::Uuid,
+    pub id: PrefixedUuid<DealPrefix>,
     pub name: Option<String>,
     pub org_id: PrefixedUuid<OrgPrefix>,
     pub size: Option<f32>,
@@ -112,7 +112,7 @@ impl Deal {
         active: bool,
     ) -> Self {
         Deal {
-            id: uuid::Uuid::new_v4(),
+            id: PrefixedUuid::create(DealPrefix),
             name,
             org_id,
             size,

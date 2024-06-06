@@ -4,6 +4,7 @@ use crate::{
     operators::deal_operator::{
         create_deal_query, delete_deal_query, get_deal_by_id, update_deal_query,
     },
+    prefixes::{DealPrefix, PrefixedUuid},
 };
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
@@ -70,7 +71,7 @@ pub async fn create_deal(
 #[tracing::instrument(skip(pg_pool))]
 pub async fn delete_deal(
     org_user: OwnerMember,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<DealPrefix>>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let deal_id = path.into_inner();
@@ -98,7 +99,7 @@ pub async fn delete_deal(
 )]
 #[tracing::instrument(skip(pg_pool))]
 pub async fn get_deal(
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<DealPrefix>>,
     org_user: OwnerMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
@@ -137,7 +138,7 @@ pub struct UpdateDealReqPayload {
 #[tracing::instrument(skip(pg_pool))]
 pub async fn update_deal(
     req_payload: web::Json<UpdateDealReqPayload>,
-    path: web::Path<uuid::Uuid>,
+    path: web::Path<PrefixedUuid<DealPrefix>>,
     org_user: OwnerMember,
     pg_pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {

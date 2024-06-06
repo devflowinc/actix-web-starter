@@ -1,7 +1,7 @@
 use crate::{
     data::models::{Deal, PgPool},
     errors::ServiceError,
-    prefixes::{OrgPrefix, PrefixedUuid},
+    prefixes::{DealPrefix, OrgPrefix, PrefixedUuid},
 };
 use actix_web::web;
 use diesel::{ExpressionMethods, QueryDsl};
@@ -27,7 +27,7 @@ pub async fn create_deal_query(
 }
 
 pub async fn delete_deal_query(
-    deal_id: uuid::Uuid,
+    deal_id: PrefixedUuid<DealPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<(), ServiceError> {
     use crate::data::schema::deals::dsl as deals_columns;
@@ -43,7 +43,7 @@ pub async fn delete_deal_query(
 }
 
 pub async fn update_deal_query(
-    deal_id: uuid::Uuid,
+    deal_id: PrefixedUuid<DealPrefix>,
     name: Option<String>,
     size: Option<f32>,
     active: Option<bool>,
@@ -65,7 +65,7 @@ pub async fn update_deal_query(
 }
 
 pub async fn get_deal_by_id(
-    deal_id: uuid::Uuid,
+    deal_id: PrefixedUuid<DealPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<Deal, ServiceError> {
     use crate::data::schema::deals::dsl as deals_columns;
