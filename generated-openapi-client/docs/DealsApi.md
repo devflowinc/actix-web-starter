@@ -50,7 +50,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**deal_id** | **String** | The deal id to use for the request | [required] |
 **organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
@@ -79,7 +79,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**deal_id** | **String** | The deal id to use for the request | [required] |
 **organization** | **String** | The org id to use for the request | [required] |
 
 ### Return type
@@ -108,7 +108,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**deal_id** | **uuid::Uuid** | The deal id to use for the request | [required] |
+**deal_id** | **String** | The deal id to use for the request | [required] |
 **organization** | **String** | The org id to use for the request | [required] |
 **update_deal_req_payload** | [**UpdateDealReqPayload**](UpdateDealReqPayload.md) | JSON request payload to update the deal | [required] |
 

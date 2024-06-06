@@ -15,7 +15,7 @@ pub struct Deal {
     #[serde(rename = "active")]
     pub active: bool,
     #[serde(rename = "id")]
-    pub id: uuid::Uuid,
+    pub id: String,
     #[serde(rename = "name", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub name: Option<Option<String>>,
     #[serde(rename = "org_id")]
@@ -25,7 +25,7 @@ pub struct Deal {
 }
 
 impl Deal {
-    pub fn new(active: bool, id: uuid::Uuid, org_id: String) -> Deal {
+    pub fn new(active: bool, id: String, org_id: String) -> Deal {
         Deal {
             active,
             id,

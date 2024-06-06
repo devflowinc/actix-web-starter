@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **active** | **bool** |  | 
-**id** | [**uuid::Uuid**](uuid::Uuid.md) |  | 
+**id** | **String** |  | 
 **name** | Option<**String**> |  | [optional]
 **org_id** | **String** |  | 
 **size** | Option<**f32**> |  | [optional]

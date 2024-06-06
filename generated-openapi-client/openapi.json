@@ -849,8 +849,7 @@
             "description": "The deal id to use for the request",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           },
           {
@@ -905,8 +904,7 @@
             "description": "The deal id to use for the request",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           },
           {
@@ -972,8 +970,7 @@
             "description": "The deal id to use for the request",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           },
           {
@@ -2938,8 +2935,7 @@
             "type": "boolean"
           },
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "$ref": "#/components/schemas/PrefixedUuid"
           },
           "name": {
             "type": "string",
