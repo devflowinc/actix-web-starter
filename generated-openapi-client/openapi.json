@@ -2626,7 +2626,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Org"
+                  "$ref": "#/components/schemas/Task"
                 }
               }
             }

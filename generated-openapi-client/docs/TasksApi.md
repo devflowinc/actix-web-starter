@@ -100,7 +100,7 @@ Name | Type | Description  | Required | Notes
 
 ## update_task
 
-> models::Org update_task(task_id, organization, update_task_req_payload)
+> models::Task update_task(task_id, organization, update_task_req_payload)
 
 
 ### Parameters
@@ -114,7 +114,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::Org**](Org.md)
+[**models::Task**](Task.md)
 
 ### Authorization
 

@@ -47,8 +47,7 @@ enum Commands {
 enum TaskCommands {
     Create,
     Delete(DeleteNote),
-    Edit,
-    List,
+    Edit(EditTask),
     View(ViewTask),
 }
 
@@ -56,6 +55,12 @@ enum TaskCommands {
 struct DeleteTask {
     /// The id of the task you want to delete
     id: Option<String>,
+}
+
+#[derive(Args)]
+struct EditTask {
+    /// The id of the task you want to edit
+    id: String,
 }
 
 #[derive(Args)]
@@ -264,16 +269,16 @@ async fn main() {
 
         Some(Commands::Tasks(task_option)) => match task_option {
             TaskCommands::Create => {
-                let _ = tasks::create_task_cmd(settings).await;
+                _ = tasks::create_task_cmd(settings).await;
             }
             TaskCommands::Delete(input) => {
-                let _ = tasks::delete_task_cmd(settings, input.id).await;
+                _ = tasks::delete_task_cmd(settings, input.id).await;
             }
             TaskCommands::View(view_options) => {
                 tasks::view_task_cmd(settings, view_options.id).await
             }
-            _ => {
-                unimplemented!("tasks command not implemented")
+            TaskCommands::Edit(edit_options) => {
+                tasks::edit_task_cmd(settings, edit_options.id).await
             }
         },
         _ => {

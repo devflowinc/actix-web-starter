@@ -81,7 +81,7 @@ pub enum GetTaskSuccess {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateTaskSuccess {
-    Status200(models::Org),
+    Status200(models::Task),
     UnknownValue(serde_json::Value),
 }
 

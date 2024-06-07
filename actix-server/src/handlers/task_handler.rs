@@ -127,7 +127,7 @@ pub struct UpdateTaskReqPayload {
   tag = "tasks",
   request_body(content = UpdateTaskReqPayload, description = "JSON request payload to update the task", content_type = "application/json"),
   responses(
-      (status = 200, description = "Object representing the updated task", body = Org),
+      (status = 200, description = "Object representing the updated task", body = Task),
       (status = 401, description = "Service error relating to authentication status of the user", body = ErrorRespPayload),
       (status = 400, description = "Service error relating to the request payload", body = ErrorRespPayload),
   ),

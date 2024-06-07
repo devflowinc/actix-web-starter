@@ -1,6 +1,8 @@
 use actix_web_starter_client::{
-    apis::tasks_api::{self, CreateTaskSuccess, GetTaskParams},
-    models::{CreateTaskReqPayload, Task},
+    apis::tasks_api::{
+        self, CreateTaskSuccess, GetTaskParams, UpdateTaskParams, UpdateTaskSuccess,
+    },
+    models::{CreateTaskReqPayload, Task, UpdateTaskReqPayload},
 };
 
 use crate::{errors::DefaultError, ui::get_cancelable_render_config};
@@ -76,6 +78,49 @@ pub async fn get_task(
         tasks_api::GetTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Could not parse response body getting task by id",
         )),
+    }
+}
+
+pub async fn edit_task_cmd(config: ActixTemplateConfiguration, task_id: String) {
+    let task = get_task(config.clone(), task_id).await.unwrap();
+    let description = inquire::Text::new("Enter description (or ESC):")
+        .with_render_config(get_cancelable_render_config("No Description"))
+        .prompt_skippable()
+        .expect("Prompt renders correctly");
+    let due_date = inquire::DateSelect::new("Enter a due date (or ESC):")
+        .with_render_config(get_cancelable_render_config("No Due Date"))
+        .prompt_skippable()
+        .expect("Prompt renders correctly")
+        .map(|d| d.format("%Y-%m-%dT00:00:00").to_string());
+
+    let update_params = UpdateTaskParams {
+        task_id: task.id,
+        organization: config.clone().org_id,
+        update_task_req_payload: UpdateTaskReqPayload {
+            contact_id: None,
+            description: Some(description),
+            deadline: Some(due_date),
+        },
+    };
+
+    let result = tasks_api::update_task(&config.into(), update_params)
+        .await
+        .unwrap_or_else(|e| {
+            eprintln!("Error updating task: {:?}", e);
+            std::process::exit(1);
+        })
+        .entity
+        .expect("Task should be returned");
+
+    match result {
+        UpdateTaskSuccess::Status200(task) => {
+            println!("Task updated successfully: {}", task.id);
+        }
+
+        UpdateTaskSuccess::UnknownValue(_) => {
+            eprintln!("Could not parse response body when updating task");
+            std::process::exit(1);
+        }
     }
 }
 
