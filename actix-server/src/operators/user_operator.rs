@@ -1,8 +1,8 @@
 use crate::{
-    data::models::{PgPool, User},
+    data::models::{PgPool, Task, TaskUser, User},
     errors::ServiceError,
     operators::api_key_operator::hash_api_key,
-    prefixes::{PrefixedUuid, UserPrefix},
+    prefixes::{PrefixedUuid, TaskPrefix, UserPrefix},
 };
 use actix_web::web;
 use diesel::prelude::*;
@@ -106,4 +106,31 @@ pub async fn get_user_by_email_query(
         })?;
 
     Ok(user)
+}
+
+pub async fn list_users_by_task_id(
+    task_id: PrefixedUuid<TaskPrefix>,
+    pg_pool: web::Data<PgPool>,
+    offset: Option<i64>,
+    limit: Option<i64>,
+) -> Result<Vec<User>, ServiceError> {
+    use crate::data::schema::tasks::dsl as tasks_columns;
+    use crate::data::schema::users::dsl as users_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    let limit = limit.unwrap_or(10);
+    let offset = offset.unwrap_or(0);
+    let task = tasks_columns::tasks
+        .filter(tasks_columns::id.eq(task_id))
+        .first::<Task>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::NotFound)?;
+    let users = TaskUser::belonging_to(&task)
+        .inner_join(users_columns::users)
+        .select(User::as_select())
+        .limit(limit)
+        .offset(offset)
+        .load::<User>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error fetching user".to_string()))?;
+    Ok(users)
 }

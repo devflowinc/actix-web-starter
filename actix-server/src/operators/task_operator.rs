@@ -1,7 +1,9 @@
 use crate::{
-    data::models::{Contact, PgPool, Task},
+    data::models::{PgPool, Task, TaskDeal, TaskLink, TaskUser},
     errors::ServiceError,
-    prefixes::{ContactPrefix, OrgPrefix, PrefixedUuid, TaskPrefix},
+    prefixes::{
+        ContactPrefix, DealPrefix, LinkPrefix, OrgPrefix, PrefixedUuid, TaskPrefix, UserPrefix,
+    },
 };
 use actix_web::web;
 use diesel::{ExpressionMethods, QueryDsl};
@@ -17,9 +19,6 @@ pub async fn create_task_query(
 ) -> Result<Task, ServiceError> {
     use crate::data::schema::tasks::dsl as tasks_columns;
     let mut conn = pg_pool.get().await.unwrap();
-    if let Some(contact_id) = contact_id {
-        contact_exists(contact_id, pg_pool.clone()).await?;
-    }
     let new_task = Task::from_details(org_id, deadline, description, contact_id);
     let task = diesel::insert_into(tasks_columns::tasks)
         .values(&new_task)
@@ -54,9 +53,6 @@ pub async fn update_task_query(
 ) -> Result<Task, ServiceError> {
     use crate::data::schema::tasks::dsl as tasks_columns;
     let mut conn = pg_pool.get().await.unwrap();
-    if let Some(contact_id) = contact_id {
-        contact_exists(contact_id, pg_pool.clone()).await?;
-    }
     let target = tasks_columns::tasks.filter(tasks_columns::id.eq(task_id));
     let updated_task = diesel::update(target)
         .set((
@@ -84,16 +80,98 @@ pub async fn get_task_by_id(
     Ok(task)
 }
 
-async fn contact_exists(
-    contact_id: PrefixedUuid<ContactPrefix>,
+pub async fn create_deal_for_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    deal_id: PrefixedUuid<DealPrefix>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<TaskDeal, ServiceError> {
+    use crate::data::schema::task_deals::dsl as task_deals_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    let new_task_deal = TaskDeal::from_details(task_id, deal_id);
+    let task_deal = diesel::insert_into(task_deals_columns::task_deals)
+        .values(&new_task_deal)
+        .get_result::<TaskDeal>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error creating task deal".to_string()))?;
+    Ok(task_deal)
+}
+
+pub async fn delete_deal_from_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    deal_id: PrefixedUuid<DealPrefix>,
     pg_pool: web::Data<PgPool>,
 ) -> Result<(), ServiceError> {
-    use crate::data::schema::contacts::dsl as contacts_columns;
+    use crate::data::schema::task_deals::dsl as task_deals_columns;
     let mut conn = pg_pool.get().await.unwrap();
-    contacts_columns::contacts
-        .filter(contacts_columns::id.eq(contact_id))
-        .first::<Contact>(&mut conn)
+    diesel::delete(task_deals_columns::task_deals)
+        .filter(task_deals_columns::task_id.eq(task_id))
+        .filter(task_deals_columns::deal_id.eq(deal_id))
+        .execute(&mut conn)
         .await
-        .map_err(|_| ServiceError::BadRequest("Contact not found".to_string()))?;
+        .map_err(|_| ServiceError::InternalServerError("Error deleting task deal".to_string()))?;
+    Ok(())
+}
+
+pub async fn create_link_for_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    link_id: PrefixedUuid<LinkPrefix>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<TaskLink, ServiceError> {
+    use crate::data::schema::task_links::dsl as task_links_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    let new_task_deal = TaskLink::from_details(task_id, link_id);
+    let task_link = diesel::insert_into(task_links_columns::task_links)
+        .values(&new_task_deal)
+        .get_result::<TaskLink>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error creating task link".to_string()))?;
+    Ok(task_link)
+}
+
+pub async fn delete_link_from_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    link_id: PrefixedUuid<LinkPrefix>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<(), ServiceError> {
+    use crate::data::schema::task_links::dsl as task_links_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    diesel::delete(task_links_columns::task_links)
+        .filter(task_links_columns::task_id.eq(task_id))
+        .filter(task_links_columns::link_id.eq(link_id))
+        .execute(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error deleting task link".to_string()))?;
+    Ok(())
+}
+
+pub async fn create_user_for_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    user_id: PrefixedUuid<UserPrefix>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<TaskUser, ServiceError> {
+    use crate::data::schema::task_users::dsl as task_users_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    let new_task_user = TaskUser::from_details(task_id, user_id);
+    let task_user = diesel::insert_into(task_users_columns::task_users)
+        .values(&new_task_user)
+        .get_result::<TaskUser>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error creating task user".to_string()))?;
+    Ok(task_user)
+}
+
+pub async fn delete_user_from_task_query(
+    task_id: PrefixedUuid<TaskPrefix>,
+    user_id: PrefixedUuid<UserPrefix>,
+    pg_pool: web::Data<PgPool>,
+) -> Result<(), ServiceError> {
+    use crate::data::schema::task_users::dsl as task_users_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    diesel::delete(task_users_columns::task_users)
+        .filter(task_users_columns::task_id.eq(task_id))
+        .filter(task_users_columns::user_id.eq(user_id))
+        .execute(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error deleting task user".to_string()))?;
     Ok(())
 }

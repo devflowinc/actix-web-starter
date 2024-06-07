@@ -8,7 +8,9 @@ use utoipa::ToSchema;
 pub type PgPool = diesel_async::pooled_connection::deadpool::Pool<diesel_async::AsyncPgConnection>;
 pub type RedisPool = bb8::Pool<RedisConnectionManager>;
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[derive(
+    Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema, Identifiable,
+)]
 #[schema(example = json!({
     "id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
     "email": "developers@trieve.ai",
@@ -88,7 +90,18 @@ impl Org {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[derive(
+    Debug,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    Queryable,
+    Insertable,
+    Selectable,
+    Clone,
+    ToSchema,
+    Identifiable,
+)]
 #[schema(example = json!({
     "id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
     "org_id": "e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3",
@@ -357,7 +370,9 @@ impl Note {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[derive(
+    Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema, Identifiable,
+)]
 #[schema(example = json!({
     "id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
     "link": "https://trieve.ai",
@@ -442,7 +457,19 @@ impl Phone {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Queryable, Insertable, Selectable, Clone, ToSchema)]
+#[derive(
+    Debug,
+    Hash,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    Queryable,
+    Insertable,
+    Selectable,
+    Clone,
+    ToSchema,
+    Identifiable,
+)]
 #[schema(example = json!({
     "id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
     "deadline": "2021-01-01T00:00:00",

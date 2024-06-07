@@ -1,5 +1,6 @@
 use std::{
     fmt::{self, Debug, Display},
+    hash::Hash,
     str::FromStr,
 };
 
@@ -49,6 +50,12 @@ impl<'__s, P: Prefix> ToSchema<'__s> for PrefixedUuid<P> {
     }
 }
 
+impl<P: Prefix> Hash for PrefixedUuid<P> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
 impl<P: Prefix> Display for PrefixedUuid<P> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}-{}", self.prefix, self.id)
@@ -66,14 +73,14 @@ impl<P: Prefix> Serialize for PrefixedUuid<P> {
 }
 
 impl<P: Prefix> FromStr for PrefixedUuid<P> {
-    type Err = ();
+    type Err = PrefixParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = s.split('-').collect();
         // Combine all parts except the first
         let rest = parts[1..].join("-");
 
-        let parsed_uuid = rest.parse().map_err(|_| ())?;
+        let parsed_uuid = rest.parse().map_err(|_| PrefixParseError)?;
 
         Ok(PrefixedUuid {
             prefix: P::default(),
@@ -140,6 +147,9 @@ impl<P: Prefix + Default> FromSql<diesel::sql_types::Uuid, diesel::pg::Pg> for P
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct PrefixParseError;
+
 macro_rules! impl_prefix {
     ($name:ident, $prefix:expr) => {
         #[derive(Clone, Debug, Serialize, Deserialize, Default, Copy, PartialEq, Eq, ToSchema)]
@@ -152,13 +162,13 @@ macro_rules! impl_prefix {
         }
 
         impl FromStr for $name {
-            type Err = ();
+            type Err = PrefixParseError;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 if s == $prefix {
                     Ok($name)
                 } else {
-                    Err(())
+                    Err(PrefixParseError)
                 }
             }
         }
@@ -178,3 +188,6 @@ impl_prefix!(EmailPrefix, "email");
 impl_prefix!(PhonePrefix, "phone");
 impl_prefix!(TaskPrefix, "task");
 impl_prefix!(CompanyPrefix, "company");
+impl_prefix!(TaskDealPrefix, "taskdeal");
+impl_prefix!(TaskLinkPrefix, "tasklink");
+impl_prefix!(TaskUserPrefix, "taskuser");

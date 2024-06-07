@@ -6,6 +6,8 @@ use std::convert::From;
 use utoipa::ToSchema;
 use uuid::Error as ParseError;
 
+use crate::prefixes::PrefixParseError;
+
 #[derive(Serialize, Deserialize, Debug, Display, ToSchema)]
 #[schema(example = json!({"message": "Bad Request"}))]
 pub struct ErrorRespPayload {
@@ -62,6 +64,14 @@ impl ResponseError for ServiceError {
 impl From<ParseError> for ServiceError {
     fn from(_: ParseError) -> ServiceError {
         ServiceError::BadRequest("Invalid UUID".into())
+    }
+}
+
+impl From<PrefixParseError> for ServiceError {
+    fn from(error: PrefixParseError) -> ServiceError {
+        match error {
+            _ => ServiceError::BadRequest("Invalid Prefix".into()),
+        }
     }
 }
 

@@ -1,10 +1,10 @@
 use crate::{
-    data::models::{Deal, PgPool},
+    data::models::{Deal, PgPool, Task, TaskDeal},
     errors::ServiceError,
-    prefixes::{DealPrefix, OrgPrefix, PrefixedUuid},
+    prefixes::{DealPrefix, OrgPrefix, PrefixedUuid, TaskPrefix},
 };
 use actix_web::web;
-use diesel::{ExpressionMethods, QueryDsl};
+use diesel::{BelongingToDsl, ExpressionMethods, QueryDsl, SelectableHelper};
 use diesel_async::RunQueryDsl;
 
 #[tracing::instrument(skip(pg_pool))]
@@ -76,4 +76,31 @@ pub async fn get_deal_by_id(
         .await
         .map_err(|_| ServiceError::NotFound)?;
     Ok(deal)
+}
+
+pub async fn list_deals_by_task_id(
+    task_id: PrefixedUuid<TaskPrefix>,
+    pg_pool: web::Data<PgPool>,
+    offset: Option<i64>,
+    limit: Option<i64>,
+) -> Result<Vec<Deal>, ServiceError> {
+    use crate::data::schema::deals::dsl as deals_columns;
+    use crate::data::schema::tasks::dsl as tasks_columns;
+    let mut conn = pg_pool.get().await.unwrap();
+    let limit = limit.unwrap_or(10);
+    let offset = offset.unwrap_or(0);
+    let task = tasks_columns::tasks
+        .filter(tasks_columns::id.eq(task_id))
+        .first::<Task>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::NotFound)?;
+    let deals = TaskDeal::belonging_to(&task)
+        .inner_join(deals_columns::deals)
+        .select(Deal::as_select())
+        .limit(limit)
+        .offset(offset)
+        .load::<Deal>(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error fetching deals".to_string()))?;
+    Ok(deals)
 }
