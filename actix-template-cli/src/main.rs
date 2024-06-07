@@ -1,5 +1,5 @@
 use clap::{Args, Parser, Subcommand};
-use commands::{configure::ActixTemplateProfile, notes, orgs};
+use commands::{configure::ActixTemplateProfile, notes, orgs, tasks};
 
 mod commands;
 mod errors;
@@ -37,6 +37,30 @@ enum Commands {
 
     #[command(subcommand)]
     Notes(NoteCommands),
+
+    #[command(subcommand)]
+    Tasks(TaskCommands),
+}
+
+#[derive(Subcommand)]
+enum TaskCommands {
+    Create,
+    Delete(DeleteNote),
+    Edit,
+    List,
+    View(ViewTask),
+}
+
+#[derive(Args)]
+struct DeleteTask {
+    /// The id of the task you want to delete
+    id: Option<String>,
+}
+
+#[derive(Args)]
+struct ViewTask {
+    /// The id of the task you want to delete
+    id: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -235,6 +259,15 @@ async fn main() {
                 notes::delete_note_cmd(settings, delete_args.id).await
             }
             NoteCommands::View(view_args) => notes::view_note_cmd(settings, view_args.id).await,
+        },
+
+        Some(Commands::Tasks(task_option)) => match task_option {
+            TaskCommands::Create => {
+                let _ = tasks::create_task_cmd(settings).await;
+            }
+            _ => {
+                unimplemented!("tasks command not implemented")
+            }
         },
         _ => {
             println!("Command not implemented yet");
