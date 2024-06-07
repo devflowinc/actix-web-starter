@@ -1,5 +1,5 @@
 use actix_web_starter_client::{
-    apis::tasks_api::{self, CreateTaskSuccess},
+    apis::tasks_api::{self, CreateTaskSuccess, GetTaskParams},
     models::{CreateTaskReqPayload, Task},
 };
 
@@ -43,5 +43,61 @@ pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task,
         CreateTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Could not parse response body creating task",
         )),
+    }
+}
+
+pub async fn _get_task(
+    config: ActixTemplateConfiguration,
+    task_id: String,
+) -> Result<Task, DefaultError> {
+    let response = tasks_api::get_task(
+        &config.clone().into(),
+        GetTaskParams {
+            task_id,
+            organization: config.org_id,
+        },
+    )
+    .await?
+    .entity
+    .unwrap();
+
+    match response {
+        tasks_api::GetTaskSuccess::Status200(task) => Ok(task),
+        tasks_api::GetTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
+            "Could not parse response body getting task by id",
+        )),
+    }
+}
+
+pub async fn delete_task_cmd(
+    config: ActixTemplateConfiguration,
+    task_id: Option<String>,
+) -> Result<(), DefaultError> {
+    let task_id = if task_id.is_none() {
+        inquire::Text::new("Enter task ID to delete:").prompt()?
+    } else {
+        task_id.unwrap()
+    };
+
+    let delete_response = tasks_api::delete_task(
+        &config.clone().into(),
+        tasks_api::DeleteTaskParams {
+            task_id,
+            organization: config.org_id,
+        },
+    )
+    .await?
+    .status
+    .is_success();
+
+    match delete_response {
+        true => {
+            println!("Task deleted successfully");
+            Ok(())
+        }
+        false => {
+            println!("Task could not be deleted");
+            Err(DefaultError::new("Task could not be deleted"))
+        }
     }
 }

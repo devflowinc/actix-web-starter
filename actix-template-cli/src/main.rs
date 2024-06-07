@@ -265,6 +265,9 @@ async fn main() {
             TaskCommands::Create => {
                 let _ = tasks::create_task_cmd(settings).await;
             }
+            TaskCommands::Delete(input) => {
+                let _ = tasks::delete_task_cmd(settings, input.id).await;
+            }
             _ => {
                 unimplemented!("tasks command not implemented")
             }

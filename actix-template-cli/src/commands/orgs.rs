@@ -5,7 +5,7 @@ use actix_web_starter_client::{
         configuration::Configuration,
         invitation_api,
         orgs_api::{
-            CreateOrgError, CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
+            CreateOrgParams, CreateOrgSuccess, GetOrgsForAuthedUserParams,
             GetOrgsForAuthedUserSuccess,
         },
     },
@@ -241,7 +241,7 @@ pub async fn invite_user(email: Option<String>, settings: ActixTemplateConfigura
             invitation_data: InvitationData {
                 user_role: 0,
                 organization_id: settings.clone().org_id,
-                email: email,
+                email,
                 app_url: "http://localhost:8090/api".to_owned(),
                 redirect_uri: "http://localhost:8090/api/auth/whoami".to_owned(),
             },
