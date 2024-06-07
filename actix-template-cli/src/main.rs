@@ -270,7 +270,7 @@ async fn main() {
                 let _ = tasks::delete_task_cmd(settings, input.id).await;
             }
             TaskCommands::View(view_options) => {
-                let _ = tasks::view_task_cmd(settings, view_options.id);
+                tasks::view_task_cmd(settings, view_options.id).await
             }
             _ => {
                 unimplemented!("tasks command not implemented")
