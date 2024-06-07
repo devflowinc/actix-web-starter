@@ -52,7 +52,7 @@ pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task,
     }
 }
 
-pub async fn _get_task(
+pub async fn get_task(
     config: ActixTemplateConfiguration,
     task_id: String,
 ) -> Result<Task, DefaultError> {
@@ -73,6 +73,13 @@ pub async fn _get_task(
             "Could not parse response body getting task by id",
         )),
     }
+}
+
+pub async fn view_task_cmd(config: ActixTemplateConfiguration, task_id: String) {
+    let task = get_task(config, task_id).await.unwrap();
+    println!("Task ID: {}", task.id);
+    println!("Description: {}", task.description);
+    println!("Deadline: {}", task.deadline.unwrap_or("None".to_string()));
 }
 
 pub async fn delete_task_cmd(

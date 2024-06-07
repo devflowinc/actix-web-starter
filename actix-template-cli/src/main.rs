@@ -61,7 +61,7 @@ struct DeleteTask {
 #[derive(Args)]
 struct ViewTask {
     /// The id of the task you want to delete
-    id: Option<String>,
+    id: String,
 }
 
 #[derive(Subcommand)]
@@ -268,6 +268,9 @@ async fn main() {
             }
             TaskCommands::Delete(input) => {
                 let _ = tasks::delete_task_cmd(settings, input.id).await;
+            }
+            TaskCommands::View(view_options) => {
+                let _ = tasks::view_task_cmd(settings, view_options.id);
             }
             _ => {
                 unimplemented!("tasks command not implemented")
