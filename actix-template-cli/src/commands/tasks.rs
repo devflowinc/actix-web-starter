@@ -3,7 +3,7 @@ use actix_web_starter_client::{
     models::{CreateTaskReqPayload, Task},
 };
 
-use crate::errors::DefaultError;
+use crate::{errors::DefaultError, ui::get_cancelable_render_config};
 
 use super::configure::ActixTemplateConfiguration;
 
@@ -13,9 +13,12 @@ fn transform_option<T>(opt: Option<T>) -> Option<Option<T>> {
 
 pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task, DefaultError> {
     // Get description
-    let description = inquire::Text::new("Enter description:").prompt_skippable()?;
+    let description = inquire::Text::new("Enter description (or ESC):")
+        .with_render_config(get_cancelable_render_config("No Description"))
+        .prompt_skippable()?;
     // Get due date? (optional)
-    let due_date = inquire::DateSelect::new("Enter a due date")
+    let due_date = inquire::DateSelect::new("Enter a due date (or ESC):")
+        .with_render_config(get_cancelable_render_config("No Due Date"))
         .prompt_skippable()?
         .map(|d| {
             // Convert to 2021-01-01T00:00:00 style string
@@ -39,7 +42,10 @@ pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task,
     .unwrap();
     // Return task
     match result {
-        CreateTaskSuccess::Status201(task) => Ok(task),
+        CreateTaskSuccess::Status201(task) => {
+            println!("Task created successfully: {}", task.id);
+            Ok(task)
+        }
         CreateTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Could not parse response body creating task",
         )),

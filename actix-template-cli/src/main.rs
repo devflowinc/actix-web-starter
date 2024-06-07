@@ -3,6 +3,7 @@ use commands::{configure::ActixTemplateProfile, notes, orgs, tasks};
 
 mod commands;
 mod errors;
+mod ui;
 
 #[derive(Parser)]
 #[command(author, version)]
