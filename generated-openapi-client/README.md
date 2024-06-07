@@ -72,8 +72,11 @@ Class | Method | HTTP request | Description
 *PhonesApi* | [**get_phone**](docs/PhonesApi.md#get_phone) | **GET** /api/phones/{phone_id} | 
 *PhonesApi* | [**update_phone**](docs/PhonesApi.md#update_phone) | **PUT** /api/phones/{phone_id} | 
 *TasksApi* | [**create_task**](docs/TasksApi.md#create_task) | **POST** /api/tasks | 
+*TasksApi* | [**create_task_resource**](docs/TasksApi.md#create_task_resource) | **POST** /api/tasks/{task_id}/{resource_type}/{resource_id} | 
 *TasksApi* | [**delete_task**](docs/TasksApi.md#delete_task) | **DELETE** /api/tasks/{task_id} | 
+*TasksApi* | [**delete_task_resource**](docs/TasksApi.md#delete_task_resource) | **DELETE** /api/tasks/{task_id}/{resource_type}/{resource_id} | 
 *TasksApi* | [**get_task**](docs/TasksApi.md#get_task) | **GET** /api/tasks/{task_id} | 
+*TasksApi* | [**list_task_resource**](docs/TasksApi.md#list_task_resource) | **GET** /api/tasks/{task_id}/{resource_type} | 
 *TasksApi* | [**update_task**](docs/TasksApi.md#update_task) | **PUT** /api/tasks/{task_id} | 
 
 
@@ -95,6 +98,7 @@ Class | Method | HTTP request | Description
  - [Deal](docs/Deal.md)
  - [Email](docs/Email.md)
  - [ErrorRespPayload](docs/ErrorRespPayload.md)
+ - [GetTaskResourceQuery](docs/GetTaskResourceQuery.md)
  - [Invitation](docs/Invitation.md)
  - [InvitationData](docs/InvitationData.md)
  - [InvitationResponse](docs/InvitationResponse.md)
@@ -103,6 +107,19 @@ Class | Method | HTTP request | Description
  - [Org](docs/Org.md)
  - [Phone](docs/Phone.md)
  - [Task](docs/Task.md)
+ - [TaskDeal](docs/TaskDeal.md)
+ - [TaskLink](docs/TaskLink.md)
+ - [TaskResType](docs/TaskResType.md)
+ - [TaskResource](docs/TaskResource.md)
+ - [TaskResourceList](docs/TaskResourceList.md)
+ - [TaskResourceListOneOf](docs/TaskResourceListOneOf.md)
+ - [TaskResourceListOneOf1](docs/TaskResourceListOneOf1.md)
+ - [TaskResourceListOneOf2](docs/TaskResourceListOneOf2.md)
+ - [TaskResourceListWithPagination](docs/TaskResourceListWithPagination.md)
+ - [TaskResourceOneOf](docs/TaskResourceOneOf.md)
+ - [TaskResourceOneOf1](docs/TaskResourceOneOf1.md)
+ - [TaskResourceOneOf2](docs/TaskResourceOneOf2.md)
+ - [TaskUser](docs/TaskUser.md)
  - [UpdateCompanyReqPayload](docs/UpdateCompanyReqPayload.md)
  - [UpdateContactReqPayload](docs/UpdateContactReqPayload.md)
  - [UpdateDealReqPayload](docs/UpdateDealReqPayload.md)

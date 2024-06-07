@@ -2708,6 +2708,263 @@
           }
         ]
       }
+    },
+    "/api/tasks/{task_id}/{resource_type}": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "operationId": "list_task_resource",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "description": "The task id to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/PrefixedUuid"
+            }
+          },
+          {
+            "name": "resource_type",
+            "in": "path",
+            "description": "The resource type to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TaskResType"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The number of records to return",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of records to skip",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of objects of resource_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResourceListWithPagination"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Service error relating to the request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/tasks/{task_id}/{resource_type}/{resource_id}": {
+      "post": {
+        "tags": [
+          "tasks"
+        ],
+        "operationId": "create_task_resource",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "description": "The task id to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/PrefixedUuid"
+            }
+          },
+          {
+            "name": "resource_type",
+            "in": "path",
+            "description": "The resource type to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TaskResType"
+            }
+          },
+          {
+            "name": "resource_id",
+            "in": "path",
+            "description": "The resource id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Object representing the created relationship",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Service error relating to the request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "tasks"
+        ],
+        "operationId": "delete_task_resource",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "description": "The task id to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/PrefixedUuid"
+            }
+          },
+          {
+            "name": "resource_type",
+            "in": "path",
+            "description": "The resource type to use for the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TaskResType"
+            }
+          },
+          {
+            "name": "resource_id",
+            "in": "path",
+            "description": "The resource id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Organization",
+            "in": "header",
+            "description": "The organization id to use for the request",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content response indicating that the task resource was successfully deleted"
+          },
+          "400": {
+            "description": "Service error relating to the request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Service error relating to authentication status of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespPayload"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": [
+              "readonly"
+            ]
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -3029,6 +3286,21 @@
           "message": "Bad Request"
         }
       },
+      "GetTaskResourceQuery": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        }
+      },
       "Invitation": {
         "type": "object",
         "required": [
@@ -3307,6 +3579,221 @@
           "id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
           "org_id": "org-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
           "updated_at": "2021-01-01T00:00:00"
+        }
+      },
+      "TaskDeal": {
+        "type": "object",
+        "required": [
+          "id",
+          "task_id",
+          "deal_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deal_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "task_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "created_at": "2021-01-01T00:00:00",
+          "deal_id": "deal-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "id": "taskdeal-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "updated_at": "2021-01-01T00:00:00"
+        }
+      },
+      "TaskLink": {
+        "type": "object",
+        "required": [
+          "id",
+          "task_id",
+          "link_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "link_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "task_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "created_at": "2021-01-01T00:00:00",
+          "id": "tasklink-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "link_id": "link-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "updated_at": "2021-01-01T00:00:00"
+        }
+      },
+      "TaskResType": {
+        "type": "string",
+        "enum": [
+          "link",
+          "deal",
+          "user"
+        ]
+      },
+      "TaskResource": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "link"
+            ],
+            "properties": {
+              "link": {
+                "$ref": "#/components/schemas/TaskLink"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "deal"
+            ],
+            "properties": {
+              "deal": {
+                "$ref": "#/components/schemas/TaskDeal"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "user"
+            ],
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/TaskUser"
+              }
+            }
+          }
+        ]
+      },
+      "TaskResourceList": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "link"
+            ],
+            "properties": {
+              "link": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Link"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "deal"
+            ],
+            "properties": {
+              "deal": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Deal"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "user"
+            ],
+            "properties": {
+              "user": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TaskResourceListWithPagination": {
+        "type": "object",
+        "required": [
+          "data",
+          "total"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TaskResourceList"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TaskUser": {
+        "type": "object",
+        "required": [
+          "id",
+          "task_id",
+          "user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "task_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user_id": {
+            "$ref": "#/components/schemas/PrefixedUuid"
+          }
+        },
+        "example": {
+          "created_at": "2021-01-01T00:00:00",
+          "id": "taskuser-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8",
+          "task_id": "task-c7c7c7c7-c7c7-c7c7-c7c7-c7c7c7c7c7c7",
+          "updated_at": "2021-01-01T00:00:00",
+          "user_id": "user-b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8"
         }
       },
       "UpdateCompanyReqPayload": {

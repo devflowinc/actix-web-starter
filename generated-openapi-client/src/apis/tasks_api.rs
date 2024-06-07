@@ -23,11 +23,37 @@ pub struct CreateTaskParams {
     pub create_task_req_payload: models::CreateTaskReqPayload
 }
 
+/// struct for passing parameters to the method [`create_task_resource`]
+#[derive(Clone, Debug)]
+pub struct CreateTaskResourceParams {
+    /// The task id to use for the request
+    pub task_id: String,
+    /// The resource type to use for the request
+    pub resource_type: models::TaskResType,
+    /// The resource id to use for the request
+    pub resource_id: String,
+    /// The organization id to use for the request
+    pub organization: String
+}
+
 /// struct for passing parameters to the method [`delete_task`]
 #[derive(Clone, Debug)]
 pub struct DeleteTaskParams {
     /// The task id to use for the request
     pub task_id: String,
+    /// The organization id to use for the request
+    pub organization: String
+}
+
+/// struct for passing parameters to the method [`delete_task_resource`]
+#[derive(Clone, Debug)]
+pub struct DeleteTaskResourceParams {
+    /// The task id to use for the request
+    pub task_id: String,
+    /// The resource type to use for the request
+    pub resource_type: models::TaskResType,
+    /// The resource id to use for the request
+    pub resource_id: String,
     /// The organization id to use for the request
     pub organization: String
 }
@@ -39,6 +65,21 @@ pub struct GetTaskParams {
     pub task_id: String,
     /// The organization id to use for the request
     pub organization: String
+}
+
+/// struct for passing parameters to the method [`list_task_resource`]
+#[derive(Clone, Debug)]
+pub struct ListTaskResourceParams {
+    /// The task id to use for the request
+    pub task_id: String,
+    /// The resource type to use for the request
+    pub resource_type: models::TaskResType,
+    /// The organization id to use for the request
+    pub organization: String,
+    /// The number of records to return
+    pub limit: i64,
+    /// The number of records to skip
+    pub offset: i64
 }
 
 /// struct for passing parameters to the method [`update_task`]
@@ -61,10 +102,26 @@ pub enum CreateTaskSuccess {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed successes of method [`create_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CreateTaskResourceSuccess {
+    Status200(models::TaskResource),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed successes of method [`delete_task`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteTaskSuccess {
+    Status204(),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed successes of method [`delete_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DeleteTaskResourceSuccess {
     Status204(),
     UnknownValue(serde_json::Value),
 }
@@ -74,6 +131,14 @@ pub enum DeleteTaskSuccess {
 #[serde(untagged)]
 pub enum GetTaskSuccess {
     Status200(models::Task),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed successes of method [`list_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListTaskResourceSuccess {
+    Status200(models::TaskResourceListWithPagination),
     UnknownValue(serde_json::Value),
 }
 
@@ -94,6 +159,15 @@ pub enum CreateTaskError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`create_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CreateTaskResourceError {
+    Status400(models::ErrorRespPayload),
+    Status401(models::ErrorRespPayload),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`delete_task`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -102,10 +176,28 @@ pub enum DeleteTaskError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`delete_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DeleteTaskResourceError {
+    Status400(models::ErrorRespPayload),
+    Status401(models::ErrorRespPayload),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`get_task`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetTaskError {
+    Status401(models::ErrorRespPayload),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`list_task_resource`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListTaskResourceError {
+    Status400(models::ErrorRespPayload),
     Status401(models::ErrorRespPayload),
     UnknownValue(serde_json::Value),
 }
@@ -164,6 +256,51 @@ pub async fn create_task(configuration: &configuration::Configuration, params: C
     }
 }
 
+pub async fn create_task_resource(configuration: &configuration::Configuration, params: CreateTaskResourceParams) -> Result<ResponseContent<CreateTaskResourceSuccess>, Error<CreateTaskResourceError>> {
+    let local_var_configuration = configuration;
+
+    // unbox the parameters
+    let task_id = params.task_id;
+    let resource_type = params.resource_type;
+    let resource_id = params.resource_id;
+    let organization = params.organization;
+
+
+    let local_var_client = &local_var_configuration.client;
+
+    let local_var_uri_str = format!("{}/api/tasks/{task_id}/{resource_type}/{resource_id}", local_var_configuration.base_path, task_id=crate::apis::urlencode(task_id), resource_type=resource_type.to_string(), resource_id=crate::apis::urlencode(resource_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
+    if let Some(ref local_var_apikey) = local_var_configuration.api_key {
+        let local_var_key = local_var_apikey.key.clone();
+        let local_var_value = match local_var_apikey.prefix {
+            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            None => local_var_key,
+        };
+        local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        let local_var_entity: Option<CreateTaskResourceSuccess> = serde_json::from_str(&local_var_content).ok();
+        let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Ok(local_var_result)
+    } else {
+        let local_var_entity: Option<CreateTaskResourceError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 pub async fn delete_task(configuration: &configuration::Configuration, params: DeleteTaskParams) -> Result<ResponseContent<DeleteTaskSuccess>, Error<DeleteTaskError>> {
     let local_var_configuration = configuration;
 
@@ -207,6 +344,51 @@ pub async fn delete_task(configuration: &configuration::Configuration, params: D
     }
 }
 
+pub async fn delete_task_resource(configuration: &configuration::Configuration, params: DeleteTaskResourceParams) -> Result<ResponseContent<DeleteTaskResourceSuccess>, Error<DeleteTaskResourceError>> {
+    let local_var_configuration = configuration;
+
+    // unbox the parameters
+    let task_id = params.task_id;
+    let resource_type = params.resource_type;
+    let resource_id = params.resource_id;
+    let organization = params.organization;
+
+
+    let local_var_client = &local_var_configuration.client;
+
+    let local_var_uri_str = format!("{}/api/tasks/{task_id}/{resource_type}/{resource_id}", local_var_configuration.base_path, task_id=crate::apis::urlencode(task_id), resource_type=resource_type.to_string(), resource_id=crate::apis::urlencode(resource_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
+    if let Some(ref local_var_apikey) = local_var_configuration.api_key {
+        let local_var_key = local_var_apikey.key.clone();
+        let local_var_value = match local_var_apikey.prefix {
+            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            None => local_var_key,
+        };
+        local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        let local_var_entity: Option<DeleteTaskResourceSuccess> = serde_json::from_str(&local_var_content).ok();
+        let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Ok(local_var_result)
+    } else {
+        let local_var_entity: Option<DeleteTaskResourceError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 pub async fn get_task(configuration: &configuration::Configuration, params: GetTaskParams) -> Result<ResponseContent<GetTaskSuccess>, Error<GetTaskError>> {
     let local_var_configuration = configuration;
 
@@ -245,6 +427,54 @@ pub async fn get_task(configuration: &configuration::Configuration, params: GetT
         Ok(local_var_result)
     } else {
         let local_var_entity: Option<GetTaskError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn list_task_resource(configuration: &configuration::Configuration, params: ListTaskResourceParams) -> Result<ResponseContent<ListTaskResourceSuccess>, Error<ListTaskResourceError>> {
+    let local_var_configuration = configuration;
+
+    // unbox the parameters
+    let task_id = params.task_id;
+    let resource_type = params.resource_type;
+    let organization = params.organization;
+    let limit = params.limit;
+    let offset = params.offset;
+
+
+    let local_var_client = &local_var_configuration.client;
+
+    let local_var_uri_str = format!("{}/api/tasks/{task_id}/{resource_type}", local_var_configuration.base_path, task_id=crate::apis::urlencode(task_id), resource_type=resource_type.to_string());
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    local_var_req_builder = local_var_req_builder.query(&[("limit", &limit.to_string())]);
+    local_var_req_builder = local_var_req_builder.query(&[("offset", &offset.to_string())]);
+    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    local_var_req_builder = local_var_req_builder.header("Organization", organization.to_string());
+    if let Some(ref local_var_apikey) = local_var_configuration.api_key {
+        let local_var_key = local_var_apikey.key.clone();
+        let local_var_value = match local_var_apikey.prefix {
+            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            None => local_var_key,
+        };
+        local_var_req_builder = local_var_req_builder.header("Authorization", local_var_value);
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        let local_var_entity: Option<ListTaskResourceSuccess> = serde_json::from_str(&local_var_content).ok();
+        let local_var_result = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Ok(local_var_result)
+    } else {
+        let local_var_entity: Option<ListTaskResourceError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }
