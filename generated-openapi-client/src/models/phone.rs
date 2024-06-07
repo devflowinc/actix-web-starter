@@ -12,20 +12,26 @@ use crate::models;
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Phone {
+    #[serde(rename = "created_at")]
+    pub created_at: String,
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "number")]
     pub number: String,
     #[serde(rename = "org_id")]
     pub org_id: String,
+    #[serde(rename = "updated_at")]
+    pub updated_at: String,
 }
 
 impl Phone {
-    pub fn new(id: String, number: String, org_id: String) -> Phone {
+    pub fn new(created_at: String, id: String, number: String, org_id: String, updated_at: String) -> Phone {
         Phone {
+            created_at,
             id,
             number,
             org_id,
+            updated_at,
         }
     }
 }
