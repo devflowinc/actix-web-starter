@@ -153,6 +153,9 @@ impl Modify for SecurityAddon {
         handlers::task_handler::delete_task,
         handlers::task_handler::update_task,
         handlers::task_handler::get_task,
+        handlers::task_handler::create_task_resource,
+        handlers::task_handler::delete_task_resource,
+        handlers::task_handler::list_task_resource,
         handlers::company_handler::delete_company,
         handlers::company_handler::create_company,
         handlers::company_handler::update_company,
@@ -182,6 +185,11 @@ impl Modify for SecurityAddon {
             handlers::note_handler::UpdateNoteReqPayload,
             handlers::task_handler::CreateTaskReqPayload,
             handlers::task_handler::UpdateTaskReqPayload,
+            handlers::task_handler::TaskResource,
+            handlers::task_handler::TaskResType,
+            handlers::task_handler::TaskResourceList,
+            handlers::task_handler::TaskResourceListWithPagination,
+            handlers::task_handler::GetTaskResourceQuery,
             handlers::company_handler::UpdateCompanyReqPayload,
             handlers::company_handler::CreateCompanyReqPayload,
             models::User,
@@ -195,6 +203,9 @@ impl Modify for SecurityAddon {
             models::Phone,
             models::Contact,
             models::Company,
+            models::TaskDeal,
+            models::TaskLink,
+            models::TaskUser,
             errors::ErrorRespPayload,
             prefixes::PrefixedUuid<prefixes::OrgPrefix>,
             prefixes::PrefixedUuid<prefixes::OrgUserPrefix>,
@@ -206,6 +217,9 @@ impl Modify for SecurityAddon {
             prefixes::PrefixedUuid<prefixes::PhonePrefix>,
             prefixes::PrefixedUuid<prefixes::TaskPrefix>,
             prefixes::PrefixedUuid<prefixes::CompanyPrefix>,
+            prefixes::PrefixedUuid<prefixes::TaskDealPrefix>,
+            prefixes::PrefixedUuid<prefixes::TaskLinkPrefix>,
+            prefixes::PrefixedUuid<prefixes::TaskUserPrefix>,
         )
     ),
     tags(
@@ -571,12 +585,33 @@ pub fn main() -> std::io::Result<()> {
                                         .route(web::post().to(handlers::task_handler::create_task)),
                                 )
                                 .service(
-                                    web::resource("/{task_id}")
-                                        .route(
-                                            web::delete().to(handlers::task_handler::delete_task),
+                                    web::scope("/{task_id}")
+                                        .service(
+                                            web::resource("")
+                                                .route(
+                                                    web::delete()
+                                                        .to(handlers::task_handler::delete_task),
+                                                )
+                                                .route(
+                                                    web::get().to(handlers::task_handler::get_task),
+                                                )
+                                                .route(
+                                                    web::put()
+                                                        .to(handlers::task_handler::update_task),
+                                                ),
                                         )
-                                        .route(web::get().to(handlers::task_handler::get_task))
-                                        .route(web::put().to(handlers::task_handler::update_task)),
+                                        .service(
+                                            web::scope("/{resource_type}")
+                                            .service(
+                                                web::resource("/{resource_id}")
+                                                .route(web::post().to(handlers::task_handler::create_task_resource))
+                                                .route(web::delete().to(handlers::task_handler::delete_task_resource))
+                                                )
+                                            .service(
+                                                web::resource("")
+                                                .route(web::get().to(handlers::task_handler::list_task_resource))
+                                                ),
+                                            ),
                                 ),
                         )
                         .service(

@@ -83,7 +83,7 @@ pub async fn list_deals_by_task_id(
     pg_pool: web::Data<PgPool>,
     offset: Option<i64>,
     limit: Option<i64>,
-) -> Result<Vec<Deal>, ServiceError> {
+) -> Result<(Vec<Deal>, i64), ServiceError> {
     use crate::data::schema::deals::dsl as deals_columns;
     use crate::data::schema::tasks::dsl as tasks_columns;
     let mut conn = pg_pool.get().await.unwrap();
@@ -102,5 +102,12 @@ pub async fn list_deals_by_task_id(
         .load::<Deal>(&mut conn)
         .await
         .map_err(|_| ServiceError::InternalServerError("Error fetching deals".to_string()))?;
-    Ok(deals)
+    let count = TaskDeal::belonging_to(&task)
+        .inner_join(deals_columns::deals)
+        .select(deals_columns::id)
+        .count()
+        .get_result(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error counting deals".to_string()))?;
+    Ok((deals, count))
 }

@@ -75,7 +75,7 @@ pub async fn list_links_by_task_id(
     pg_pool: web::Data<PgPool>,
     offset: Option<i64>,
     limit: Option<i64>,
-) -> Result<Vec<Link>, ServiceError> {
+) -> Result<(Vec<Link>, i64), ServiceError> {
     use crate::data::schema::links::dsl as links_columns;
     use crate::data::schema::tasks::dsl as tasks_columns;
     let mut conn = pg_pool.get().await.unwrap();
@@ -94,5 +94,13 @@ pub async fn list_links_by_task_id(
         .load::<Link>(&mut conn)
         .await
         .map_err(|_| ServiceError::InternalServerError("Error fetching links".to_string()))?;
-    Ok(links)
+
+    let count = TaskLink::belonging_to(&task)
+        .inner_join(links_columns::links)
+        .select(links_columns::id)
+        .count()
+        .get_result(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error fetching links".to_string()))?;
+    Ok((links, count))
 }

@@ -113,7 +113,7 @@ pub async fn list_users_by_task_id(
     pg_pool: web::Data<PgPool>,
     offset: Option<i64>,
     limit: Option<i64>,
-) -> Result<Vec<User>, ServiceError> {
+) -> Result<(Vec<User>, i64), ServiceError> {
     use crate::data::schema::tasks::dsl as tasks_columns;
     use crate::data::schema::users::dsl as users_columns;
     let mut conn = pg_pool.get().await.unwrap();
@@ -132,5 +132,14 @@ pub async fn list_users_by_task_id(
         .load::<User>(&mut conn)
         .await
         .map_err(|_| ServiceError::InternalServerError("Error fetching user".to_string()))?;
-    Ok(users)
+
+    let count = TaskUser::belonging_to(&task)
+        .inner_join(users_columns::users)
+        .select(users_columns::id)
+        .count()
+        .get_result(&mut conn)
+        .await
+        .map_err(|_| ServiceError::InternalServerError("Error counting deals".to_string()))?;
+
+    Ok((users, count))
 }
