@@ -1,5 +1,5 @@
-use std::fmt::Display;
-
+use super::configure::ActixTemplateConfiguration;
+use crate::errors::DefaultError;
 use actix_web_starter_client::{
     apis::{
         configuration::Configuration,
@@ -11,11 +11,37 @@ use actix_web_starter_client::{
     },
     models::{CreateOrgReqPayload, InvitationData, Org},
 };
+use clap::{Args, Subcommand};
 use inquire::{Confirm, Select};
+use std::fmt::Display;
 
-use crate::errors::DefaultError;
+#[derive(Subcommand)]
+pub enum OrgCommands {
+    Create(CreateOrg),
+    Delete,
+    Rename,
+    Invite(InviteToOrg),
+    Leave(LeaveOrg),
+}
 
-use super::configure::ActixTemplateConfiguration;
+#[derive(Args)]
+pub struct CreateOrg {
+    /// The name of the organization you want to create
+    pub name: Option<String>,
+}
+
+#[derive(Args)]
+pub struct LeaveOrg {
+    /// The name of the organization you want to create
+    pub id: Option<String>,
+}
+
+#[derive(Args)]
+pub struct InviteToOrg {
+    /// The user's email
+    #[arg(short, long)]
+    pub email: Option<String>,
+}
 
 pub async fn create_org(
     settings: ActixTemplateConfiguration,

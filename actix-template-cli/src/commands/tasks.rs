@@ -1,13 +1,37 @@
+use super::configure::ActixTemplateConfiguration;
+use crate::{errors::DefaultError, ui::get_cancelable_render_config};
 use actix_web_starter_client::{
     apis::tasks_api::{
         self, CreateTaskSuccess, GetTaskParams, UpdateTaskParams, UpdateTaskSuccess,
     },
     models::{CreateTaskReqPayload, Task, UpdateTaskReqPayload},
 };
+use clap::{Args, Subcommand};
 
-use crate::{errors::DefaultError, ui::get_cancelable_render_config};
+#[derive(Subcommand)]
+pub enum TaskCommands {
+    Create,
+    Delete(DeleteTask),
+    Edit(EditTask),
+    View(ViewTask),
+}
+#[derive(Args)]
+pub struct DeleteTask {
+    /// The id of the task you want to delete
+    pub id: Option<String>,
+}
 
-use super::configure::ActixTemplateConfiguration;
+#[derive(Args)]
+pub struct EditTask {
+    /// The id of the task you want to edit
+    pub id: String,
+}
+
+#[derive(Args)]
+pub struct ViewTask {
+    /// The id of the task you want to delete
+    pub id: String,
+}
 
 fn transform_option<T>(opt: Option<T>) -> Option<Option<T>> {
     opt.map(Some)
@@ -45,7 +69,8 @@ pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task,
     )
     .await?
     .entity
-    .unwrap();
+    .ok_or_else(|| DefaultError::new("No entity returned from API for create_task"))?;
+
     // Return task
     match result {
         CreateTaskSuccess::Status201(task) => {

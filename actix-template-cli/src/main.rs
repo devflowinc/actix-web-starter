@@ -1,6 +1,11 @@
 use clap::{Args, Parser, Subcommand};
-use commands::{configure::ActixTemplateProfile, notes, orgs, tasks};
-
+use commands::{
+    configure::ActixTemplateProfile,
+    deals::{self, DealCommands},
+    notes::{self, NoteCommands},
+    orgs::{self, OrgCommands},
+    tasks::{self, TaskCommands},
+};
 mod commands;
 mod errors;
 mod ui;
@@ -29,105 +34,21 @@ enum Commands {
     Login(Login),
     #[command(subcommand, about = "Commands for managing API Keys")]
     ApiKey(ApiKeyCommands),
-    /// Command to manage profiles
+    /// Manage Profiles
     #[command(subcommand)]
     Profile(Profile),
-    /// Command to manage organizations
+    /// Manage Organizations
     #[command(subcommand)]
     Orgs(OrgCommands),
-
+    /// Manage Notes
     #[command(subcommand)]
     Notes(NoteCommands),
-
+    /// Manage Tasks
     #[command(subcommand)]
     Tasks(TaskCommands),
-}
-
-#[derive(Subcommand)]
-enum TaskCommands {
-    Create,
-    Delete(DeleteNote),
-    Edit(EditTask),
-    View(ViewTask),
-}
-
-#[derive(Args)]
-struct DeleteTask {
-    /// The id of the task you want to delete
-    id: Option<String>,
-}
-
-#[derive(Args)]
-struct EditTask {
-    /// The id of the task you want to edit
-    id: String,
-}
-
-#[derive(Args)]
-struct ViewTask {
-    /// The id of the task you want to delete
-    id: String,
-}
-
-#[derive(Subcommand)]
-enum NoteCommands {
-    Create(CreateNote),
-    Delete(DeleteNote),
-    Edit(EditNote),
-    List,
-    View(ViewNote),
-}
-
-#[derive(Args)]
-struct CreateNote {
-    /// The title of the note you want to create
-    title: Option<String>,
-}
-
-#[derive(Args)]
-struct DeleteNote {
-    /// The id of the note you want to delete
-    id: Option<String>,
-}
-
-#[derive(Args)]
-struct EditNote {
-    /// The id of the note you want to edit
-    id: Option<String>,
-}
-
-#[derive(Args)]
-struct ViewNote {
-    /// The title of the note you want to view
-    id: Option<String>,
-}
-
-#[derive(Subcommand)]
-enum OrgCommands {
-    Create(CreateOrg),
-    Delete,
-    Rename,
-    Invite(InviteToOrg),
-    Leave(LeaveOrg),
-}
-
-#[derive(Args)]
-struct CreateOrg {
-    /// The name of the organization you want to create
-    name: Option<String>,
-}
-
-#[derive(Args)]
-struct LeaveOrg {
-    /// The name of the organization you want to create
-    id: Option<String>,
-}
-
-#[derive(Args)]
-struct InviteToOrg {
-    /// The user's email
-    #[arg(short, long)]
-    email: Option<String>,
+    /// Manage Deals
+    #[command(subcommand)]
+    Deals(DealCommands),
 }
 
 #[derive(Subcommand)]
@@ -281,6 +202,22 @@ async fn main() {
                 tasks::edit_task_cmd(settings, edit_options.id).await
             }
         },
+
+        Some(Commands::Deals(deal_option)) => match deal_option {
+            DealCommands::Create => {
+                _ = deals::create_deal_cmd(settings).await;
+            }
+            DealCommands::Delete(delete_args) => {
+                _ = deals::delete_deal_cmd(settings, delete_args.id).await;
+            }
+            DealCommands::View(view_args) => {
+                _ = deals::view_deal_cmd(settings, view_args.id).await;
+            }
+            DealCommands::Edit(edit_args) => {
+                _ = deals::edit_deal_cmd(settings, edit_args.id).await;
+            }
+        },
+
         _ => {
             println!("Command not implemented yet");
         }

@@ -1,5 +1,5 @@
-use std::fmt::{self, Display};
-
+use super::configure::ActixTemplateConfiguration;
+use crate::errors::DefaultError;
 use actix_web_starter_client::{
     apis::notes_api::{
         self, CreateNoteParams, CreateNoteSuccess, GetNoteByIdParams, GetNoteByIdSuccess,
@@ -7,11 +7,42 @@ use actix_web_starter_client::{
     },
     models::{CreateNoteReqPayload, Note, UpdateNoteReqPayload},
 };
+use clap::{Args, Subcommand};
 use inquire::Editor;
+use std::fmt::{self, Display};
 
-use crate::errors::DefaultError;
+#[derive(Subcommand)]
+pub enum NoteCommands {
+    Create(CreateNote),
+    Delete(DeleteNote),
+    Edit(EditNote),
+    List,
+    View(ViewNote),
+}
 
-use super::configure::ActixTemplateConfiguration;
+#[derive(Args)]
+pub struct CreateNote {
+    /// The title of the note you want to create
+    pub title: Option<String>,
+}
+
+#[derive(Args)]
+pub struct DeleteNote {
+    /// The id of the note you want to delete
+    pub id: Option<String>,
+}
+
+#[derive(Args)]
+pub struct EditNote {
+    /// The id of the note you want to edit
+    pub id: Option<String>,
+}
+
+#[derive(Args)]
+pub struct ViewNote {
+    /// The title of the note you want to view
+    pub id: Option<String>,
+}
 
 async fn get_org_notes(config: ActixTemplateConfiguration) -> Result<Vec<Note>, DefaultError> {
     let notes = actix_web_starter_client::apis::notes_api::get_notes_for_org(

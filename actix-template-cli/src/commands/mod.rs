@@ -5,3 +5,4 @@ pub mod notes;
 pub mod orgs;
 pub mod profile;
 pub mod tasks;
+pub mod deals;

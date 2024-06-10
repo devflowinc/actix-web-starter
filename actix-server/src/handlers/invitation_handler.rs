@@ -84,15 +84,18 @@ pub async fn post_invitation(
     let existing_user_org_id = invitation_data.organization_id;
     let existing_user_role = invitation_data.user_role;
 
-    let db_user = get_user_by_email_query(email.as_str(), pool.clone()).await?;
+    let db_user_result: Result<crate::data::models::User, ServiceError> =
+        get_user_by_email_query(email.as_str(), pool.clone()).await;
 
-    add_user_to_org_query(
-        db_user.id,
-        existing_user_org_id,
-        existing_user_role.into(),
-        pool.clone(),
-    )
-    .await?;
+    if let Ok(db_user) = db_user_result {
+        add_user_to_org_query(
+            db_user.id,
+            existing_user_org_id,
+            existing_user_role.into(),
+            pool.clone(),
+        )
+        .await?;
+    }
 
     let invitation = create_invitation(
         invitation_data.app_url,
