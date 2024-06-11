@@ -1,4 +1,4 @@
-use crate::{commands::login_server::server, Login};
+use crate::{commands::login_server::server, errors::DefaultError, Login};
 use actix_web_starter_client::apis::{
     auth_api::{whoami, WhoamiSuccess},
     configuration::{ApiKey, Configuration},
@@ -202,7 +202,7 @@ struct ApiKeyResponse {
     api_key: String,
 }
 
-pub async fn login(init: Login, settings: ActixTemplateConfiguration) {
+pub async fn login(init: Login, settings: ActixTemplateConfiguration) -> Result<(), DefaultError> {
     let api_key = init.api_key;
     let mut api_url = init.api_url;
 
@@ -275,9 +275,5 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) {
     });
 
     confy::store("actix_template", "profiles", profiles)
-        .map_err(|e| {
-            eprintln!("Error saving configuration: {:?}", e);
-            std::process::exit(1);
-        })
-        .unwrap();
+        .map_err(|_| DefaultError::new("Error saving configuration"))
 }

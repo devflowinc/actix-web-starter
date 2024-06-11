@@ -6,6 +6,7 @@ use commands::{
     orgs::{self, OrgCommands},
     tasks::{self, TaskCommands},
 };
+use errors::DefaultError;
 mod commands;
 mod errors;
 mod ui;
@@ -131,55 +132,30 @@ async fn main() {
             .settings
     };
 
-    match args.command {
-        Some(Commands::Login(login)) => {
-            commands::configure::login(login, settings).await;
-        }
+    let output: Result<(), DefaultError> = match args.command {
+        Some(Commands::Login(login)) => commands::configure::login(login, settings).await,
         Some(Commands::ApiKey(api_key)) => match api_key {
             ApiKeyCommands::Generate(api_key_data) => {
-                commands::api_key::generate_api_key(settings, api_key_data)
-                    .await
-                    .map_err(|e| {
-                        eprintln!("Error generating API Key: {:?}", e);
-                        std::process::exit(1);
-                    })
-                    .unwrap();
+                commands::api_key::generate_api_key(settings, api_key_data).await
             }
         },
         Some(Commands::Profile(profile)) => match profile {
-            Profile::Switch(switch) => {
-                commands::profile::switch_profile(switch, profiles.to_vec())
-                    .map_err(|e| {
-                        eprintln!("Error switching profile: {:?}", e);
-                        std::process::exit(1);
-                    })
-                    .unwrap();
-            }
-            Profile::Delete(delete) => {
-                commands::profile::delete_profile(delete, profiles.to_vec())
-                    .map_err(|e| {
-                        eprintln!("Error deleting profile: {:?}", e);
-                        std::process::exit(1);
-                    })
-                    .unwrap();
-            }
+            Profile::Switch(switch) => commands::profile::switch_profile(switch, profiles.to_vec()),
+            Profile::Delete(delete) => commands::profile::delete_profile(delete, profiles.to_vec()),
         },
         Some(Commands::Orgs(org)) => match org {
-            OrgCommands::Create(org) => {
-                _ = orgs::create_org(settings, org.name).await;
-            }
+            OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
             OrgCommands::Delete => orgs::delete_org(settings).await,
             OrgCommands::Rename => orgs::rename_org(settings).await,
             OrgCommands::Invite(invite) => orgs::invite_user(invite.email, settings).await,
-            OrgCommands::Leave(leave_org) => {
-                orgs::leave_org(leave_org.id, settings).await;
-            }
+            OrgCommands::Leave(leave_org) => orgs::leave_org(leave_org.id, settings).await,
         },
 
         Some(Commands::Notes(note_option)) => match note_option {
             NoteCommands::Create(create_note) => {
                 notes::create_note_cmd(settings, create_note.title).await
             }
+
             NoteCommands::List => notes::list_notes_cmd(settings).await,
             NoteCommands::Edit(edit_args) => notes::edit_note_cmd(settings, edit_args.id).await,
             NoteCommands::Delete(delete_args) => {
@@ -189,12 +165,8 @@ async fn main() {
         },
 
         Some(Commands::Tasks(task_option)) => match task_option {
-            TaskCommands::Create => {
-                _ = tasks::create_task_cmd(settings).await;
-            }
-            TaskCommands::Delete(input) => {
-                _ = tasks::delete_task_cmd(settings, input.id).await;
-            }
+            TaskCommands::Create => tasks::create_task_cmd(settings).await,
+            TaskCommands::Delete(input) => tasks::delete_task_cmd(settings, input.id).await,
             TaskCommands::View(view_options) => {
                 tasks::view_task_cmd(settings, view_options.id).await
             }
@@ -204,22 +176,22 @@ async fn main() {
         },
 
         Some(Commands::Deals(deal_option)) => match deal_option {
-            DealCommands::Create => {
-                _ = deals::create_deal_cmd(settings).await;
-            }
+            DealCommands::Create => deals::create_deal_cmd(settings).await,
             DealCommands::Delete(delete_args) => {
-                _ = deals::delete_deal_cmd(settings, delete_args.id).await;
+                deals::delete_deal_cmd(settings, delete_args.id).await
             }
-            DealCommands::View(view_args) => {
-                _ = deals::view_deal_cmd(settings, view_args.id).await;
-            }
-            DealCommands::Edit(edit_args) => {
-                _ = deals::edit_deal_cmd(settings, edit_args.id).await;
-            }
+            DealCommands::View(view_args) => deals::view_deal_cmd(settings, view_args.id).await,
+            DealCommands::Edit(edit_args) => deals::edit_deal_cmd(settings, edit_args.id).await,
         },
 
         _ => {
             println!("Command not implemented yet");
+            Ok(())
         }
     };
+
+    if let Err(e) = output {
+        eprintln!("Error: {:?}", e);
+        std::process::exit(1);
+    }
 }

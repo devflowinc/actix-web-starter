@@ -46,7 +46,7 @@ pub struct InviteToOrg {
 pub async fn create_org(
     settings: ActixTemplateConfiguration,
     name: Option<String>,
-) -> Result<Org, DefaultError> {
+) -> Result<(), DefaultError> {
     let name = if name.is_none() {
         inquire::Text::new("Enter a name for the organization:").prompt()?
     } else {
@@ -69,7 +69,7 @@ pub async fn create_org(
         CreateOrgSuccess::Status201(org) => {
             println!("\nOrganization created successfully!\n");
             println!("Name: {}", org.name);
-            return Ok(org);
+            return Ok(());
         }
         CreateOrgSuccess::UnknownValue(_) => {
             return Err(DefaultError::new(
@@ -138,7 +138,7 @@ pub async fn select_from_my_orgs(
     Ok(ans.org)
 }
 
-pub async fn delete_org(settings: ActixTemplateConfiguration) {
+pub async fn delete_org(settings: ActixTemplateConfiguration) -> Result<(), DefaultError> {
     // Fetch the list of orgs
     let selected = match select_from_my_orgs(
         &settings.clone().into(),
@@ -186,35 +186,27 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) {
             println!("Organization deleted successfully.");
             std::process::exit(0);
         }
-        false => {
-            eprintln!("Error deleting organization.");
-            std::process::exit(1);
-        }
+        false => Err(DefaultError::new("Error deleting organization.")),
     }
 }
 
-pub async fn rename_org(settings: ActixTemplateConfiguration) {
-    let selected = match select_from_my_orgs(
+pub async fn rename_org(settings: ActixTemplateConfiguration) -> Result<(), DefaultError> {
+    let selected = select_from_my_orgs(
         &settings.clone().into(),
         "Select an organization to rename:",
     )
     .await
-    {
-        Ok(ans) => ans,
-        Err(OrgSelectError::NoOrgs) => {
-            println!("No organizations found.");
-            std::process::exit(0);
-        }
-        _ => {
-            eprintln!("Error fetching organizations.");
-            std::process::exit(1);
-        }
-    };
+    .map_err(|e| match e {
+        OrgSelectError::NoOrgs => DefaultError::new("No organizations found."),
+        _ => DefaultError::new("Error fetching organizations."),
+    })?;
 
     // Prompt for new name
     let new_name = inquire::Text::new("Enter the new name for the organization:")
         .prompt()
-        .expect("Prompt configured correctly");
+        .map_err(|e| {
+            DefaultError::new(format!("Error prompting for new name: {:?}", e).as_str())
+        })?;
 
     // Send the rename request
     let rename_payload = actix_web_starter_client::models::UpdateOrgReqPayload { name: new_name };
@@ -228,34 +220,34 @@ pub async fn rename_org(settings: ActixTemplateConfiguration) {
         },
     )
     .await
-    .map_err(|e| {
-        eprintln!("Error renaming organization: {:?}", e);
-    })
-    .unwrap()
+    .map_err(|e| DefaultError::new(format!("Error renaming organization: {:?}", e).as_str()))?
     .entity;
 
     if renamed.is_none() {
         println!("Organization renamed successfully.");
-        std::process::exit(0);
+        return Ok(());
     }
 
     match renamed.unwrap() {
         actix_web_starter_client::apis::orgs_api::UpdateOrgSuccess::Status200(org) => {
             println!("Organization renamed successfully.");
             println!("Name: {}", org.name);
+            Ok(())
         }
-        _ => {
-            eprintln!("Error renaming organization.");
-            std::process::exit(1);
-        }
-    };
+        _ => Err(DefaultError::new("Error renaming organization.")),
+    }
 }
 
-pub async fn invite_user(email: Option<String>, settings: ActixTemplateConfiguration) {
+pub async fn invite_user(
+    email: Option<String>,
+    settings: ActixTemplateConfiguration,
+) -> Result<(), DefaultError> {
     let email = if email.is_none() {
         inquire::Text::new("Enter the email address of the user to invite:")
             .prompt()
-            .expect("Prompt configured correctly")
+            .map_err(|e| {
+                DefaultError::new(format!("Error prompting for email: {:?}", e).as_str())
+            })?
     } else {
         email.unwrap()
     };
@@ -274,38 +266,30 @@ pub async fn invite_user(email: Option<String>, settings: ActixTemplateConfigura
         },
     )
     .await
-    .map_err(|e| {
-        eprintln!("Error renaming organization: {:?}", e);
-    })
-    .unwrap()
+    .map_err(|e| DefaultError::new(format!("Error sending invitation: {:?}", e).as_str()))?
     .entity;
 
     match invitation {
         Some(invitation_api::PostInvitationSuccess::Status204()) => {
             println!("Invitation sent successfully.");
+            Ok(())
         }
-        _ => {
-            eprintln!("Error sending invitation.");
-            std::process::exit(1);
-        }
+        _ => Err(DefaultError::new("Error sending invitation.")),
     }
 }
 
-pub async fn leave_org(org_id: Option<String>, settings: ActixTemplateConfiguration) {
+pub async fn leave_org(
+    org_id: Option<String>,
+    settings: ActixTemplateConfiguration,
+) -> Result<(), DefaultError> {
     let org_id = if org_id.is_none() {
-        match select_from_my_orgs(&settings.clone().into(), "Select an organization to leave:")
+        select_from_my_orgs(&settings.clone().into(), "Select an organization to leave:")
             .await
-        {
-            Ok(ans) => ans.id,
-            Err(OrgSelectError::NoOrgs) => {
-                println!("No organizations found.");
-                std::process::exit(0);
-            }
-            _ => {
-                eprintln!("Error fetching organizations.");
-                std::process::exit(1);
-            }
-        }
+            .map_err(|e| match e {
+                OrgSelectError::NoOrgs => DefaultError::new("No organizations found."),
+                _ => DefaultError::new("Error fetching organizations."),
+            })?
+            .id
     } else {
         org_id.unwrap()
     };
@@ -318,18 +302,15 @@ pub async fn leave_org(org_id: Option<String>, settings: ActixTemplateConfigurat
         },
     )
     .await
-    .map_err(|e| {
-        eprintln!("Error leaving organization: {:?}", e);
-    })
+    .map_err(|e| DefaultError::new(format!("Error leaving organization: {:?}", e).as_str()))
     .unwrap()
     .status
     .is_success();
 
     if left {
         println!("Left organization successfully.");
-        std::process::exit(0);
+        Ok(())
     } else {
-        eprintln!("Error leaving organization.");
-        std::process::exit(1);
+        Err(DefaultError::new("Error leaving organization."))
     }
 }

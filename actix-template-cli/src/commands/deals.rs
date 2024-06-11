@@ -32,7 +32,7 @@ pub struct ViewDeal {
     pub id: String,
 }
 
-pub async fn create_deal_cmd(config: ActixTemplateConfiguration) -> Result<Deal, DefaultError> {
+pub async fn create_deal_cmd(config: ActixTemplateConfiguration) -> Result<(), DefaultError> {
     let name = inquire::Text::new("Enter deal name:")
         .with_render_config(get_cancelable_render_config("No Description"))
         .prompt()?;
@@ -61,9 +61,9 @@ pub async fn create_deal_cmd(config: ActixTemplateConfiguration) -> Result<Deal,
     .ok_or_else(|| DefaultError::new("No entity returned from API for create_deal"))?;
 
     match result {
-        CreateDealSuccess::Status201(deal) => {
+        CreateDealSuccess::Status201(_) => {
             println!("Deal created successfully!");
-            Ok(deal)
+            Ok(())
         }
         CreateDealSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Unknown response from API for create_deal",
@@ -97,7 +97,7 @@ pub async fn get_deal(
 pub async fn edit_deal_cmd(
     config: ActixTemplateConfiguration,
     deal_id: String,
-) -> Result<Deal, DefaultError> {
+) -> Result<(), DefaultError> {
     let deal = get_deal(config.clone(), deal_id.clone()).await?;
     let prev_deal_name = deal
         .name
@@ -133,17 +133,14 @@ pub async fn edit_deal_cmd(
         },
     )
     .await
-    .unwrap_or_else(|e| {
-        eprintln!("Error updating deal: {:?}", e);
-        std::process::exit(1);
-    })
+    .map_err(|e| DefaultError::new(format!("Error updating deal: {:?}", e).as_str()))?
     .entity
     .ok_or_else(|| DefaultError::new("No entity returned from API for update_deal"))?;
 
     match result {
-        deals_api::UpdateDealSuccess::Status200(deal) => {
+        deals_api::UpdateDealSuccess::Status200(_) => {
             println!("Deal edited successfully!");
-            Ok(deal)
+            Ok(())
         }
         deals_api::UpdateDealSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Unknown response from API for update_deal",
@@ -154,7 +151,7 @@ pub async fn edit_deal_cmd(
 pub async fn view_deal_cmd(
     config: ActixTemplateConfiguration,
     deal_id: String,
-) -> Result<Deal, DefaultError> {
+) -> Result<(), DefaultError> {
     let deal = get_deal(config.clone(), deal_id.clone()).await?;
     let name = deal
         .name
@@ -169,7 +166,7 @@ pub async fn view_deal_cmd(
     println!("Size: {}", size);
     println!("Active: {}", active);
 
-    Ok(deal)
+    Ok(())
 }
 
 pub async fn delete_deal_cmd(

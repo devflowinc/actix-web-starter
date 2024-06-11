@@ -41,7 +41,7 @@ fn reduce_option(opt: Option<Option<String>>) -> String {
     opt.unwrap_or(None).unwrap_or("".to_string())
 }
 
-pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task, DefaultError> {
+pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<(), DefaultError> {
     // Get description
     let description = inquire::Text::new("Enter description (or ESC):")
         .with_render_config(get_cancelable_render_config("No Description"))
@@ -75,7 +75,7 @@ pub async fn create_task_cmd(config: ActixTemplateConfiguration) -> Result<Task,
     match result {
         CreateTaskSuccess::Status201(task) => {
             println!("Task created successfully: {}", task.id);
-            Ok(task)
+            Ok(())
         }
         CreateTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
             "Could not parse response body creating task",
@@ -106,12 +106,14 @@ pub async fn get_task(
     }
 }
 
-pub async fn edit_task_cmd(config: ActixTemplateConfiguration, task_id: String) {
-    let task = get_task(config.clone(), task_id).await.unwrap();
+pub async fn edit_task_cmd(
+    config: ActixTemplateConfiguration,
+    task_id: String,
+) -> Result<(), DefaultError> {
+    let task = get_task(config.clone(), task_id).await?;
     let description = inquire::Text::new("Enter description (or ESC):")
         .with_render_config(get_cancelable_render_config("No Description"))
-        .prompt_skippable()
-        .expect("Prompt renders correctly");
+        .prompt_skippable()?;
     let due_date = inquire::DateSelect::new("Enter a due date (or ESC):")
         .with_render_config(get_cancelable_render_config("No Due Date"))
         .prompt_skippable()
@@ -130,32 +132,33 @@ pub async fn edit_task_cmd(config: ActixTemplateConfiguration, task_id: String) 
 
     let result = tasks_api::update_task(&config.into(), update_params)
         .await
-        .unwrap_or_else(|e| {
-            eprintln!("Error updating task: {:?}", e);
-            std::process::exit(1);
-        })
+        .map_err(|e| DefaultError::new(format!("Error updating task: {:?}", e).as_str()))?
         .entity
         .expect("Task should be returned");
 
     match result {
         UpdateTaskSuccess::Status200(task) => {
             println!("Task updated successfully: {}", task.id);
+            Ok(())
         }
 
-        UpdateTaskSuccess::UnknownValue(_) => {
-            eprintln!("Could not parse response body when updating task");
-            std::process::exit(1);
-        }
+        UpdateTaskSuccess::UnknownValue(_) => Err(DefaultError::new(
+            "Could not parse response body when updating task",
+        )),
     }
 }
 
-pub async fn view_task_cmd(config: ActixTemplateConfiguration, task_id: String) {
-    let task = get_task(config, task_id).await.unwrap();
+pub async fn view_task_cmd(
+    config: ActixTemplateConfiguration,
+    task_id: String,
+) -> Result<(), DefaultError> {
+    let task = get_task(config, task_id).await?;
     let description = reduce_option(task.description);
     let deadline = reduce_option(task.deadline);
     println!("Task ID: {}", task.id);
     println!("Description: {}", description);
     println!("Deadline: {}", deadline);
+    Ok(())
 }
 
 pub async fn delete_task_cmd(

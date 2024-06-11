@@ -1,11 +1,13 @@
-use crate::{commands::configure::ActixTemplateProfile, DeleteProfile, SwitchProfile};
+use crate::{
+    commands::configure::ActixTemplateProfile, errors::DefaultError, DeleteProfile, SwitchProfile,
+};
 
 use super::configure::ActixTemplateProfileInner;
 
 pub fn switch_profile(
     profile_data: SwitchProfile,
     profiles: Vec<ActixTemplateProfileInner>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), DefaultError> {
     let profile_name = profile_data.profile_name.unwrap_or_else(|| {
         let profile_name = inquire::Select::new(
             "Select a profile to switch to:",
@@ -19,10 +21,7 @@ pub fn switch_profile(
     profiles
         .iter()
         .find(|p| p.name == profile_name)
-        .ok_or_else(|| {
-            eprintln!("Profile '{}' not found.", profile_name);
-            std::process::exit(1);
-        })
+        .ok_or_else(|| DefaultError::new(format!("Profile '{}' not found.", profile_name).as_str()))
         .unwrap();
 
     let profiles = profiles
@@ -49,10 +48,7 @@ pub fn switch_profile(
         "profiles",
         ActixTemplateProfile { inner: profiles },
     )
-    .map_err(|e| {
-        eprintln!("Error saving configuration: {:?}", e);
-        std::process::exit(1);
-    })
+    .map_err(|e| DefaultError::new(format!("Error saving configuration: {:?}", e).as_str()))
     .unwrap();
 
     println!("Switched to profile '{}'.", profile_name);
@@ -63,7 +59,7 @@ pub fn switch_profile(
 pub fn delete_profile(
     profile_data: DeleteProfile,
     profiles: Vec<ActixTemplateProfileInner>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), DefaultError> {
     let profile_name = profile_data.profile_name.unwrap_or_else(|| {
         let profile_name = inquire::Select::new(
             "Select a profile to delete:",
@@ -77,10 +73,7 @@ pub fn delete_profile(
     let profile = profiles
         .iter()
         .find(|p| p.name == profile_name)
-        .ok_or_else(|| {
-            eprintln!("Profile '{}' not found.", profile_name);
-            std::process::exit(1);
-        })
+        .ok_or_else(|| DefaultError::new(format!("Profile '{}' not found.", profile_name).as_str()))
         .unwrap();
 
     let mut profiles = profiles
@@ -91,8 +84,7 @@ pub fn delete_profile(
 
     if profile.selected {
         if profiles.is_empty() {
-            eprintln!("Cannot delete the last profile.");
-            std::process::exit(1);
+            return Err(DefaultError::new("Cannot delete the last profile."));
         }
 
         profiles[0].selected = true;
@@ -103,11 +95,7 @@ pub fn delete_profile(
         "profiles",
         ActixTemplateProfile { inner: profiles },
     )
-    .map_err(|e| {
-        eprintln!("Error saving configuration: {:?}", e);
-        std::process::exit(1);
-    })
-    .unwrap();
+    .map_err(|e| DefaultError::new(format!("Error saving configuration: {:?}", e).as_str()))?;
 
     println!("Deleted profile '{}'.", profile_name);
 

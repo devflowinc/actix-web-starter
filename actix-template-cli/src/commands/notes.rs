@@ -122,15 +122,14 @@ async fn get_note_by_id(
     }
 }
 
-pub async fn edit_note_cmd(config: ActixTemplateConfiguration, note_id: Option<String>) {
+pub async fn edit_note_cmd(
+    config: ActixTemplateConfiguration,
+    note_id: Option<String>,
+) -> Result<(), DefaultError> {
     let note = if note_id.is_none() {
-        select_note(config.clone(), "Select a note to edit:")
-            .await
-            .unwrap()
+        select_note(config.clone(), "Select a note to edit:").await?
     } else {
-        get_note_by_id(config.clone(), note_id.unwrap())
-            .await
-            .unwrap()
+        get_note_by_id(config.clone(), note_id.unwrap()).await?
     };
 
     let _ = edit_note(
@@ -138,40 +137,37 @@ pub async fn edit_note_cmd(config: ActixTemplateConfiguration, note_id: Option<S
         note.clone(),
         &format!("Editing note: {}", note.title),
     )
-    .await
-    .unwrap();
+    .await?;
+    Ok(())
 }
 
-pub async fn view_note_cmd(config: ActixTemplateConfiguration, note_id: Option<String>) {
+pub async fn view_note_cmd(
+    config: ActixTemplateConfiguration,
+    note_id: Option<String>,
+) -> Result<(), DefaultError> {
     let note = if note_id.is_none() {
-        select_note(config.clone(), "Select a note to view:")
-            .await
-            .unwrap()
+        select_note(config.clone(), "Select a note to view:").await?
     } else {
-        get_note_by_id(config.clone(), note_id.unwrap())
-            .await
-            .unwrap()
+        get_note_by_id(config.clone(), note_id.unwrap()).await?
     };
 
     println!("\nNote: {}\n{}\n", note.title, note.id);
     println!("{}", note.body);
+    Ok(())
 }
 
-pub async fn list_notes_cmd(config: ActixTemplateConfiguration) {
-    let Ok(notes) = get_org_notes(config.clone()).await else {
-        eprintln!("Error fetching notes");
-        std::process::exit(1);
-    };
-
+pub async fn list_notes_cmd(config: ActixTemplateConfiguration) -> Result<(), DefaultError> {
+    let notes = get_org_notes(config.clone()).await?;
     if notes.is_empty() {
         println!("No notes found.");
-        return;
+        return Ok(());
     }
 
     println!("\nNotes:");
     for note in notes {
         println!("  - {}", note.title);
     }
+    Ok(())
 }
 
 struct NoteSelectOption {
@@ -205,15 +201,14 @@ async fn select_note(
     Ok(note.note)
 }
 
-pub async fn delete_note_cmd(config: ActixTemplateConfiguration, note_id: Option<String>) {
+pub async fn delete_note_cmd(
+    config: ActixTemplateConfiguration,
+    note_id: Option<String>,
+) -> Result<(), DefaultError> {
     let note = if note_id.is_none() {
-        select_note(config.clone(), "Select a note to delete:")
-            .await
-            .unwrap()
+        select_note(config.clone(), "Select a note to delete:").await?
     } else {
-        get_note_by_id(config.clone(), note_id.unwrap())
-            .await
-            .unwrap()
+        get_note_by_id(config.clone(), note_id.unwrap()).await?
     };
 
     match actix_web_starter_client::apis::notes_api::delete_note(
@@ -224,30 +219,29 @@ pub async fn delete_note_cmd(config: ActixTemplateConfiguration, note_id: Option
         },
     )
     .await
-    .map_err(|e| {
-        eprintln!("Error deleting note: {:?}", e);
-        std::process::exit(1);
-    })
-    .unwrap()
+    .map_err(|e| DefaultError::new(format!("Error deleting note: {:?}", e).as_str()))?
     .status
     .is_success()
     {
         true => {
             println!("Note deleted successfully.");
-            std::process::exit(0);
+            Ok(())
         }
         false => {
             eprintln!("Error deleting note.");
-            std::process::exit(1);
+            Err(DefaultError::new("Error deleting note"))
         }
-    };
+    }
 }
 
-pub async fn create_note_cmd(config: ActixTemplateConfiguration, title: Option<String>) {
+pub async fn create_note_cmd(
+    config: ActixTemplateConfiguration,
+    title: Option<String>,
+) -> Result<(), DefaultError> {
     let title = if title.is_none() {
         inquire::Text::new("Enter a title for the note:")
             .prompt()
-            .expect("Prompt configured correctly")
+            .map_err(|e| DefaultError::new(format!("Error getting title: {:?}", e).as_str()))?
     } else {
         title.unwrap()
     };
@@ -261,24 +255,18 @@ pub async fn create_note_cmd(config: ActixTemplateConfiguration, title: Option<S
             create_note_req_payload: payload,
         },
     )
-    .await
-    .map_err(|e| {
-        eprintln!("Error creating note: {:?}", e);
-        std::process::exit(1);
-    })
-    .unwrap()
-    .entity
-    .unwrap();
+    .await?
+    .entity;
+    let note = match created_note {
+        None => Err(DefaultError::new("Unknown error creating note.")),
+        Some(CreateNoteSuccess::UnknownValue(_)) => {
+            Err(DefaultError::new("Unknown error creating note."))
+        }
+        Some(CreateNoteSuccess::Status201(note)) => Ok(note),
+    }?;
 
-    let CreateNoteSuccess::Status201(note) = created_note else {
-        eprintln!("Error creating note.");
-        std::process::exit(1);
-    };
-
-    let Ok(note) = edit_note(config, note, "Edit note").await else {
-        eprintln!("Error editing note");
-        std::process::exit(1);
-    };
+    let note = edit_note(config, note, "Edit note").await?;
 
     println!("\nNote created successfully with id: {}\n", note.id);
+    Ok(())
 }
