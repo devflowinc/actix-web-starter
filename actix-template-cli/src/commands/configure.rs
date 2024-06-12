@@ -87,7 +87,7 @@ impl Default for ActixTemplateConfiguration {
 pub async fn get_user(
     api_url: String,
     api_key: String,
-) -> actix_web_starter_client::apis::auth_api::WhoamiSuccess {
+) -> Result<actix_web_starter_client::apis::auth_api::WhoamiSuccess, DefaultError> {
     let configuration = Configuration {
         base_path: api_url.clone(),
         api_key: Some(ApiKey {
@@ -97,15 +97,11 @@ pub async fn get_user(
         ..Default::default()
     };
 
-    whoami(&configuration)
+    Ok(whoami(&configuration)
         .await
-        .map_err(|e| {
-            eprintln!("Error getting user: {:?}", e);
-            std::process::exit(1);
-        })
-        .unwrap()
+        .map_err(|e| DefaultError::new(format!("Error getting user: {:?}", e).as_str()))?
         .entity
-        .unwrap()
+        .expect("User entity not found"))
 }
 
 async fn configure(
@@ -142,7 +138,7 @@ async fn configure(
         server.abort();
     }
 
-    let result = get_user(api_url.clone(), api_key.clone().unwrap()).await;
+    let result = get_user(api_url.clone(), api_key.clone().unwrap()).await?;
 
     let temporary_config = Configuration {
         base_path: api_url.clone(),
@@ -252,10 +248,10 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) -> Result<
     if profiles.iter().any(|p| p.name == profile_name) {
         let overwrite = Confirm::new("Profile already exists. Overwrite?")
             .with_default(false)
-            .prompt();
+            .prompt()?;
 
-        if !overwrite.unwrap() {
-            std::process::exit(0);
+        if !overwrite {
+            return Ok(());
         }
 
         profiles.retain(|p| p.name != profile_name);
