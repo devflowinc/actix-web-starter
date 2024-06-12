@@ -187,7 +187,7 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
                 // Prompt user to select an org or create one
                 api_key: api_key.unwrap(),
                 api_url: api_url.clone(),
-                org_id: org_id,
+                org_id,
             }
         }
         _ => {

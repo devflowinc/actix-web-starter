@@ -46,7 +46,7 @@ pub struct InviteToOrg {
 pub async fn create_org(
     settings: ActixTemplateConfiguration,
     name: Option<String>,
-) -> Result<(), DefaultError> {
+) -> Result<Org, DefaultError> {
     let name = if name.is_none() {
         inquire::Text::new("Enter a name for the organization:").prompt()?
     } else {
@@ -69,7 +69,7 @@ pub async fn create_org(
         CreateOrgSuccess::Status201(org) => {
             println!("\nOrganization created successfully!\n");
             println!("Name: {}", org.name);
-            return Ok(());
+            return Ok(org);
         }
         CreateOrgSuccess::UnknownValue(_) => {
             return Err(DefaultError::new(
@@ -84,6 +84,7 @@ pub async fn create_org(
 pub enum OrgSelectError {
     NoOrgs,
     OrgFetchFailure,
+    CancelInput,
 }
 
 #[derive(Debug)]
@@ -133,7 +134,7 @@ pub async fn select_from_my_orgs(
 
     let ans = Select::new(prompt, options)
         .prompt()
-        .expect("Prompt is configured correctly");
+        .map_err(|_| OrgSelectError::CancelInput)?;
 
     Ok(ans.org)
 }

@@ -144,7 +144,7 @@ async fn main() {
             Profile::Delete(delete) => commands::profile::delete_profile(delete, profiles.to_vec()),
         },
         Some(Commands::Orgs(org)) => match org {
-            OrgCommands::Create(org) => orgs::create_org(settings, org.name).await,
+            OrgCommands::Create(org) => orgs::create_org(settings, org.name).await.map(|_| ()),
             OrgCommands::Delete => orgs::delete_org(settings).await,
             OrgCommands::Rename => orgs::rename_org(settings).await,
             OrgCommands::Invite(invite) => orgs::invite_user(invite.email, settings).await,
