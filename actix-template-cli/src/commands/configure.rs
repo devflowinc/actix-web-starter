@@ -108,7 +108,10 @@ pub async fn get_user(
         .unwrap()
 }
 
-async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplateConfiguration {
+async fn configure(
+    api_url: String,
+    mut api_key: Option<String>,
+) -> Result<ActixTemplateConfiguration, DefaultError> {
     if api_key.is_none() {
         let (tx, mut rx) = mpsc::channel::<String>(100);
 
@@ -124,9 +127,7 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
             api_url = api_url
         );
 
-        let _ = Text::new("Press Enter to authenticate in browser: ")
-            .prompt()
-            .unwrap();
+        let _ = Text::new("Press Enter to authenticate in browser: ").prompt()?;
 
         if open::that(auth_url.clone()).is_err() {
             eprintln!("Error opening browser. Please visit the URL manually.");
@@ -159,7 +160,7 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
                     .await;
 
             let org_id = match potential_org {
-                Ok(selection) => selection.id,
+                Ok(selection) => Ok(selection.id),
                 Err(OrgSelectError::NoOrgs) => {
                     // Create the org
                     let created = create_org(
@@ -170,30 +171,25 @@ async fn configure(api_url: String, mut api_key: Option<String>) -> ActixTemplat
                         },
                         None,
                     )
-                    .await
-                    .unwrap_or_else(|e| {
-                        eprintln!("Error creating org: {:?}", e);
-                        std::process::exit(1);
-                    });
-                    created.id
+                    .await?;
+                    Ok(created.id)
                 }
-                _ => {
-                    eprintln!("Error selecting org: {:?}", potential_org);
-                    std::process::exit(1);
+                Err(OrgSelectError::CancelInput) => {
+                    Err(DefaultError::new("Org selection cancelled"))
                 }
-            };
+                Err(OrgSelectError::OrgFetchFailure) => {
+                    Err(DefaultError::new("Error fetching orgs"))
+                }
+            }?;
 
-            ActixTemplateConfiguration {
+            Ok(ActixTemplateConfiguration {
                 // Prompt user to select an org or create one
                 api_key: api_key.unwrap(),
                 api_url: api_url.clone(),
                 org_id,
-            }
+            })
         }
-        _ => {
-            eprintln!("Error authenticating: {:?}", result);
-            std::process::exit(1);
-        }
+        _ => Err(DefaultError::new("Error getting user")),
     }
 }
 
@@ -219,9 +215,9 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) -> Result<
             "Would you like to use the default URL for the Actix Template server (http://localhost:8090)?",
         )
         .with_default(true)
-        .prompt();
+        .prompt()?;
 
-        if use_default.unwrap() {
+        if use_default {
             api_url = Some("http://localhost:8090".to_string());
         } else {
             Text::new("Enter the URL of the Actix Template server:")
@@ -231,7 +227,7 @@ pub async fn login(init: Login, settings: ActixTemplateConfiguration) -> Result<
         }
     }
 
-    let config = configure(api_url.unwrap().clone(), api_key).await;
+    let config = configure(api_url.unwrap().clone(), api_key).await?;
 
     let profile_name = if init.profile_name.is_none() {
         let profile_name = Text::new("Enter a name for this profile:")

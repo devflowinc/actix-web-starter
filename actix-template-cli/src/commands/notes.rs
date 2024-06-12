@@ -195,9 +195,7 @@ async fn select_note(
         .iter()
         .map(|n| n.clone().into())
         .collect::<Vec<NoteSelectOption>>();
-    let note = inquire::Select::new(prompt, notes)
-        .prompt()
-        .expect("Prompt configured correctly");
+    let note = inquire::Select::new(prompt, notes).prompt()?;
     Ok(note.note)
 }
 

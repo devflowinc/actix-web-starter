@@ -160,8 +160,7 @@ pub async fn delete_org(settings: ActixTemplateConfiguration) -> Result<(), Defa
 
     let ans = Confirm::new(format!("Are you sure you want to delete {}?", selected.name).as_str())
         .with_default(false)
-        .prompt()
-        .expect("Prompt is configured correctly");
+        .prompt()?;
 
     if ans == false {
         println!("Deletion cancelled.");

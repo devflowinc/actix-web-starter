@@ -116,8 +116,7 @@ pub async fn edit_task_cmd(
         .prompt_skippable()?;
     let due_date = inquire::DateSelect::new("Enter a due date (or ESC):")
         .with_render_config(get_cancelable_render_config("No Due Date"))
-        .prompt_skippable()
-        .expect("Prompt renders correctly")
+        .prompt_skippable()?
         .map(|d| d.format("%Y-%m-%dT00:00:00").to_string());
 
     let update_params = UpdateTaskParams {
